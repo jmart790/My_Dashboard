@@ -1,4 +1,4 @@
-# portfolio-site-2
+# My Dashboard
 
 ## Project setup
 ```
