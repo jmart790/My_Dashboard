@@ -1,0 +1,23 @@
+// screen sizes
+$mobile-sm:        320px;
+$mobile-md:        375px;
+$mobile-lg:        425px;
+$tablet:           768px;
+$laptop:           1024px;
+$laptop-lg:        1440px;
+$desktop:          1920px;
+$desktop-lg:       2560px;
+
+// font sizes
+p, span {
+  font-size: 16px;
+  @media screen and (min-width: $tablet) {
+    font-size: 18px;
+  }
+}
+label {
+  font-size: 12px;
+  @media screen and (min-width: $tablet) {
+    font-size: 14px;
+  } 
+}
