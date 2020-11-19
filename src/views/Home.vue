@@ -56,13 +56,14 @@ export default {
   height: 100vh;
   width: 100vw;
   padding: 24px 20px;
-  background-color: $off-white;
+  background: rgb(34,34,34);
+  background: linear-gradient(45deg, rgba(34,34,34,1) 15%, rgba(22,22,22,1) 100%);
 
   &__title {
     font-size: 40px;
     text-align: center;
     color: $primary;
-    text-shadow: 2px 2px 0 $grey-4;
+    text-shadow: 2px 2px 0 $grey;
   }
   &__sub-title {
     text-align: center;
