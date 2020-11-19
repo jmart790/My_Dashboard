@@ -12,7 +12,9 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+@import "./assets/style.css";
+
 * {
   box-sizing: border-box;
   margin: 0;
