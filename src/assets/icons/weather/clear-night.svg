@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="184.633px" height="183.653px" viewBox="0 0 184.633 183.653" enable-background="new 0 0 184.633 183.653"
+	 xml:space="preserve">
+<g id="bg" display="none">
+	<rect x="-52.074" y="-17" display="inline" fill-rule="evenodd" clip-rule="evenodd" fill="#211F20" width="1156" height="621"/>
+</g>
+<g id="storm">
+</g>
+<g id="snow">
+</g>
+<g id="sleet">
+</g>
+<g id="wind">
+</g>
+<g id="rain">
+</g>
+<g id="partly-cloudy-night">
+</g>
+<g id="clear-night">
+	<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="92.3164" y1="0" x2="92.3164" y2="183.6533">
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="0" style="stop-color:#FFFFFF"/>
+		<stop  offset="1" style="stop-color:#BFCAFF"/>
+	</linearGradient>
+	<path fill="url(#SVGID_1_)" d="M184.025,80.745C118.086,91.921,82.966,65.384,79.042,0C34.351,6.44,0,44.863,0,91.338
+		c0,50.983,41.333,92.315,92.317,92.315c50.984,0,92.315-41.332,92.315-92.315C184.633,87.755,184.421,84.223,184.025,80.745z
+		 M129.311,146.907l-1.846,1.184c-9.839,5.995-21.398,9.451-33.764,9.451c-35.892,0-64.988-29.096-64.988-64.987
+		c0-22.284,11.222-41.943,28.318-53.65c16.291,46.057,48.609,70.771,98.398,73.967C150.794,126.962,141.478,138.919,129.311,146.907
+		z"/>
+</g>
+<g id="partly-cloudy-day">
+</g>
+<g id="cloudy">
+</g>
+<g id="fog">
+</g>
+<g id="clear-day">
+</g>
+</svg>
