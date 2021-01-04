@@ -8,18 +8,14 @@
 	
 		<rect x="-818.031" y="-21.154" display="inline" fill-rule="evenodd" clip-rule="evenodd" fill="#211F20" width="1156" height="621"/>
 </g>
-<g id="storm">
-</g>
-<g id="snow">
-</g>
 <g id="sleet">
 	<g>
-		<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="55.1172" y1="72.0186" x2="55.1172" y2="182.3149">
+		<linearGradient id="sleet-icon" gradientUnits="userSpaceOnUse" x1="55.1172" y1="72.0186" x2="55.1172" y2="182.3149">
 			<stop  offset="0" style="stop-color:#FFFFFF"/>
 			<stop  offset="0" style="stop-color:#F9F9FB"/>
 			<stop  offset="1" style="stop-color:#CED4E8"/>
 		</linearGradient>
-		<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_1_)" d="M110.23,127.064c0.15,4.457-3.442,7.309-9.406,7.499
+		<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#sleet-icon)" d="M110.23,127.064c0.15,4.457-3.442,7.309-9.406,7.499
 			c-2.272,0.072-4.542,0.216-7.676,0.369c1.251,2.012,2.012,3.229,2.767,4.45c2.48,4.014,1.974,7.68-1.421,10.235
 			c-3.29,2.476-7.234,1.979-10.238-1.596c-2.699-3.212-5.127-6.649-7.68-9.983c-2.295-2.998-9.45-4.789-12.661-3.149
 			c-0.422,0.217-0.851,0.542-1.114,0.928c-1.944,2.843-0.115,13.691,2.652,15.832c3.32,2.57,6.702,5.065,9.968,7.705

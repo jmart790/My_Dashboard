@@ -8,29 +8,13 @@
 	
 		<rect x="-313.445" y="-50.457" display="inline" fill-rule="evenodd" clip-rule="evenodd" fill="#211F20" width="1156" height="621"/>
 </g>
-<g id="storm">
-</g>
-<g id="snow">
-</g>
-<g id="sleet">
-</g>
-<g id="wind">
-</g>
-<g id="rain">
-</g>
-<g id="partly-cloudy-night">
-</g>
-<g id="clear-night">
-</g>
-<g id="partly-cloudy-day">
-</g>
 <g id="cloudy">
-	<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="135.2651" y1="0" x2="135.2651" y2="162.8955">
+	<linearGradient id="cloudy-icon" gradientUnits="userSpaceOnUse" x1="135.2651" y1="0" x2="135.2651" y2="162.8955">
 		<stop  offset="0" style="stop-color:#FFFFFF"/>
 		<stop  offset="0" style="stop-color:#A7D4FA"/>
 		<stop  offset="1" style="stop-color:#DAE2F6"/>
 	</linearGradient>
-	<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_1_)" d="M268.201,44.957c-1.043-2.062-2.518-3.903-3.818-5.843
+	<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#cloudy-icon)" d="M268.201,44.957c-1.043-2.062-2.518-3.903-3.818-5.843
 		c-0.078-0.082-0.148-0.172-0.209-0.267c-0.516-0.414-1.025-0.837-1.537-1.261c-0.645-0.443-1.266-0.914-1.857-1.403
 		c-0.141-0.056-0.268-0.125-0.383-0.209c-0.76-0.375-1.58-0.636-2.326-1.009c-0.146-0.027-0.281-0.068-0.404-0.123
 		c-0.064-0.013-0.125-0.027-0.18-0.051c-3.975-1.596-8.051-2.126-12.256-1.271c-1.145,0.232-1.572-0.209-1.975-1.177

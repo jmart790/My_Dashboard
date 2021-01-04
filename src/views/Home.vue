@@ -1,14 +1,16 @@
 <template>
   <div class="home">
-    <h1 class="home__title">My Dashboard Dot Com</h1>
-    <h2 class="home__sub-title">{{location.city || ''}}, {{location.region || ''}}</h2>
+    <header class="home__header">
+      <h4 class="home__title">Mi Dash</h4>
+      <h4 class="home__sub-title">{{location.city || ''}}, {{location.region || ''}}</h4>
+    </header>
     <WeatherWidget v-if="hasLocation" :location="location"/>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import WeatherWidget from "@/components/WeatherWidget";
+import WeatherWidget from "@/components/weather/WeatherWidget";
 
 
 export default {
@@ -55,18 +57,17 @@ export default {
 .home {
   height: 100vh;
   width: 100vw;
-  padding: 24px 20px;
-  background: rgb(34,34,34);
-  background: linear-gradient(45deg, rgba(34,34,34,1) 15%, rgba(22,22,22,1) 100%);
-
-  &__title {
-    font-size: 40px;
-    text-align: center;
-    color: $primary;
-    text-shadow: 2px 2px 0 $grey;
+  padding: $gap-6 $gap-5;
+  background: $app-bg-fallback;
+  background: $app-bg;
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: $gap-4;
   }
   &__sub-title {
     text-align: center;
   }
 }
+
 </style>

@@ -1,5 +1,5 @@
 // screen sizes
-$mobile-sm:        320px;
+$mobile-sm:        360px;
 $mobile-md:        375px;
 $mobile-lg:        425px;
 $tablet:           768px;
@@ -15,3 +15,13 @@ p, span {
 label {
   font-size: 12px;
 }
+
+// Spaces
+$gap-1: 4px; 
+$gap-2: 8px;
+$gap-3: 12px;
+$gap-4: 16px;
+$gap-5: 20px;
+$gap-6: 24px;
+$gap-7: 28px;
+$gap-8: 32px;
