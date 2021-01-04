@@ -1,26 +1,17 @@
 // Color Pallete
 $white:           #fff;
-$white-2:         #F8F9FB;
-$white-3:         #F9FDFF;
-$off-white:       #ecf4f3;
 $black:           #000;
-$grey:            #696868;
+$grey-2:          #949494;
 $brown:           #424242;
-$shadow:          rgba(0, 0, 0, 0.16);
-$purple-lt:       #41456475;
-$blue:            #082a5b;
-$blue-2:          #1270A3;
-$aqua:            #1fbee6;
-$green:           #1fb940;
-$red:             red;
-$red-2:           #EB5E5F;
-$peach:           #ff7e67;
-$teal:            #006a71;
-$teal-lt:         #68b0ab;
+$sky:             #86B4FA;
 $yellow:          #ffc93c;
+$dark-gradiant:     linear-gradient(45deg, rgba(34,34,34,1) 15%, rgba(22,22,22,1) 100%);
+$dark:            #222222;
 
 // Color Assignments 
-$primary:         $peach;
-$secondary:       $teal;
-$secondary-lt:    $teal-lt;
+$app-bg:          $dark-gradiant;
+$app-bg-fallback: $dark;
+$card-bg-color:   rgba(4, 4, 4, 0.363);
+$shadow:          rgba(0, 0, 0, 0.16);
+
 
