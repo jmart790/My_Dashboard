@@ -8,24 +8,6 @@
 	
 		<rect x="-665.658" y="-265.742" display="inline" fill-rule="evenodd" clip-rule="evenodd" fill="#211F20" width="1156" height="621"/>
 </g>
-<g id="storm">
-</g>
-<g id="snow">
-</g>
-<g id="sleet">
-</g>
-<g id="wind">
-</g>
-<g id="rain">
-</g>
-<g id="partly-cloudy-night">
-</g>
-<g id="clear-night">
-</g>
-<g id="partly-cloudy-day">
-</g>
-<g id="cloudy">
-</g>
 <g id="fog">
 	<g>
 		<g>
@@ -37,12 +19,12 @@
 					c7.049-0.638,14.447-2.04,21.186-0.641c19.449,4.041,32.141,22.629,29.881,41.943c-1.393,11.903-7.763,21.899-17.002,28.044
 					c2.814,4.847,6.729,8.903,11.315,12.329c12.7-9.572,21.145-24.735,22.321-42.432C228.892,82.465,208.384,56.971,180.896,52.809z
 					"/>
-				<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="113.6055" y1="0" x2="113.6055" y2="162.7642">
+				<linearGradient id="fog-icon" gradientUnits="userSpaceOnUse" x1="113.6055" y1="0" x2="113.6055" y2="162.7642">
 					<stop  offset="0" style="stop-color:#FFFFFF"/>
 					<stop  offset="0" style="stop-color:#A6B0E3"/>
 					<stop  offset="1" style="stop-color:#CFD6F1"/>
 				</linearGradient>
-				<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_1_)" d="M180.896,52.809c-7.428-1.125-15.17-0.17-23.12-0.17
+				<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#fog-icon)" d="M180.896,52.809c-7.428-1.125-15.17-0.17-23.12-0.17
 					c-0.881-1.896-1.907-4.15-2.97-6.387C136.825,8.394,92.67-9.504,53.146,5.042c-38.903,14.317-61.287,56.7-50.393,96.551
 					c5.194,19.001,14.899,33.69,28.81,44.143c4.886-3.194,9.574-6.635,13.968-10.393c-15.756-10.441-26.552-27.567-28.783-47.707
 					C13.55,58.781,31.219,30.528,58.861,20.292c33.591-12.439,70.647,4.517,83.457,38.211c1.808,4.754,3.491,9.555,5.297,14.509

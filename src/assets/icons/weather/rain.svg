@@ -6,21 +6,13 @@
 	 xml:space="preserve">
 <g id="bg" display="none">
 </g>
-<g id="storm">
-</g>
-<g id="snow">
-</g>
-<g id="sleet">
-</g>
-<g id="wind">
-</g>
 <g id="rain">
-	<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="86.2979" y1="0" x2="86.2978" y2="222.1719">
+	<linearGradient id="rain-icon_1" gradientUnits="userSpaceOnUse" x1="86.2979" y1="0" x2="86.2978" y2="222.1719">
 		<stop  offset="0" style="stop-color:#FFFFFF"/>
 		<stop  offset="0" style="stop-color:#8EB8FD"/>
 		<stop  offset="1" style="stop-color:#3294E3"/>
 	</linearGradient>
-	<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#SVGID_1_)" d="M43.783,45.499c15.654,22.816,32.312,44.131,40.828,70.176
+	<path fill-rule="evenodd" clip-rule="evenodd" fill="url(#rain-icon_1)" d="M43.783,45.499c15.654,22.816,32.312,44.131,40.828,70.176
 		c4.763,14.566,4.018,28.98-3.232,42.566c-8.506,15.941-22.01,24.535-40.236,23.379c-18.934-1.199-31.074-12.237-37.706-29.555
 		c-6.46-16.871-3.101-33.043,4.181-48.781C17.1,82.791,30.415,64.702,43.783,45.499z M43.768,73.825
 		c-10.642,15.981-21.346,30.956-25.938,48.927c-1.623,6.352-1.604,13.598-0.432,20.092c2.438,13.51,13.463,22.685,25.826,23.035
