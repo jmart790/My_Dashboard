@@ -1,9 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap');
-@import url("https://fonts.googleapis.com/css?family=Montserrat:400,500,600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@100;300;500&family=Montserrat:wght@400;600;700&display=swap');
+$base-font: 'Lato', sans-serif;
+$heading-font: "Montserrat", sans-serif;
 * {
-  font-family: 'Lato', sans-serif;
+  font-family: $base-font;
   color: $brown;
 }
+
 h1,
 h2,
 h3,
@@ -11,8 +14,25 @@ h4,
 h5,
 h6,
 label,
-legend {
-  font-family: "Montserrat", sans-serif;
+legend,
+figcaption {
+  font-family: $heading-font;
+  font-weight: 600;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+p, span {
+  font-size: 16px;
+  font-weight: 400;
+  @media screen and (min-width: $laptop) {
+    font-size: 18px;
+  }
+}
+label, legend, figcaption {
+  font-size: 12px;
+  margin-bottom: $gap-1;
+  @media screen and (min-width: $laptop) {
+    font-size: 14px;
+  }
 }

@@ -1,72 +1,60 @@
-<template>
-  <div class="home">
-    <header class="home__header">
-      <h4 class="home__title">Mi Dash</h4>
-      <h4 class="home__sub-title">{{location.city || ''}}, {{location.region || ''}}</h4>
-    </header>
-    <WeatherWidget v-if="hasLocation" :location="location"/>
-  </div>
-</template>
-
 <script>
-import axios from "axios";
-import WeatherWidget from "@/components/weather/WeatherWidget";
-
+import { mapGetters } from "vuex";
+import PageHeader from "@/components/base/PageHeader";
 
 export default {
   name: 'Home',
   components: {
-    WeatherWidget
+    PageHeader
   },
-  data() {
-    return {
-      hasLocation: false,
-      location: {
-        city: '',
-        region: '',
-        latitude: '',
-        longitude: ''
-      },
-      isLoading: false,
-      error: null,
-    }
-  },
-  async created() {
-    const options = {
-      method: 'GET',
-      url: 'https://ip-geolocation-ipwhois-io.p.rapidapi.com/json/',
-      params: {ip: '68.254.126.158'},
-      headers: {
-        'x-rapidapi-key': process.env.VUE_APP_RAPID_API_KEY,
-        'x-rapidapi-host': 'ip-geolocation-ipwhois-io.p.rapidapi.com'
-      }
-    };
-    this.isLoading = true;
-    await axios.request(options).then(response => {
-      this.location = response.data;
-      this.hasLocation = true;
-    }).catch(error => {
-      this.error = error
-    });
-    this.isLoading = false;
+  computed: {
+    ...mapGetters('location', ['cityState'])
   }
 }
 </script>
+<template>
+  <div class="home page">
+    <PageHeader title="Dashboard" :subtitle="cityState" />
+  </div>
+</template>
 
 <style lang="scss">
 .home {
-  height: 100vh;
-  width: 100vw;
-  padding: $gap-6 $gap-5;
-  background: $app-bg-fallback;
-  background: $app-bg;
-  &__header {
+  &__search {
+    position: relative;
     display: flex;
-    justify-content: space-between;
-    margin-bottom: $gap-4;
-  }
-  &__sub-title {
-    text-align: center;
+    align-items: center;
+    width: 200px;
+    padding: $gap-1 $gap-4;
+    border-radius: 50px;
+    background: $main-gradiant;
+    box-shadow: $main-shadow;
+    button {
+      margin-right: $gap-4;
+      background: $third-gradiant;
+      border-radius: 100%;
+      border: none;
+      outline: none;
+      height: 30px;
+      width: 30px;
+      span {
+        color: #878A94;
+        font-size: 12px;
+      }
+      &:hover {
+        cursor: pointer;
+        background: $second-gradiant;
+      }
+    }
+    input {
+      outline: none;
+      background: transparent;
+      border: none;
+      width: 100%;
+    }
+    &:focus-within {
+      box-shadow: $focus-shadow;
+    }
   }
 }
 

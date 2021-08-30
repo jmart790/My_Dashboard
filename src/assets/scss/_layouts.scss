@@ -1,0 +1,20 @@
+.card {
+    width: 100%;
+    height: 100%;
+    padding: $gap-6;
+    border-radius: 30px;
+    box-shadow: $main-shadow;
+    background: $card-bg-color;
+    @media screen and (min-width: $tablet) {
+      padding: $gap-8;
+    }
+    &__header {
+      font-size: 20px;
+      color: $white;
+    }
+    &__subheader {
+      font-family: $base-font;
+      font-size: 18px;
+      font-weight: 400;
+    }
+  }

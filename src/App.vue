@@ -1,14 +1,16 @@
 <template>
   <div id="app">
-    <Home />
+    <AppLayout>
+      <router-view/>
+    </AppLayout>
   </div>
 </template>
 
 <script>
-import Home from "@/views/Home";
+import AppLayout from "@/components/AppLayout";
 
 export default {
-  components: { Home }  
+  components: { AppLayout }  
 }
 </script>
 
@@ -22,5 +24,8 @@ export default {
 }
 ul {
    list-style: none;
+}
+a {
+  text-decoration: none;
 }
 </style>

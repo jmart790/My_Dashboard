@@ -1,0 +1,12 @@
+{
+  "location": {
+    "name": "Miami",
+    "region": "Florida",
+    "country": "USA",
+    "lat": 25.81,
+    "lon": -80.19,
+    "tz_id": "America/Kentucky/Monticello",
+    "localtime_epoch": 1629839135,
+    "localtime": "2021-08-24 17:05"
+  }
+}

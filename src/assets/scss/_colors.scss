@@ -1,17 +1,32 @@
 // Color Pallete
-$white:           #fff;
+$white:           #fbfbfb;
 $black:           #000;
-$grey-2:          #949494;
-$brown:           #424242;
+$grey-2:          #a8a7a7;
+$brown:           #a4a6ac;
 $sky:             #86B4FA;
 $yellow:          #ffc93c;
-$dark-gradiant:     linear-gradient(45deg, rgba(34,34,34,1) 15%, rgba(22,22,22,1) 100%);
-$dark:            #222222;
+$orange:          #DE4833;
+$dark:            #22262D;
+$main-gradiant:     linear-gradient(45deg, #2D3038 15%, #3C4045 100%);
+$second-gradiant:   linear-gradient(45deg, #22262D 15%, #101115 100%);
+$third-gradiant: linear-gradient(45deg, #2D3038 25%, #1F2228 100%);
+$shadow:          rgba(0, 0, 0, 0.16);
+$main-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+              0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+              0 12.5px 10px rgba(0, 0, 0, 0.06),
+              0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+              0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+              ;
+$focus-shadow: inset 0 0 3px rgba(#DE4833, 0.5),
+              0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+              0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+              0 12.5px 10px rgba(0, 0, 0, 0.06);
+
 
 // Color Assignments 
-$app-bg:          $dark-gradiant;
+$app-bg:          $dark;
 $app-bg-fallback: $dark;
-$card-bg-color:   rgba(4, 4, 4, 0.363);
-$shadow:          rgba(0, 0, 0, 0.16);
-
+$card-bg-color:   $main-gradiant;
+$nav-btn-gradiant:  $second-gradiant;
+$primary:         $orange;
 
