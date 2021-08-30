@@ -71,7 +71,7 @@ export default {
       backdrop-filter: unset;
     } 
     @media screen and (min-width: $laptop-lg) {
-      width: 120px;
+      width: 150px;
     }
     .nav-logo {
       display: none;
