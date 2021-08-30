@@ -18,7 +18,9 @@ export default {
   <div class="weather-daily card">
     <ul class="weather-daily__forecasts">
       <li v-for="(forecast, index) in dailyForecast" :key="`DAILYFORECAST${index}`">
-        <p class="forecast-hour">{{ index === 0 ? 'Today' : forecast.time }}</p>
+        <p class="forecast-hour">
+          {{ index === 0 ? 'Today' : forecast.time }}
+        </p>
         <div class="weather-daily__icon-group">
           <inline-svg
             class="weather-daily__icon"
@@ -32,10 +34,18 @@ export default {
             </span>
           </p>
         </div>
-        <p class="weather-daily__detail"><span>H</span> {{ forecast.high }}°</p>
-        <p class="weather-daily__detail"><span>L</span> {{ forecast.low }}°</p>
-        <p class="weather-daily__detail"><span class="icon-humidity" />{{ formatPercent(forecast.humidity) }}</p>
-        <p class="weather-daily__detail"><span class="icon-windy-day" /> {{ Math.round(forecast.wind) }} mph</p>
+        <p class="weather-daily__detail">
+          <span>H</span> {{ forecast.high }}°
+        </p>
+        <p class="weather-daily__detail">
+          <span>L</span> {{ forecast.low }}°
+        </p>
+        <p class="weather-daily__detail">
+          <span class="icon-humidity" />{{ formatPercent(forecast.humidity) }}
+        </p>
+        <p class="weather-daily__detail">
+          <span class="icon-windy-day" /> {{ Math.round(forecast.wind) }} mph
+        </p>
       </li>
     </ul>
   </div>

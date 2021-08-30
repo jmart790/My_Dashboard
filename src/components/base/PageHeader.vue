@@ -31,8 +31,12 @@ export default {
 <template>
   <header class="page-header">
     <div>
-      <h1 class="page-header__title">{{ title }}</h1>
-      <h4 class="page-header__sub-title">{{ subtitle }}</h4>
+      <h1 class="page-header__title">
+        {{ title }}
+      </h1>
+      <h4 class="page-header__sub-title">
+        {{ subtitle }}
+      </h4>
     </div>
     <form class="page-header__search" @submit.prevent="handleSearch(zipcode)">
       <button type="submit">

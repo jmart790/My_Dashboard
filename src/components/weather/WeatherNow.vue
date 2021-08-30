@@ -27,7 +27,9 @@ export default {
 
 <template>
   <div class="weather-now card">
-    <p class="weather-now__time">{{ time }}</p>
+    <p class="weather-now__time">
+      {{ time }}
+    </p>
     <div class="weather-now__icon-summary">
       <inline-svg
         class="weather-now__icon"
@@ -35,14 +37,16 @@ export default {
         title="My Image"
         height="130"
       />
-      <p class="weather-now__summary">{{ currentWeather.summary }}</p>
+      <p class="weather-now__summary">
+        {{ currentWeather.summary }}
+      </p>
     </div>
     <div class="current-weather-data">
       <div class="current-weather-data__meta">
         <span class="icon-thermometer" />{{ highAndLows }}
         <span class="icon-windy-day" />{{ currentWeather.windSpeed }}
         <span class="icon-droplet" />
-          {{formatPercent(currentWeather.precipProbability)}}
+        {{ formatPercent(currentWeather.precipProbability) }}
       </div>
       <h1 class="current-weather-data__temp">
         {{ Math.round(currentWeather.temperature) }}°

@@ -16,9 +16,9 @@ export default {
 <template>
   <div class="weather-details card">
     <figure>
-        <figcaption>Daily Summary</figcaption>
-        <p>{{ currentDetails.summary }}</p>
-      </figure>
+      <figcaption>Daily Summary</figcaption>
+      <p>{{ currentDetails.summary }}</p>
+    </figure>
     <figure>
       <figcaption>Sunrise</figcaption>
       <p>{{ msToTime(currentDetails.sunriseTime) }}</p>
@@ -41,7 +41,7 @@ export default {
     </figure>
     <figure>
       <figcaption>Visibility</figcaption>
-      <p>{{currentDetails.visibility}} mi</p>
+      <p>{{ currentDetails.visibility }} mi</p>
     </figure>
   </div>
 </template>

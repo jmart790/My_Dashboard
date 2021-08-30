@@ -54,25 +54,25 @@ export default {
     <WeatherNow
       v-if="hasWeatherData"
       class="weather__now"
-      :currentWeather="weather.currently"
-      :weatherAlerts="weather.alerts || []"
-      :highAndLows="highAndLows"
+      :current-weather="weather.currently"
+      :weather-alerts="weather.alerts || []"
+      :high-and-lows="highAndLows"
       :time="dateToShort(new Date())"
     />
     <WeatherDaily
       v-if="hasWeatherData"
       class="weather__daily"
-      :dailyForecast="dailyForecast"
+      :daily-forecast="dailyForecast"
     />
     <WeatherHourly
       v-if="hasWeatherData"
       class="weather__hourly"
-      :hourlyForecast="hourlyForecast"
+      :hourly-forecast="hourlyForecast"
     />
     <WeatherExtraDetails 
       v-if="hasWeatherData"
       class="weather__details"
-      :currentDetails="currentDetails"
+      :current-details="currentDetails"
     />
   </div>
 </template>

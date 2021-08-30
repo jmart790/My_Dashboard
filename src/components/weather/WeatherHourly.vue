@@ -32,7 +32,9 @@ export default {
           height="30"
           width="40"
         />
-        <p class="weather-hourly__temp">{{ forecast.temperature }}°</p>
+        <p class="weather-hourly__temp">
+          {{ forecast.temperature }}°
+        </p>
       </li>
     </ul>
   </div>
