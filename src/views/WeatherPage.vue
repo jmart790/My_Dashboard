@@ -45,7 +45,7 @@ export default {
 </script>
 
 <template>
-  <div class="weather page-container">
+  <div class="weather">
     <PageHeader 
       class="weather__header"
       title="Weather" 
