@@ -73,6 +73,7 @@ export default {
     @media screen and (min-width: $laptop-lg) {
       width: 150px;
     }
+
     .nav-logo {
       display: none;
       margin-bottom: $gap-6;
@@ -85,11 +86,15 @@ export default {
         background: -webkit-linear-gradient(#6C0902, #F5582F);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-
       }
       @media screen and (min-width: $tablet) {
         display: flex;
       }
+      @media screen and (min-width: $laptop-lg) {
+        span {
+          font-size: 48px;
+        }
+      }  
     }
     .nav-link {
       height: 50px;
@@ -105,10 +110,17 @@ export default {
         font-size: 24px;
         transition: all .3s ease-out;
       }
-      &:hover span{
+      &:hover span {
         color: $primary;
         @media screen and (min-width: $tablet) {
           background: $nav-btn-gradiant;
+        }
+      }
+      @media screen and (min-width: $laptop-lg) {
+        height: 80px;
+        span {
+          font-size: 32px;
+          padding: $gap-4;
         }
       }
     }
