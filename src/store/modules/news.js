@@ -1,11 +1,10 @@
 import apiClient from '@/apiClient';
-import localNewsResponse from '@/test-responses/localNewsResponse';
 
 const getDefaultState = () => ({
   news: {
     local: [],
     state: [],
-    topHeadlines: [],
+    country: [],
   },
   isLoading: false,
   error: null,
@@ -21,8 +20,8 @@ export default {
     SET_STATE_NEWS(state, value) {
       state.news.state = value;
     },
-    SET_TOP_HEADLINES_NEWS(state, value) {
-      state.news.topHeadlines = value;
+    SET_COUNTRY_NEWS(state, value) {
+      state.news.country = value;
     },
     SET_IS_LOADING(state, value) {
       state.isLoading = value;
@@ -40,13 +39,12 @@ export default {
     news: (state) => state.news,
   },
   actions: {
-    async getLocalNews({ commit }, _payload) {
+    async getLocalNews({ commit }, payload) {
       commit('SET_IS_LOADING', true);
-      commit('SET_LOCAL_NEWS', localNewsResponse);
-      // await apiClient
-      //   .getNewsByLocation(payload)
-      //   .then((data) => commit('SET_LOCAL_NEWS', data.articles))
-      //   .catch((error) => commit('SET_ERROR', error));
+      await apiClient
+        .getNewsByLocation(payload)
+        .then((data) => commit('SET_LOCAL_NEWS', data.articles))
+        .catch((error) => commit('SET_ERROR', error));
       commit('SET_IS_LOADING', false);
     },
     async getStateNews({ commit }, payload) {
@@ -57,11 +55,11 @@ export default {
         .catch((error) => commit('SET_ERROR', error));
       commit('SET_IS_LOADING', false);
     },
-    async getTopNewsHeadlines({ commit }, payload) {
+    async getCountryNews({ commit }, payload) {
       commit('SET_IS_LOADING', true);
       await apiClient
-        .getTopNewsHeadlines(payload)
-        .then((data) => commit('SET_TOP_HEADLINES_NEWS', data.articles))
+        .getNewsByLocation(payload)
+        .then((data) => commit('SET_COUNTRY_NEWS', data.articles))
         .catch((error) => commit('SET_ERROR', error));
       commit('SET_IS_LOADING', false);
     },
