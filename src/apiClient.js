@@ -38,36 +38,20 @@ export default {
   },
   /**
    * 
-   * @param {*} payload is expecting city or state
+   * @param {*} payload is expecting city or state or country
    * @returns an array of news objects
    */
   async getNewsByLocation(payload) {
-    const options = {
+    var options = {
       method: 'GET',
-      url: 'https://google-news1.p.rapidapi.com/geolocation',
-      params: {geo: payload, country: 'US', lang: 'en', limit: '50', media: 'true'},
+      url: 'https://free-news.p.rapidapi.com/v1/search',
+      params: {q: payload, lang: 'en', page_size: '10'},
       headers: {
-        'x-rapidapi-host': 'google-news1.p.rapidapi.com',
+        'x-rapidapi-host': 'free-news.p.rapidapi.com',
         'x-rapidapi-key': rapidApiKey
       }
     };
     return (await axios.request(options)).data;
   },
-  /**
-   * 
-   * @param {*} payload is a country or providence
-   * @returns an array of news objects
-   */
-  async getTopNewsHeadlines(payload) {
-    const options = {
-      method: 'GET',
-      url: 'https://google-news1.p.rapidapi.com/top-headlines',
-      params: {country: payload, lang: 'en', limit: '50', media: 'true'},
-      headers: {
-        'x-rapidapi-host': 'google-news1.p.rapidapi.com',
-        'x-rapidapi-key': rapidApiKey
-      }
-    };
-    return (await axios.request(options)).data;
-  }
 }
+
