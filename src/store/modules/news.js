@@ -45,6 +45,7 @@ export default {
         .getNewsByLocation(payload)
         .then((data) => commit('SET_LOCAL_NEWS', data.articles))
         .catch((error) => commit('SET_ERROR', error));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       commit('SET_IS_LOADING', false);
     },
     async getStateNews({ commit }, payload) {
@@ -53,6 +54,7 @@ export default {
         .getNewsByLocation(payload)
         .then((data) => commit('SET_STATE_NEWS', data.articles))
         .catch((error) => commit('SET_ERROR', error));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       commit('SET_IS_LOADING', false);
     },
     async getCountryNews({ commit }, payload) {
@@ -61,6 +63,7 @@ export default {
         .getNewsByLocation(payload)
         .then((data) => commit('SET_COUNTRY_NEWS', data.articles))
         .catch((error) => commit('SET_ERROR', error));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       commit('SET_IS_LOADING', false);
     },
     resetState: {
