@@ -3,8 +3,10 @@
     height: 100%;
     padding: $gap-6;
     border-radius: 30px;
-    box-shadow: $main-shadow;
+    // box-shadow: $main-shadow;
+    box-shadow: 0px 7px 10px rgba(black, 0.5);
     background: $card-bg-color;
+    overflow: hidden;
     @media screen and (min-width: $tablet) {
       padding: $gap-8;
     }
