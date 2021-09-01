@@ -157,7 +157,7 @@ export default {
       padding: $gap-6 $gap-5;
     }
     @media screen and (min-width: $laptop-lg) {
-      max-width: 1500px;
+      max-width: 1660px;
       margin: 0 auto;
     }
   }
