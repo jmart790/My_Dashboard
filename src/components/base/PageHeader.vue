@@ -1,31 +1,31 @@
 <script>
-import { mapActions } from 'vuex';
+import { mapActions } from "vuex";
 
 export default {
-  name: 'PageHeader',
+  name: "PageHeader",
   props: {
     title: {
       type: String,
-      required: true
+      required: true,
     },
     subtitle: {
       type: String,
-      default: ''
-    }
+      default: "",
+    },
   },
   data() {
     return {
-      zipcode: ''
-    }
+      zipcode: "",
+    };
   },
   methods: {
-    ...mapActions('location', ['getLocation']),
+    ...mapActions("location", ["getLocation"]),
     handleSearch(zipcode) {
       this.getLocation(zipcode);
-      this.zipcode = '';
-    }
-  }
-}
+      this.zipcode = "";
+    },
+  },
+};
 </script>
 
 <template>
@@ -42,18 +42,21 @@ export default {
       <button type="submit">
         <span class="icon-actions-linear-search" />
       </button>
-      <input 
+      <input
         v-model.trim="zipcode"
-        type="text" 
-        name="location" 
+        type="text"
+        name="location"
         placeholder="Zip code"
-      >
+      />
     </form>
   </header>
 </template>
 
 <style lang="scss">
 .page-header {
+  @media screen and (min-width: $tablet) {
+    max-height: 50px;
+  }
   display: flex;
   justify-content: space-between;
   &__title {
@@ -91,7 +94,7 @@ export default {
         margin-right: $gap-4;
       }
       span {
-        color: #878A94;
+        color: #878a94;
         font-size: 12px;
       }
       &:hover {
