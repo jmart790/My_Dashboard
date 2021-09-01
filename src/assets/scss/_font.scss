@@ -1,10 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Jost:wght@100;300;500&family=Montserrat:wght@400;600;700&display=swap');
-$base-font: 'Lato', sans-serif;
-$heading-font: "Montserrat", sans-serif;
+
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;600;800&display=swap');
+$base-font: 'Nunito', sans-serif;
+$heading-font: 'Nunito', sans-serif;
+
 * {
   font-family: $base-font;
-  color: $brown;
+  color: $grey-2;
 }
 
 h1,
@@ -17,8 +19,8 @@ label,
 legend,
 figcaption {
   font-family: $heading-font;
-  font-weight: 600;
-  -webkit-font-smoothing: antialiased;
+  font-weight: 800;
+  -webkit-font-soothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
