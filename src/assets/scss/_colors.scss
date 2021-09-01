@@ -1,32 +1,92 @@
-// Color Pallete
-$white:           #fbfbfb;
-$black:           #000;
-$grey-2:          #a8a7a7;
-$brown:           #a4a6ac;
-$sky:             #86B4FA;
-$yellow:          #ffc93c;
-$orange:          #DE4833;
-$dark:            #22262D;
-$main-gradiant:     linear-gradient(45deg, #2D3038 15%, #3C4045 100%);
-$second-gradiant:   linear-gradient(45deg, #22262D 15%, #101115 100%);
-$third-gradiant: linear-gradient(45deg, #2D3038 25%, #1F2228 100%);
-$shadow:          rgba(0, 0, 0, 0.16);
-$main-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
-              0 6.7px 5.3px rgba(0, 0, 0, 0.048),
-              0 12.5px 10px rgba(0, 0, 0, 0.06),
-              0 22.3px 17.9px rgba(0, 0, 0, 0.072),
-              0 41.8px 33.4px rgba(0, 0, 0, 0.086),
-              ;
-$focus-shadow: inset 0 0 3px rgba(#DE4833, 0.5),
-              0 2.8px 2.2px rgba(0, 0, 0, 0.034),
-              0 6.7px 5.3px rgba(0, 0, 0, 0.048),
-              0 12.5px 10px rgba(0, 0, 0, 0.06);
+//  Color Pallete for references only
+$leaf:                  #048765;
+$leaf-dk:               #035B44;
+$leaf-lt:               #039270;
+$fucia:                 #d02683;
+$fucia-lt:              #ec55a8;
+$fucia-dk:              #9B1C62;
+$salmon: 							  #ff6f61;
+$salmon-lt: 					  #ff9c93;
+$salmon-dk: 					  #ca473b;
+$royal:                 #3863FF;
+$royal-lt:              #4793e7;
+$navy:                  #132259;
+$navy-lt:               #1d3db3;
+$navy-dk:               #1f2e54;
+$yellow:                #FBE812;
+
+$pale-blue:             #eff6ff;
+$sky:                   #00B8EC;
+$sky-lt:                #CCF0FB;
+$sky-dk:                #2ba2c7;
+$forest:                #06A77D;
+$forest-lt:             #CDEDE5;
+$apricot:               #FFB734;
+$apricot-lt:            #FFF7EA;
+$red:                   #DF3838;
+$red-lt:                #FBEAEA;
+$orange:                #e98760;
+
+$teal:                  #0089b0;
+$deep-blue:             #223345;
+$red-2:                 #e35656;
+$purple:                #C271D8;
+$pink:                  #EEB3D3;
+$pink-2:                #F5D3E6;
+$blue:                  #244a82;
+$blue-2:                #294ABF;
+$blue-3:                #DFECFF;
+$purple-lt:             #28253cce;
+
+$grey:                  #dddddd;
+$grey-2:                #a8a7a7;
+$grey-white:            #d0d2d6;
+$grey-white-2:          rgba(244, 245, 248, 0.8);
+$grey-white-3:          #c8d0da;
+$grey-white-4:          #F3F5F7;
+$grey-white-5:          #F7FAFF;
+$grey-white-6:          #EFF6FF;
+$grey-blue:             #6d7783;
+$grey-blue-2:           #8a929d;
+$grey-blue-3:           #72808c;
+$grey-dark:             #808997;
+$grey-dark-2:           #5d6369;
+$grey-dark-3:           #272f37;
+$grey-dark-4:           #888c8f;
+$grey-coal:             #384550;
+$grey-coal-2:           #475262;
+$grey-brown:            #a4a4a4;
+$grey-smoke:            #dbdbea;
+$grey-smoke-2:          #f4f8fb;
+$grey-smoke-3:          #aab1bc;
+$grey-smoke-4:          #e5e7e9;
+$brown:                 #424242;
+$black-blue:            #212b36;
+$grey-coal-dark:        #2c363f;
+$dark:                  #22262D;
+$black:                 #000;
+$white:                 #fbfbfb;
+
+$main-gradiant:           linear-gradient(45deg, #2D3038 15%, #3C4045 100%);
+$second-gradiant:         linear-gradient(45deg, #22262D 15%, #101115 100%);
+$third-gradiant:          linear-gradient(45deg, #2D3038 25%, #1F2228 100%);
+$shadow:                rgba(0, 0, 0, 0.16);
+$main-shadow:             0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+                          0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+                          0 12.5px 10px rgba(0, 0, 0, 0.06),
+                          0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+                          0 41.8px 33.4px rgba(0, 0, 0, 0.086);
+$focus-shadow:            inset 0 0 3px rgba(#DE4833, 0.5),
+                          0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+                          0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+                          0 12.5px 10px rgba(0, 0, 0, 0.06);
 
 
 // Color Assignments 
-$app-bg:          $dark;
-$app-bg-fallback: $dark;
-$card-bg-color:   $main-gradiant;
-$nav-btn-gradiant:  $second-gradiant;
-$primary:         $orange;
+$app-bg:                  $dark;
+$card-bg-color:           $main-gradiant;
+$nav-btn-gradiant:        $second-gradiant;
+$primary:                 $salmon;
+$primary-lt:              $salmon-lt;
+$primary-dk:              $salmon-dk;
 
