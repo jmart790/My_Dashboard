@@ -3,30 +3,30 @@ import { mapActions } from "vuex";
 export default {
   name: "AppLayout",
   async created() {
-    await this.getLocation('33137')
+    await this.getLocation("33137");
   },
   methods: {
-    ...mapActions('location', ["getLocation"]),
-  }
-}
+    ...mapActions("location", ["getLocation"]),
+  },
+};
 </script>
 
 <template>
   <div class="app-layout">
     <nav>
-      <router-link class="nav-logo" :to="{ name: 'Home'}">
+      <router-link class="nav-logo" :to="{ name: 'Home' }">
         <span class="icon-reddit" />
       </router-link>
-      <router-link class="nav-link" :to="{ name: 'Home'}" exact>
+      <router-link class="nav-link" :to="{ name: 'Home' }" exact>
         <span class="icon-house" />
       </router-link>
-      <router-link class="nav-link" :to="{ name: 'Weather'}">
+      <router-link class="nav-link" :to="{ name: 'Weather' }">
         <span class="icon-weather-app" />
       </router-link>
-      <router-link class="nav-link" :to="{ name: 'News'}">
+      <router-link class="nav-link" :to="{ name: 'News' }">
         <span class="icon-news" />
       </router-link>
-      <router-link class="nav-link" :to="{ name: 'Media'}">
+      <router-link class="nav-link" :to="{ name: 'Media' }">
         <span class="icon-tv-app" />
       </router-link>
     </nav>
@@ -58,18 +58,18 @@ export default {
     gap: $gap-4;
     border-top: 1px solid rgba(128, 128, 128, 0.13);
     box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.5);
-    background-color: rgba($app-bg, 0.45);  
+    background-color: rgba($app-bg, 0.45);
     backdrop-filter: blur(5px);
     @media screen and (min-width: $tablet) {
       position: unset;
-      flex-direction: column;  
+      flex-direction: column;
       justify-content: unset;
       width: 100px;
       border-top: unset;
       box-shadow: unset;
-      background-color: unset;  
+      background-color: unset;
       backdrop-filter: unset;
-    } 
+    }
     @media screen and (min-width: $laptop-lg) {
       width: 150px;
     }
@@ -83,7 +83,7 @@ export default {
       span {
         font-size: 36px;
         color: $primary;
-        background: -webkit-linear-gradient(#6C0902, #F5582F);
+        background: -webkit-linear-gradient(#ca473b, #ff9c93);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
@@ -94,7 +94,7 @@ export default {
         span {
           font-size: 48px;
         }
-      }  
+      }
     }
     .nav-link {
       height: 50px;
@@ -106,9 +106,9 @@ export default {
         display: block;
         padding: $gap-3;
         border-radius: 15px;
-        color: #9598A1;
+        color: #9598a1;
         font-size: 24px;
-        transition: all .3s ease-out;
+        transition: all 0.3s ease-out;
       }
       &:hover span {
         color: $primary;
@@ -124,9 +124,9 @@ export default {
         }
       }
     }
-    .nav-link.router-link-active, 
+    .nav-link.router-link-active,
     .nav-link.router-link-exact-path-active {
-      @media screen and (min-width: $tablet) { 
+      @media screen and (min-width: $tablet) {
         border-left: 2px solid $primary;
       }
       span {
@@ -136,7 +136,6 @@ export default {
         }
       }
     }
-
   }
   main {
     position: relative;
@@ -151,13 +150,13 @@ export default {
 
     /* Hide scrollbar for IE, Edge and Firefox */
     & {
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;  /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
     }
-    @media screen and (min-width: $tablet) { 
+    @media screen and (min-width: $tablet) {
       padding: $gap-6 $gap-5;
     }
-    @media screen and (min-width: $laptop-lg) { 
+    @media screen and (min-width: $laptop-lg) {
       max-width: 1500px;
       margin: 0 auto;
     }
