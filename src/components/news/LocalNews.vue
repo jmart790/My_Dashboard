@@ -1,117 +1,93 @@
 <script>
-import NewsArticle from "@/components/news/NewsArticle";
+import NewsSnippet from "@/components/news/NewsSnippet";
+import NewsList from "@/components/news/NewsList";
 
 export default {
   name: "LocalNews",
   components: {
-    NewsArticle,
+    NewsSnippet,
+    NewsList
   },
   props: {
-    label: {
-      type: String,
-      required: true,
-    },
     news: {
       type: Array,
-      required: true,
-    },
-  },
+      required: true
+    }
+  }
 };
 </script>
 
 <template>
-  <div class="local-news">
-    <article class="local-main-article card">
-      <img :src="news[0].media || backupImage" alt="Local News Image" />
-      <div class="local-main-article__details">
-        <h4 class="local-main-article__title">
-          {{ news[0].title }}
-        </h4>
-        <p class="local-main-article__copy">
-          {{ news[0].summary }}
-        </p>
-        <a
-          :href="news[0].link || '#'"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="local-main-article__link"
-        >
-          Read more at {{ news[0].clean_url }}
-          <span class="icon-arrow-right2" />
-        </a>
-      </div>
-    </article>
-
-    <div class="local-news__articles">
-      <NewsArticle
-        v-for="(article, id) in news.slice(1)"
-        :key="`COUNTRY_NEWS_${id}`"
-        :article="article"
-        class="local-news__article"
-        minified
+  <div class="local-news card">
+    <article class="local-news__main-article">
+      <img :src="news[0].media" alt="Local News Image" />
+      <NewsSnippet
+        class="local-news__main-article-snippet"
+        :article="news[0]"
+        isLarge
       />
-    </div>
+    </article>
+    <NewsList
+      class="local-news__list"
+      label="More Local News"
+      :news="news.slice(1)"
+    />
   </div>
 </template>
 
 <style lang="scss">
 .local-news {
-  &__title {
-    margin-bottom: $gap-4;
-  }
-  &__articles {
-    display: flex;
-    width: 100%;
-    overflow-x: scroll;
-  }
-  &__article {
-    margin-right: $gap-6;
-    flex-shrink: 0;
-    width: 200px;
-    height: 200px;
-  }
-}
-.local-main-article {
-  margin-bottom: $gap-6;
-  display: flex;
+  // border: 1px solid yellow;
   width: 100%;
-  height: auto !important;
-  padding: unset !important;
-  img {
-    height: 280px;
-    width: 280px;
-    object-fit: cover;
+  display: grid;
+  gap: $gap-6;
+  @media screen and (min-width: $desktop) {
+    height: fit-content;
+    grid-template-columns: 1fr auto;
   }
-  &__details {
-    padding: $gap-6;
+  @media screen and (min-width: $desktop) {
+    max-height: 420px;
+    height: 100%;
   }
-  &__title {
-    margin-bottom: $gap-4;
-    font-size: 20px;
-    color: $white;
+  &__list {
+    // border: 1px solid green;
+    max-height: 350px;
+    @media screen and (min-width: $laptop) {
+      height: 100%;
+    }
+    @media screen and (min-width: $desktop) {
+      max-height: unset;
+      height: 80%;
+      width: 280px;
+    }
   }
-  &__copy {
-    margin-bottom: $gap-8;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
-    overflow: hidden;
-  }
-  &__link {
-    float: right;
+  &__main-article {
+    // border: 1px solid orange;
     display: flex;
-    align-items: center;
-    color: $primary;
-    transition: color 0.2s;
-    &:hover {
-      color: $primary-lt;
-      span {
-        color: $white;
+    flex-direction: column;
+    gap: $gap-4;
+    @media screen and (min-width: $desktop) {
+      flex-direction: row;
+      height: 80%;
+    }
+    img {
+      max-height: 300px;
+      width: 100%;
+      object-fit: cover;
+      object-position: center;
+      border-radius: $round-1;
+
+      @media screen and (min-width: $desktop) {
+        max-height: 100%;
+        max-width: 500px;
       }
     }
-    span {
-      transition: color 0.2s;
-      margin-left: $gap-2;
+  }
+  &__main-article-snippet {
+    height: fit-content;
+    @media screen and (min-width: $desktop) {
+      max-width: 300px;
+      margin: 0 $gap-8;
     }
   }
 }

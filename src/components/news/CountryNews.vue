@@ -1,49 +1,69 @@
 <script>
-import NewsArticle from "@/components/news/NewsArticle";
+import NewsSnippet from "@/components/news/NewsSnippet";
+import NewsList from "@/components/news/NewsList";
 
 export default {
   name: "CountryNews",
   components: {
-    NewsArticle,
+    NewsSnippet,
+    NewsList
   },
   props: {
     label: {
       type: String,
-      required: true,
+      required: true
     },
     news: {
       type: Array,
-      required: true,
-    },
-  },
+      required: true
+    }
+  }
 };
 </script>
 
 <template>
-  <div class="country-news">
-    <div class="country-news__articles">
-      <NewsArticle
-        v-for="(article, id) in news"
-        :key="`COUNTRY_NEWS_${id}`"
-        :article="article"
-        class="country-news__article"
+  <div class="national-news card">
+    <article class="national-news__main-article">
+      <img :src="news[0].media" alt="Country News Image" />
+      <NewsSnippet
+        class="national-news__main-article-snippet"
+        :article="news[0]"
+        isLarge
       />
-    </div>
+    </article>
+    <NewsList
+      class="national-news__list"
+      label="More National News"
+      :news="news.slice(1)"
+    />
   </div>
 </template>
 
 <style lang="scss">
-.country-news {
-  &__title {
-    margin-bottom: $gap-4;
+.national-news {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  @media screen and (min-width: $desktop) {
   }
-  &__articles {
-    max-height: 90vh;
-    overflow-y: auto;
+  &__main-article {
+    margin-bottom: $gap-8;
+    img {
+      margin-bottom: $gap-4;
+      width: -webkit-fill-available;
+      object-fit: cover;
+      object-position: center;
+      border-radius: $round-1;
+    }
   }
-  &__article {
-    height: 200px !important;
-    margin-bottom: $gap-6;
+  &__list {
+    max-height: 350px;
+    @media screen and (min-width: $tablet) {
+      max-height: 528px;
+    }
+    @media screen and (min-width: $desktop) {
+      max-height: 500px;
+    }
   }
 }
 </style>
