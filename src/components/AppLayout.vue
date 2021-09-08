@@ -6,8 +6,8 @@ export default {
     await this.getLocation("33137");
   },
   methods: {
-    ...mapActions("location", ["getLocation"]),
-  },
+    ...mapActions("location", ["getLocation"])
+  }
 };
 </script>
 
@@ -83,7 +83,7 @@ export default {
       span {
         font-size: 36px;
         color: $primary;
-        background: -webkit-linear-gradient(#ca473b, #ff9c93);
+        background: -webkit-linear-gradient($primary-dk, $primary-lt);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
@@ -105,7 +105,7 @@ export default {
         position: relative;
         display: block;
         padding: $gap-3;
-        border-radius: 15px;
+        border-radius: $round-1;
         color: #9598a1;
         font-size: 24px;
         transition: all 0.3s ease-out;
@@ -143,6 +143,7 @@ export default {
     height: 100%;
     overflow-y: auto;
     padding: $gap-4 $gap-5;
+    // margin: 0 $gap-5;
     /* Hide scrollbar for Chrome, Safari and Opera */
     &::-webkit-scrollbar {
       display: none;
@@ -155,6 +156,7 @@ export default {
     }
     @media screen and (min-width: $tablet) {
       padding: $gap-6 $gap-5;
+      // margin: 0 $gap-5;
     }
     @media screen and (min-width: $laptop-lg) {
       max-width: 1660px;
