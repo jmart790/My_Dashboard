@@ -3,6 +3,7 @@ import { mapGetters, mapActions } from "vuex";
 import PageHeader from "@/components/base/PageHeader";
 import CountryNews from "@/components/news/CountryNews";
 import LocalNews from "@/components/news/LocalNews";
+import StateNews from "@/components/news/StateNews";
 
 export default {
   name: "NewsPage",
@@ -10,6 +11,7 @@ export default {
     PageHeader,
     CountryNews,
     LocalNews,
+    StateNews
   },
   async mounted() {
     if (this.location) {
@@ -20,24 +22,24 @@ export default {
   },
   computed: {
     ...mapGetters("location", ["location", "cityState"]),
-    ...mapGetters("news", ["news", "isLoading"]),
+    ...mapGetters("news", ["news", "isLoading"])
   },
   methods: {
     ...mapActions("news", ["getLocalNews", "getStateNews", "getCountryNews"]),
     filterArticles(articles) {
       const articlesWithContent = articles.filter(
-        (article) =>
+        article =>
           article.media && article.clean_url && article.title && article.summary
       );
       const seen = new Set();
-      const articlesWithoutDupes = articlesWithContent.filter((article) => {
+      const articlesWithoutDupes = articlesWithContent.filter(article => {
         const duplicate = seen.has(article.title);
         seen.add(article.title);
         return !duplicate;
       });
       return articlesWithoutDupes;
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -52,9 +54,15 @@ export default {
     />
     <CountryNews
       v-if="news.country.length"
-      label="Latest National"
+      label="National"
       :news="filterArticles(news.country)"
       class="news__country"
+    />
+    <StateNews
+      v-if="news.state.length"
+      label="State"
+      :news="filterArticles(news.state)"
+      class="news__state"
     />
   </div>
 </template>
@@ -64,24 +72,27 @@ export default {
 .news {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-areas: "header" "weather";
+  grid-template-areas: "header" "local" "state" "country";
   gap: $gap-4;
   padding-bottom: 80px;
   @media screen and (min-width: $tablet) {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas:
-      "header header"
-      "country country";
     gap: $gap-6;
   }
   @media screen and (min-width: $laptop) {
-    grid-template-columns: 1fr 1fr 450px;
-    grid-template-rows: min-content 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 400px;
+    grid-template-rows: auto auto auto;
     grid-template-areas:
       "header header country"
       "local  local  country"
-      "local  local  country";
+      "state  state  state";
     gap: $gap-8;
+  }
+  @media screen and (min-width: $desktop) {
+    // max-height: 100vh;
+    grid-template-areas:
+      "header header country"
+      "local  local  country"
+      "state  state  country";
   }
   &__header {
     grid-area: header;
@@ -89,6 +100,9 @@ export default {
   }
   &__local {
     grid-area: local;
+  }
+  &__state {
+    grid-area: state;
   }
   &__country {
     grid-area: country;
