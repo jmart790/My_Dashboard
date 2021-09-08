@@ -1,10 +1,10 @@
 <script>
-import PageHeader from '@/components/base/PageHeader';
+import PageHeader from "@/components/base/PageHeader";
 import WeatherNow from "@/components/weather/WeatherNow";
 import WeatherDaily from "@/components/weather/WeatherDaily";
 import WeatherHourly from "@/components/weather/WeatherHourly";
 import WeatherExtraDetails from "@/components/weather/WeatherExtraDetails";
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions } from "vuex";
 import { formatMixins } from "@/mixins/formatMixins";
 
 export default {
@@ -28,29 +28,25 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('location', ["coordinates", "location", "cityState"]),
-    ...mapGetters('weather', [
+    ...mapGetters("location", ["coordinates", "location", "cityState"]),
+    ...mapGetters("weather", [
       "hasWeatherData",
-      "weather", 
-      "highAndLows", 
-      "hourlyForecast", 
+      "weather",
+      "highAndLows",
+      "hourlyForecast",
       "dailyForecast",
       "currentDetails"
-    ]),
+    ])
   },
   methods: {
-    ...mapActions('weather', ["getWeather"]),
+    ...mapActions("weather", ["getWeather"])
   }
-}
+};
 </script>
 
 <template>
   <div class="weather">
-    <PageHeader 
-      class="weather__header"
-      title="Weather" 
-      :subtitle="cityState" 
-    />
+    <PageHeader class="weather__header" title="Weather" :subtitle="cityState" />
     <WeatherNow
       v-if="hasWeatherData"
       class="weather__now"
@@ -69,7 +65,7 @@ export default {
       class="weather__hourly"
       :hourly-forecast="hourlyForecast"
     />
-    <WeatherExtraDetails 
+    <WeatherExtraDetails
       v-if="hasWeatherData"
       class="weather__details"
       :current-details="currentDetails"
@@ -95,7 +91,7 @@ export default {
     gap: $gap-6;
   }
   @media screen and (min-width: $laptop) {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 400px;
     grid-template-areas:
       "header header now"
       "hourly hourly now"
