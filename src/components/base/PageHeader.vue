@@ -6,16 +6,16 @@ export default {
   props: {
     title: {
       type: String,
-      required: true,
+      required: true
     },
     subtitle: {
       type: String,
-      default: "",
-    },
+      default: ""
+    }
   },
   data() {
     return {
-      zipcode: "",
+      zipcode: ""
     };
   },
   methods: {
@@ -23,8 +23,8 @@ export default {
     handleSearch(zipcode) {
       this.getLocation(zipcode);
       this.zipcode = "";
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -54,11 +54,11 @@ export default {
 
 <style lang="scss">
 .page-header {
+  display: flex;
+  justify-content: space-between;
   @media screen and (min-width: $tablet) {
     max-height: 50px;
   }
-  display: flex;
-  justify-content: space-between;
   &__title {
     font-size: 24px;
     letter-spacing: 2px;
