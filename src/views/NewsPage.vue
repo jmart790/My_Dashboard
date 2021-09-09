@@ -13,19 +13,32 @@ export default {
     LocalNews,
     StateNews
   },
-  async mounted() {
-    if (this.location) {
-      await this.getLocalNews(this.location.name);
-      await this.getStateNews(this.location.region);
-      await this.getCountryNews(this.location.country);
+  mounted() {
+    if (this.location) this.getNews(this.location);
+  },
+  watch: {
+    location: {
+      deep: true,
+      handler() {
+        this.getNews(this.location);
+      }
     }
   },
   computed: {
-    ...mapGetters("location", ["location", "cityState"]),
-    ...mapGetters("news", ["news", "isLoading"])
+    ...mapGetters("location", {
+      locationLoading: "isLoading",
+      location: "location",
+      cityState: "cityState"
+    }),
+    ...mapGetters("news", { news: "news", newsLoading: "isLoading" })
   },
   methods: {
     ...mapActions("news", ["getLocalNews", "getStateNews", "getCountryNews"]),
+    async getNews({ name, region, country }) {
+      await this.getLocalNews(name);
+      await this.getStateNews(region);
+      await this.getCountryNews(country);
+    },
     filterArticles(articles) {
       const articlesWithContent = articles.filter(
         article =>
@@ -80,10 +93,13 @@ export default {
   }
   @media screen and (min-width: $laptop) {
     grid-template-columns: 1fr 1fr 400px;
-    grid-template-rows: auto auto auto;
+    // grid-template-rows: auto auto auto;
     grid-template-areas:
       "header header country"
       "local  local  country"
+      "local  local  country"
+      "local  local  country"
+      "state  state  state"
       "state  state  state";
     gap: $gap-8;
   }
@@ -96,7 +112,6 @@ export default {
   }
   &__header {
     grid-area: header;
-    margin-bottom: $gap-3;
   }
   &__local {
     grid-area: local;
