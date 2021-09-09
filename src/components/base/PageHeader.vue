@@ -54,10 +54,14 @@ export default {
 
 <style lang="scss">
 .page-header {
+  height: min-content;
   display: flex;
   justify-content: space-between;
   @media screen and (min-width: $tablet) {
-    max-height: 50px;
+    margin-bottom: $gap-2;
+  }
+  @media screen and (min-width: $laptop-lg) {
+    margin-bottom: $gap-8;
   }
   &__title {
     font-size: 24px;
@@ -69,6 +73,7 @@ export default {
     font-weight: 400;
   }
   &__search {
+    height: 54px;
     position: relative;
     display: flex;
     align-items: center;
