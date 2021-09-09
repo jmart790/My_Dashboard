@@ -103,7 +103,6 @@ export default {
   }
   &__header {
     grid-area: header;
-    margin-bottom: $gap-3;
   }
   &__now {
     grid-area: now;
