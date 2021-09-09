@@ -1,25 +1,28 @@
 <script>
-import { weatherMixins } from '@/mixins/weatherMixins';
-import { formatMixins } from '@/mixins/formatMixins';
+import { weatherMixins } from "@/mixins/weatherMixins";
+import { formatMixins } from "@/mixins/formatMixins";
 
 export default {
-  name: 'WeatherDaily',
+  name: "WeatherDaily",
   mixins: [weatherMixins, formatMixins],
   props: {
     dailyForecast: {
       type: Array,
-      required: true,
-    },
-  },
+      required: true
+    }
+  }
 };
 </script>
 
 <template>
   <div class="weather-daily card">
     <ul class="weather-daily__forecasts">
-      <li v-for="(forecast, index) in dailyForecast" :key="`DAILYFORECAST${index}`">
+      <li
+        v-for="(forecast, index) in dailyForecast"
+        :key="`DAILYFORECAST${index}`"
+      >
         <p class="forecast-hour">
-          {{ index === 0 ? 'Today' : forecast.time }}
+          {{ index === 0 ? "Today" : forecast.time }}
         </p>
         <div class="weather-daily__icon-group">
           <inline-svg
@@ -34,12 +37,8 @@ export default {
             </span>
           </p>
         </div>
-        <p class="weather-daily__detail">
-          <span>H</span> {{ forecast.high }}°
-        </p>
-        <p class="weather-daily__detail">
-          <span>L</span> {{ forecast.low }}°
-        </p>
+        <p class="weather-daily__detail"><span>H</span> {{ forecast.high }}°</p>
+        <p class="weather-daily__detail"><span>L</span> {{ forecast.low }}°</p>
         <p class="weather-daily__detail">
           <span class="icon-humidity" />{{ formatPercent(forecast.humidity) }}
         </p>
@@ -62,18 +61,19 @@ export default {
       display: grid;
       grid-template-columns: 1fr 70px repeat(2, 32px);
       align-items: center;
-      grid-column-gap: $gap-4;
+      column-gap: $gap-4;
       margin-bottom: $gap-6;
       @media screen and (min-width: $tablet) {
         grid-template-columns: 1fr repeat(3, 80px);
-        grid-column-gap: $gap-8;
+        column-gap: $gap-8;
       }
       @media screen and (min-width: $laptop-lg) {
         grid-template-columns: 1fr repeat(5, 100px);
-        grid-column-gap: $gap-8;
+        column-gap: $gap-8;
+        margin-bottom: $gap-8;
       }
       @media screen and (min-width: $desktop) {
-        grid-column-gap: $gap-12;
+        column-gap: $gap-12;
       }
     }
     li:last-of-type {
@@ -106,7 +106,7 @@ export default {
       margin-right: $gap-1;
     }
   }
-  &__detail:nth-of-type(4), 
+  &__detail:nth-of-type(4),
   &__detail:nth-of-type(5) {
     display: none;
     @media screen and (min-width: $laptop-lg) {
