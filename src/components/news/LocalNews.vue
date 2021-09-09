@@ -37,7 +37,6 @@ export default {
 
 <style lang="scss">
 .local-news {
-  // border: 1px solid yellow;
   width: 100%;
   display: grid;
   gap: $gap-6;
@@ -50,25 +49,21 @@ export default {
     height: 100%;
   }
   &__list {
-    // border: 1px solid green;
     max-height: 350px;
     @media screen and (min-width: $laptop) {
       height: 100%;
     }
     @media screen and (min-width: $desktop) {
       max-height: unset;
-      height: 80%;
       width: 280px;
     }
   }
   &__main-article {
-    // border: 1px solid orange;
     display: flex;
     flex-direction: column;
     gap: $gap-4;
     @media screen and (min-width: $desktop) {
       flex-direction: row;
-      height: 80%;
     }
     img {
       max-height: 300px;
@@ -78,7 +73,7 @@ export default {
       border-radius: $round-1;
 
       @media screen and (min-width: $desktop) {
-        max-height: 100%;
+        max-height: 372px;
         max-width: 500px;
       }
     }
