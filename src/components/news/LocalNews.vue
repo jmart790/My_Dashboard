@@ -79,7 +79,7 @@ export default {
     height: fit-content;
     @media screen and (min-width: $desktop) {
       max-width: 300px;
-      margin: 0 $gap-8;
+      margin: 0 $gap-4;
     }
   }
 }
