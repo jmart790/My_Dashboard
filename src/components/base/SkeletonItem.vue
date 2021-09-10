@@ -57,7 +57,7 @@ export default {
   height: $height;
   width: $width;
   border-radius: $round-1;
-  background-color: #72808c;
+  background-color: #9ea6ac;
 
   &--square,
   &--circle {

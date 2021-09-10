@@ -12,23 +12,27 @@ export default {
 
 
 <style lang="scss">
-// $background-color: #f5f5f5;
-$background-color: #3c4045;
-// $background-fade: #d0d2d6;
-$background-fade: #72808c;
-
 .skeleton {
   @mixin background-gradient {
+    background: #656871;
     background-image: linear-gradient(
-      90deg,
-      $background-fade 0px,
-      #606970 20px,
-      $background-color 70px,
-      $background-color 80px,
-      #606970 120px,
-      $background-fade 140px
+      to right,
+      #656871 0%,
+      #888b94 20%,
+      #656871 40%,
+      #656871 100%
     );
     background-size: 150%;
+    background-repeat: no-repeat;
+  }
+
+  @keyframes placeHolderShimmer {
+    0% {
+      background-position: 150% 0;
+    }
+    100% {
+      background-position: -150% 0;
+    }
   }
 
   position: relative;
@@ -36,7 +40,7 @@ $background-fade: #72808c;
   width: 100%;
   padding: $gap-6;
   border-radius: $round-2;
-  background: $background-color;
+  background: #414247;
   overflow: hidden;
 
   &::before {
@@ -47,17 +51,9 @@ $background-fade: #72808c;
     width: 100%;
     height: 100%;
     @include background-gradient;
-    // animation: shine-lines 1.8s infinite linear;
+    animation: placeHolderShimmer 1s infinite linear;
+    animation-fill-mode: forwards;
     mix-blend-mode: darken;
-  }
-
-  @keyframes shine-lines {
-    0% {
-      background-position: 150%;
-    }
-    100% {
-      background-position: -150%;
-    }
   }
 }
 </style>
