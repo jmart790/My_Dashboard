@@ -61,7 +61,7 @@ export default {
     height: 300px;
     padding: $gap-6;
     border-radius: $round-1;
-    background-color: #4b5057;
+    background-color: #3b3c40;
     @media screen and (min-width: $desktop) {
       height: 100%;
     }
