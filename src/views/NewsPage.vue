@@ -4,6 +4,7 @@ import PageHeader from "@/components/base/PageHeader";
 import CountryNews from "@/components/news/CountryNews";
 import LocalNews from "@/components/news/LocalNews";
 import StateNews from "@/components/news/StateNews";
+import SkeletonLocalNews from "@/components/Skeletons/SkeletonLocalNews";
 
 export default {
   name: "NewsPage",
@@ -11,7 +12,8 @@ export default {
     PageHeader,
     CountryNews,
     LocalNews,
-    StateNews
+    StateNews,
+    SkeletonLocalNews
   },
   mounted() {
     if (this.location) this.getNews(this.location);
@@ -59,8 +61,9 @@ export default {
 <template>
   <div class="news">
     <PageHeader class="news__header" title="News" :subtitle="cityState" />
+    <SkeletonLocalNews v-if="true" class="news__local" />
     <LocalNews
-      v-if="news.local.length"
+      v-else
       label="Local"
       :news="filterArticles(news.local)"
       class="news__local"

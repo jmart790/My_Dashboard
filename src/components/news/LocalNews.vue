@@ -41,12 +41,9 @@ export default {
   display: grid;
   gap: $gap-6;
   @media screen and (min-width: $desktop) {
-    height: fit-content;
-    grid-template-columns: 1fr auto;
-  }
-  @media screen and (min-width: $desktop) {
     max-height: 420px;
     height: 100%;
+    grid-template-columns: 1fr auto;
   }
   &__list {
     max-height: 350px;
