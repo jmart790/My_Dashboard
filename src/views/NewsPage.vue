@@ -4,7 +4,9 @@ import PageHeader from "@/components/base/PageHeader";
 import CountryNews from "@/components/news/CountryNews";
 import LocalNews from "@/components/news/LocalNews";
 import StateNews from "@/components/news/StateNews";
-import SkeletonLocalNews from "@/components/Skeletons/SkeletonLocalNews";
+import SkeletonLocalNews from "@/components/skeletons/SkeletonLocalNews";
+import SkeletonStateNews from "@/components/skeletons/SkeletonStateNews";
+import SkeletonNationNews from "@/components/skeletons/SkeletonNationNews";
 
 export default {
   name: "NewsPage",
@@ -13,7 +15,9 @@ export default {
     CountryNews,
     LocalNews,
     StateNews,
-    SkeletonLocalNews
+    SkeletonLocalNews,
+    SkeletonStateNews,
+    SkeletonNationNews
   },
   mounted() {
     if (this.location) this.getNews(this.location);
@@ -32,7 +36,10 @@ export default {
       location: "location",
       cityState: "cityState"
     }),
-    ...mapGetters("news", { news: "news", newsLoading: "isLoading" })
+    ...mapGetters("news", { news: "news", newsLoading: "isLoading" }),
+    isLoading() {
+      return this.locationLoading || this.newsLoading;
+    }
   },
   methods: {
     ...mapActions("news", ["getLocalNews", "getStateNews", "getCountryNews"]),
@@ -61,21 +68,24 @@ export default {
 <template>
   <div class="news">
     <PageHeader class="news__header" title="News" :subtitle="cityState" />
-    <SkeletonLocalNews v-if="true" class="news__local" />
+    <SkeletonLocalNews v-if="isLoading" class="news__local" />
     <LocalNews
       v-else
       label="Local"
       :news="filterArticles(news.local)"
       class="news__local"
     />
+
+    <SkeletonNationNews v-if="isLoading" class="news__country" />
     <CountryNews
-      v-if="news.country.length"
+      v-else
       label="National"
       :news="filterArticles(news.country)"
       class="news__country"
     />
+    <SkeletonStateNews v-if="isLoading" class="news__state" />
     <StateNews
-      v-if="news.state.length"
+      v-else
       label="State"
       :news="filterArticles(news.state)"
       class="news__state"
