@@ -107,15 +107,16 @@ export default {
   &__search {
     height: 54px;
     position: relative;
-    margin-bottom: $gap-8;
     display: flex;
     align-items: center;
+    margin-bottom: $gap-6;
     padding: $gap-1 $gap-3;
     border-radius: 50px;
     background: $main-gradiant;
     box-shadow: $main-shadow;
     @media screen and (min-width: $tablet) {
       width: 200px;
+      margin-bottom: unset;
       padding: $gap-1 $gap-4;
     }
     button {
