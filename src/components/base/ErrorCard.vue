@@ -115,8 +115,7 @@ export default {
       background: $primary-dk;
     }
     &:focus {
-      box-shadow: 0 3px 3px $sky, 0px -3px 3px $sky, 3px 0 3px $sky,
-        -3px 0 3px $sky;
+      box-shadow: $focus-shadow;
     }
   }
 
