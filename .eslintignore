@@ -3,6 +3,7 @@
 !*.js
 !*.ts
 !*.json
+*.spec.js
 node_modules
 dist
 umd
