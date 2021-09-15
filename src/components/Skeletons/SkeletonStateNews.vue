@@ -32,7 +32,6 @@ export default {
   display: grid;
   gap: $gap-8;
   @media screen and (min-width: $laptop-lg) {
-    max-height: 420px;
     height: 100%;
     grid-template-columns: 2fr 1fr;
   }
@@ -44,7 +43,7 @@ export default {
   &__img .skeleton-item {
     margin-bottom: $gap-8;
     @media screen and (min-width: $laptop-lg) {
-      height: 150px !important;
+      max-height: 130px !important;
     }
   }
   &__header {
@@ -59,7 +58,7 @@ export default {
     float: right;
   }
   &__snippets {
-    height: 300px;
+    height: 100%;
     padding: $gap-6;
     border-radius: $round-1;
     background-color: #3b3c40;
