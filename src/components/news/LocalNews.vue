@@ -59,6 +59,7 @@ export default {
     display: flex;
     flex-direction: column;
     gap: $gap-4;
+    overflow: hidden;
     @media screen and (min-width: $desktop) {
       flex-direction: row;
     }
