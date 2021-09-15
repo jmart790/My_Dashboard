@@ -21,12 +21,16 @@ export default {
   },
   methods: {
     ...mapActions("location", ["getLocation"]),
-    isNumber(event) {
-      if (!event.key.match(/^[0-9]*$/)) event.preventDefault();
-      else return true;
+    handleBlur(zipcode) {
+      if (!zipcode) this.hasErrors = false;
+      else if (!this.checkValidation(zipcode)) this.hasErrors = true;
+    },
+    checkValidation(zipcode) {
+      const numOnly = zipcode.match(/^[0-9]*$/);
+      return zipcode.length === 5 && numOnly;
     },
     handleSearch(zipcode) {
-      if (zipcode.length === 5) {
+      if (this.checkValidation(zipcode)) {
         this.getLocation(zipcode);
         this.zipcode = "";
       } else this.hasErrors = true;
@@ -37,7 +41,7 @@ export default {
 
 <template>
   <header class="page-header">
-    <div>
+    <div class="page-header__title-group">
       <h1 class="page-header__title">
         {{ title }}
       </h1>
@@ -58,9 +62,9 @@ export default {
         type="text"
         name="zipcode"
         placeholder="Zip code"
-        @keypress="isNumber($event)"
         maxlength="5"
         autocomplete="off"
+        @blur="handleBlur(zipcode)"
       />
       <p>Please enter a 5 digit zipcode</p>
     </form>
@@ -71,12 +75,25 @@ export default {
 .page-header {
   height: min-content;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
+  gap: $gap-4;
+  @media screen and (min-width: 500px) {
+    flex-direction: row;
+  }
   @media screen and (min-width: $tablet) {
     margin-bottom: $gap-2;
   }
   @media screen and (min-width: $laptop-lg) {
     margin-bottom: $gap-8;
+  }
+  &__title-group {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    @media screen and (min-width: 500px) {
+      display: unset;
+    }
   }
   &__title {
     font-size: 24px;
@@ -90,9 +107,9 @@ export default {
   &__search {
     height: 54px;
     position: relative;
+    margin-bottom: $gap-8;
     display: flex;
     align-items: center;
-    width: 125px;
     padding: $gap-1 $gap-3;
     border-radius: 50px;
     background: $main-gradiant;
@@ -149,7 +166,7 @@ export default {
     &--error {
       border: 1px solid $danger;
       p {
-        transform: translateY(24px);
+        transform: translateY(28px);
         opacity: 1;
       }
     }
