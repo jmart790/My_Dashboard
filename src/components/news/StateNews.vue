@@ -29,7 +29,6 @@ export default {
         class="state-news__main-article-snippet"
         :article="news[0]"
         showImage
-        isLarge
       />
     </article>
   </div>
