@@ -7,6 +7,7 @@ import StateNews from "@/components/news/StateNews";
 import SkeletonLocalNews from "@/components/skeletons/SkeletonLocalNews";
 import SkeletonStateNews from "@/components/skeletons/SkeletonStateNews";
 import SkeletonNationNews from "@/components/skeletons/SkeletonNationNews";
+import ErrorCard from "@/components/base/ErrorCard";
 
 export default {
   name: "NewsPage",
@@ -17,7 +18,8 @@ export default {
     StateNews,
     SkeletonLocalNews,
     SkeletonStateNews,
-    SkeletonNationNews
+    SkeletonNationNews,
+    ErrorCard
   },
   mounted() {
     if (this.location) this.getNews(this.location);
@@ -36,7 +38,11 @@ export default {
       location: "location",
       cityState: "cityState"
     }),
-    ...mapGetters("news", { news: "news", newsLoading: "isLoading" }),
+    ...mapGetters("news", {
+      news: "news",
+      newsLoading: "isLoading",
+      newsError: "error"
+    }),
     isLoading() {
       return this.locationLoading || this.newsLoading;
     }
@@ -47,19 +53,6 @@ export default {
       await this.getLocalNews(name);
       await this.getStateNews(region);
       await this.getCountryNews(country);
-    },
-    filterArticles(articles) {
-      const articlesWithContent = articles.filter(
-        article =>
-          article.media && article.clean_url && article.title && article.summary
-      );
-      const seen = new Set();
-      const articlesWithoutDupes = articlesWithContent.filter(article => {
-        const duplicate = seen.has(article.title);
-        seen.add(article.title);
-        return !duplicate;
-      });
-      return articlesWithoutDupes;
     }
   }
 };
@@ -68,59 +61,87 @@ export default {
 <template>
   <div class="news">
     <PageHeader class="news__header" title="News" :subtitle="cityState" />
+
     <SkeletonLocalNews v-if="isLoading" class="news__local" />
-    <LocalNews
-      v-else
-      label="Local"
-      :news="filterArticles(news.local)"
+    <ErrorCard
+      v-else-if="newsError.local || news.local.length <= 0"
       class="news__local"
-    />
+      category="NEWS"
+      :messageOption="1"
+      showRefreshBtn
+      @request-data="getNews(location)"
+    >
+      <inline-svg
+        :src="require(`@/assets/illustrations/undraw_newspaper.svg`)"
+      />
+    </ErrorCard>
+    <LocalNews v-else label="Local" :news="news.local" class="news__local" />
 
     <SkeletonNationNews v-if="isLoading" class="news__country" />
+    <ErrorCard
+      v-else-if="newsError.country || news.country.length <= 0"
+      class="news__country"
+      category="NEWS"
+      :messageOption="2"
+      isVertical
+    >
+      <inline-svg
+        :src="require(`@/assets/illustrations/undraw_Sharing_articles.svg`)"
+      />
+    </ErrorCard>
     <CountryNews
       v-else
       label="National"
-      :news="filterArticles(news.country)"
+      :news="news.country"
       class="news__country"
     />
+
     <SkeletonStateNews v-if="isLoading" class="news__state" />
-    <StateNews
-      v-else
-      label="State"
-      :news="filterArticles(news.state)"
+    <ErrorCard
+      v-else-if="newsError.state || news.state.length <= 0"
       class="news__state"
+      category="NEWS"
+      :messageOption="3"
+      isReverse
     />
+    <StateNews v-else label="State" :news="news.state" class="news__state" />
   </div>
 </template>
 
 
 <style lang="scss">
 .news {
+  min-height: 100%;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-areas: "header" "local" "state" "country";
   gap: $gap-4;
-  padding-bottom: 80px;
+  margin-bottom: 80px;
   @media screen and (min-width: $tablet) {
     gap: $gap-6;
   }
   @media screen and (min-width: $laptop) {
     grid-template-columns: 1fr 1fr 400px;
-    // grid-template-rows: auto auto auto;
+    grid-template-rows: auto repeat(3, 1fr) repeat(3, auto);
     grid-template-areas:
       "header header country"
       "local  local  country"
       "local  local  country"
       "local  local  country"
       "state  state  state"
+      "state  state  state"
       "state  state  state";
     gap: $gap-8;
   }
   @media screen and (min-width: $desktop) {
-    // max-height: 100vh;
+    height: 100%;
     grid-template-areas:
       "header header country"
       "local  local  country"
+      "local  local  country"
+      "local  local  country"
+      "state  state  country"
+      "state  state  country"
       "state  state  country";
   }
   &__header {
