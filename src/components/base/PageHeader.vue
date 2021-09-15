@@ -15,14 +15,21 @@ export default {
   },
   data() {
     return {
-      zipcode: ""
+      zipcode: "",
+      hasErrors: false
     };
   },
   methods: {
     ...mapActions("location", ["getLocation"]),
+    isNumber(event) {
+      if (!event.key.match(/^[0-9]*$/)) event.preventDefault();
+      else return true;
+    },
     handleSearch(zipcode) {
-      this.getLocation(zipcode);
-      this.zipcode = "";
+      if (zipcode.length === 5) {
+        this.getLocation(zipcode);
+        this.zipcode = "";
+      } else this.hasErrors = true;
     }
   }
 };
@@ -38,16 +45,24 @@ export default {
         {{ subtitle }}
       </h4>
     </div>
-    <form class="page-header__search" @submit.prevent="handleSearch(zipcode)">
+    <form
+      class="page-header__search"
+      :class="{ 'page-header__search--error': hasErrors }"
+      @submit.prevent="handleSearch(zipcode)"
+    >
       <button type="submit">
         <span class="icon-actions-linear-search" />
       </button>
       <input
         v-model.trim="zipcode"
         type="text"
-        name="location"
+        name="zipcode"
         placeholder="Zip code"
+        @keypress="isNumber($event)"
+        maxlength="5"
+        autocomplete="off"
       />
+      <p>Please enter a 5 digit zipcode</p>
     </form>
   </header>
 </template>
@@ -89,7 +104,7 @@ export default {
     button {
       margin-right: $gap-2;
       flex-shrink: 0;
-      background: $third-gradiant;
+      background: transparent;
       border-radius: 100%;
       border: none;
       outline: none;
@@ -104,7 +119,7 @@ export default {
       }
       &:hover {
         cursor: pointer;
-        background: $second-gradiant;
+        background: $third-gradiant;
       }
     }
     input {
@@ -115,6 +130,25 @@ export default {
     }
     &:focus-within {
       box-shadow: $focus-shadow;
+    }
+    p {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      white-space: nowrap;
+      font-size: 12px;
+      color: $danger;
+      opacity: 0;
+      transition: all 0.2s ease;
+    }
+    &--error {
+      border: 1px solid $danger;
+      p {
+        transform: translateY(24px);
+        opacity: 1;
+      }
     }
   }
 }
