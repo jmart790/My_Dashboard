@@ -21,13 +21,13 @@ export default {
   },
   methods: {
     ...mapActions("location", ["getLocation"]),
-    handleBlur(zipcode) {
-      if (!zipcode) this.hasErrors = false;
-      else if (!this.checkValidation(zipcode)) this.hasErrors = true;
-    },
     checkValidation(zipcode) {
       const numOnly = zipcode.match(/^[0-9]*$/);
       return zipcode.length === 5 && numOnly;
+    },
+    handleBlur(zipcode) {
+      if (!zipcode) this.hasErrors = false;
+      else if (!this.checkValidation(zipcode)) this.hasErrors = true;
     },
     handleSearch(zipcode) {
       if (this.checkValidation(zipcode)) {
