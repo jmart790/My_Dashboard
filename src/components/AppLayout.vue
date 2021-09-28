@@ -26,6 +26,9 @@ export default {
       <router-link class="nav-link" :to="{ name: 'News' }">
         <span class="icon-news" />
       </router-link>
+      <router-link class="nav-link" :to="{ name: 'Food' }">
+        <span class="icon-waze" />
+      </router-link>
       <router-link class="nav-link" :to="{ name: 'Media' }">
         <span class="icon-tv-app" />
       </router-link>
