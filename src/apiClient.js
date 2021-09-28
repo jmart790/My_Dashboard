@@ -42,7 +42,7 @@ export default {
    * @returns an array of news objects
    */
   async getNewsByLocation(payload) {
-    var options = {
+    const options = {
       method: 'GET',
       url: 'https://free-news.p.rapidapi.com/v1/search',
       params: {q: payload, lang: 'en', page_size: '10'},
@@ -53,5 +53,37 @@ export default {
     };
     return (await axios.request(options)).data;
   },
+  /**
+   * 
+   * @param {*} payload is an object containing lat, long, and day(YYYY-MM-DD)
+   */
+  async getRestaurants(payload) {
+    const options = {
+      method: 'GET',
+      url: 'https://resy.p.rapidapi.com/4/find',
+      params: {
+        ...payload,
+        party_size: '2',
+        offset: '0'
+      },
+      headers: {
+        'x-rapidapi-host': 'resy.p.rapidapi.com',
+        'x-rapidapi-key': rapidApiKey
+      }
+    };
+    return (await axios.request(options)).data;
+  },
+  async getFeaturedRestaurant(payload) {
+    const options = {
+      method: 'GET',
+      url: 'https://resy.p.rapidapi.com/3/venue',
+      params: payload,
+      headers: {
+        'x-rapidapi-host': 'resy.p.rapidapi.com',
+        'x-rapidapi-key': rapidApiKey
+      }
+    };
+    return (await axios.request(options)).data;
+  }
 }
 
