@@ -1,16 +1,24 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import PageHeader from "@/components/base/PageHeader";
-import TopRestaurants from "@/components/food/TopRestaurants";
+import RestaurantList from "@/components/food/RestaurantList";
 
 export default {
   name: "FoodPage",
   components: {
     PageHeader,
-    TopRestaurants
+    RestaurantList
   },
   mounted() {
-    if (this.location) this.getRestaurantsData(this.location);
+    if (this.location.name) this.getRestaurantsData(this.location);
+  },
+  watch: {
+    location: {
+      deep: true,
+      handler(location) {
+        if (location.name) this.getRestaurantsData(location);
+      }
+    }
   },
   computed: {
     ...mapGetters("location", ["cityState", "location"]),
@@ -29,7 +37,7 @@ export default {
   <div class="food-page">
     <PageHeader class="food-page__header" title="Food" :subtitle="cityState" />
     <div class="food-page__featured card">Featured</div>
-    <TopRestaurants class="food-page__extra" :restaurants="restaurants" />
+    <RestaurantList class="food-page__extra" :restaurants="restaurants" />
     <div class="food-page__map card">map</div>
   </div>
 </template>
