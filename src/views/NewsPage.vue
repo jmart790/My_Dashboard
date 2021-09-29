@@ -27,8 +27,8 @@ export default {
   watch: {
     location: {
       deep: true,
-      handler() {
-        this.getNews(this.location);
+      handler(location) {
+        this.getNews(location);
       }
     }
   },
