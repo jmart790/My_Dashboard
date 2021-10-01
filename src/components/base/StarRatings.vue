@@ -34,7 +34,7 @@ export default {
         class="icon-ratings-solid-star star-rating__icon"
       />
     </div>
-    <span class="star-rating__total">( {{ totalRatings }} )</span>
+    <span class="star-rating__total">{{ totalRatings }}</span>
   </div>
 </template>
 
@@ -58,7 +58,7 @@ export default {
     font-size: 14px;
   }
   &__total {
-    font-size: 12px;
+    font-size: 12px !important;
     font-weight: 600;
     color: $grey-3;
   }
