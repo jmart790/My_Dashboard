@@ -1,10 +1,5 @@
 <script>
-import streetFood from "@/assets/illustrations/undraw_Street_food.svg?url";
-import breakfast from "@/assets/illustrations/undraw_breakfast.svg?url";
-import cooking from "@/assets/illustrations/undraw_cooking.svg?url";
-
-// OpenStreetMap has no photos, so cards rotate through the food illustrations
-const art = [streetFood, breakfast, cooking];
+import { artFor } from "@/components/food/foodArt";
 
 export default {
   name: "Restaurant",
@@ -13,26 +8,35 @@ export default {
       type: Object,
       required: true
     },
-    index: {
-      type: Number,
-      default: 0
+    isFeatured: {
+      type: Boolean,
+      default: false
+    },
+    // 'open' | 'closed' | 'unknown', from the store's openStatus
+    status: {
+      type: String,
+      default: "unknown"
     }
   },
+  emits: ["select"],
   computed: {
-    img: ({ index }) => art[index % art.length],
+    img: ({ restaurant }) => artFor(restaurant.id),
     details: ({ restaurant }) =>
       [restaurant.address, restaurant.hours].filter(Boolean).join(" · ") ||
-      "No address or hours listed"
+      "No address or hours listed",
+    statusLabel: ({ status }) =>
+      ({ open: "Open now", closed: "Closed", unknown: "Hours unknown" })[status]
   }
 };
 </script>
 
 <template>
-  <a
+  <button
+    type="button"
     class="restaurant"
-    :href="restaurant.url"
-    target="_blank"
-    rel="noopener noreferrer"
+    :class="{ 'restaurant--featured': isFeatured }"
+    :aria-current="isFeatured ? 'true' : null"
+    @click="$emit('select', restaurant.id)"
   >
     <img
       :src="img"
@@ -47,13 +51,21 @@ export default {
         {{ details }}
       </p>
       <div class="restaurant__details">
-        <span class="restaurant__type">{{ restaurant.cuisine }}</span>
+        <span class="restaurant__type">
+          <span
+            class="restaurant__dot"
+            :class="`restaurant__dot--${status}`"
+            role="img"
+            :aria-label="statusLabel"
+            :title="statusLabel"
+          />
+          {{ restaurant.cuisine }}
+        </span>
         <span>{{ restaurant.distance.toFixed(2) }} mi</span>
       </div>
     </div>
-  </a>
+  </button>
 </template>
-
 
 <style lang="scss">
 .restaurant {
@@ -63,16 +75,32 @@ export default {
   align-content: center;
   padding: $gap-2;
   gap: $gap-6;
+  border: 0;
+  border-radius: $round-1;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
-  outline: none !important;
+  &:focus-visible {
+    outline: none;
+    box-shadow: $focus-shadow;
+  }
+  &--featured {
+    box-shadow: inset 0 0 0 2px $salmon;
+  }
   &__img {
-    position: inherit;
+    position: relative;
+    z-index: 1;
     flex-shrink: 0;
     object-fit: contain;
     border-radius: $round-1;
   }
   &__content {
     position: relative;
+    z-index: 1;
+    flex: 1;
+    min-width: 0;
     h4 {
       display: -webkit-box;
       -webkit-box-orient: vertical;
@@ -83,9 +111,6 @@ export default {
     * {
       font-size: 14px;
     }
-  }
-  &__ratings {
-    margin-bottom: $gap-2;
   }
   &__details {
     position: absolute;
@@ -106,15 +131,28 @@ export default {
     -webkit-line-clamp: 2;
     overflow: hidden;
   }
-  &__distance {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-  }
   &__type {
+    display: inline-flex;
+    align-items: center;
+    gap: $gap-2;
     background: $grey-6;
     padding: $gap-1 $gap-2;
     border-radius: 7px;
+    text-transform: capitalize;
+  }
+  &__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    &--open {
+      background: $forest;
+    }
+    &--closed {
+      background: $red-2;
+    }
+    &--unknown {
+      background: $grey-4;
+    }
   }
   &::before {
     position: absolute;
@@ -129,7 +167,8 @@ export default {
     transition: opacity 0.2s ease-in-out;
   }
   &:hover::before,
-  &:focus::before {
+  &:focus-visible::before,
+  &--featured::before {
     opacity: 1;
   }
 }

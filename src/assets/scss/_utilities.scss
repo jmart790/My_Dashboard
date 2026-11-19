@@ -1,3 +1,4 @@
+@use "vars" as *;
 .flex {
   display: flex;
 }
@@ -23,4 +24,36 @@
 }
 .small-text {
   font-size: 12px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: $gap-1;
+  padding: $gap-1 $gap-3;
+  border: 1px solid $grey-6;
+  border-radius: 999px;
+  background: transparent;
+  color: $grey-2;
+  font-size: 13px;
+  text-transform: capitalize;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  &:hover {
+    border-color: $grey-4;
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: $focus-shadow;
+  }
+  &[aria-pressed="true"] {
+    background: $salmon;
+    border-color: $salmon;
+    color: $white;
+  }
+  &__count {
+    font-size: 11px;
+    opacity: 0.7;
+  }
 }

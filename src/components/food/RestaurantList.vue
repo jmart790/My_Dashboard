@@ -1,32 +1,103 @@
 <script>
+import { mapActions, mapGetters } from "vuex";
 import Restaurant from "@/components/food/Restaurant.vue";
 
 export default {
   name: "RestaurantList",
   components: { Restaurant },
-  props: {
-    restaurants: {
-      type: Array,
-      required: true
-    }
+  computed: {
+    ...mapGetters("restaurants", [
+      "filteredRestaurants",
+      "openStatus",
+      "cuisines",
+      "featured",
+      "sort",
+      "openNow",
+      "cuisine"
+    ])
+  },
+  methods: {
+    ...mapActions("restaurants", [
+      "selectRestaurant",
+      "setSort",
+      "setOpenNow",
+      "setCuisine",
+      "clearFilters"
+    ])
   }
 };
 </script>
 
 <template>
   <div class="restaurants card">
-    <div class="restaurants__sort-btns">
-      sort btns go here
-    </div>
-    <ul class="restaurants__list">
-      <li
-        v-for="(restaurant, index) in restaurants"
-        :key="`RESTAURANT-${restaurant.id}`"
+    <div class="restaurants__controls">
+      <div class="restaurants__row" role="group" aria-label="Sort and filter">
+        <button
+          type="button"
+          class="chip"
+          :aria-pressed="sort === 'distance'"
+          @click="setSort('distance')"
+        >
+          Nearest
+        </button>
+        <button
+          type="button"
+          class="chip"
+          :aria-pressed="sort === 'name'"
+          @click="setSort('name')"
+        >
+          A–Z
+        </button>
+        <button
+          type="button"
+          class="chip"
+          :aria-pressed="openNow"
+          @click="setOpenNow(!openNow)"
+        >
+          Open now
+        </button>
+      </div>
+      <div
+        v-if="cuisines.length"
+        class="restaurants__row"
+        role="group"
+        aria-label="Cuisine"
       >
+        <button
+          type="button"
+          class="chip"
+          :aria-pressed="!cuisine"
+          @click="setCuisine(null)"
+        >
+          All
+        </button>
+        <button
+          v-for="option in cuisines"
+          :key="option.name"
+          type="button"
+          class="chip"
+          :aria-pressed="cuisine === option.name"
+          @click="setCuisine(option.name)"
+        >
+          {{ option.name }}
+          <span class="chip__count">{{ option.count }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div v-if="!filteredRestaurants.length" class="restaurants__empty">
+      <p>No places match these filters.</p>
+      <button type="button" class="chip" @click="clearFilters">
+        Clear filters
+      </button>
+    </div>
+    <ul v-else class="restaurants__list">
+      <li v-for="restaurant in filteredRestaurants" :key="restaurant.id">
         <Restaurant
-          class="restaurants__restaurant"
           :restaurant="restaurant"
-          :index="index"
+          :is-featured="featured !== null && featured.id === restaurant.id"
+          :status="openStatus[restaurant.id]"
+          @select="selectRestaurant"
         />
       </li>
     </ul>
@@ -36,18 +107,40 @@ export default {
 <style lang="scss">
 .restaurants {
   height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $gap-4;
   padding-right: $gap-3 !important;
   border-radius: $round-2;
-  overflow-y: hidden;
-  &__sort-btns {
-    margin-bottom: $gap-2;
+  overflow: hidden;
+  &__controls {
+    display: grid;
+    gap: $gap-2;
+  }
+  &__row {
+    display: flex;
+    gap: $gap-2;
+    overflow-x: auto;
+    padding-bottom: $gap-1;
+  }
+  &__empty {
+    display: grid;
+    justify-items: start;
+    gap: $gap-3;
   }
   &__list {
-    height: 93%;
+    flex: 1;
+    min-height: 0;
+    max-height: 70vh;
     padding-right: $gap-4;
     display: grid;
+    align-content: start;
     row-gap: $gap-6;
     overflow: auto;
+    @media screen and (min-width: $laptop) {
+      max-height: none;
+    }
     &::-webkit-scrollbar {
       width: 10px;
     }

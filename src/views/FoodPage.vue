@@ -38,7 +38,7 @@ export default {
     <div class="food-page__featured card">
       Featured
     </div>
-    <RestaurantList class="food-page__extra" :restaurants="restaurants" />
+    <RestaurantList class="food-page__extra" />
     <div class="food-page__map card">
       map
     </div>
