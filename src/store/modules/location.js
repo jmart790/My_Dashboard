@@ -7,6 +7,7 @@ const getDefaultState = () => ({
     region: '',
     lat: '',
     lon: '',
+    timezone: null,
   },
   zipcode: '',
   isLoading: false,

@@ -65,13 +65,24 @@ export default {
   async getLocation(zipcode) {
     const { data } = await axios.get(`https://api.zippopotam.us/us/${zipcode}`);
     const place = data.places[0];
+    const lat = Number(place.latitude);
+    const lon = Number(place.longitude);
+    // Zippopotam has no timezone; Open-Meteo resolves it from coordinates.
+    // Optional: "open now" falls back to the browser's timezone without it.
+    const timezone = await axios
+      .get('https://api.open-meteo.com/v1/forecast', {
+        params: { latitude: lat, longitude: lon, timezone: 'auto' },
+      })
+      .then(({ data: tz }) => tz.timezone)
+      .catch(() => null);
     return {
       location: {
         name: place['place name'],
         region: place.state,
         country: data.country,
-        lat: Number(place.latitude),
-        lon: Number(place.longitude),
+        lat,
+        lon,
+        timezone,
       },
     };
   },
@@ -201,6 +212,8 @@ export default {
           cuisine: (t.cuisine || 'restaurant').split(';')[0].replace(/_/g, ' '),
           address: [a.house_number, a.road].filter(Boolean).join(' '),
           hours: t.opening_hours || '',
+          lat: Number(place.lat),
+          lon: Number(place.lon),
           distance: milesBetween(lat, lon, Number(place.lat), Number(place.lon)),
           url: t.website || `https://www.openstreetmap.org/${place.osm_type}/${place.osm_id}`,
         };

@@ -10,16 +10,46 @@ describe('apiClient adapters', () => {
     sessionStorage.clear();
   });
 
-  it('getLocation reshapes Zippopotam into the location store shape', async () => {
-    axios.get.mockResolvedValue({
-      data: {
+  it('getLocation reshapes Zippopotam and adds the timezone from Open-Meteo', async () => {
+    axios.get.mockImplementation((url) =>
+      url.includes('zippopotam')
+        ? Promise.resolve({
+            data: {
+              country: 'United States',
+              places: [{ 'place name': 'Miami', state: 'Florida', latitude: '25.8', longitude: '-80.1' }],
+            },
+          })
+        : Promise.resolve({ data: { timezone: 'America/New_York' } })
+    );
+    expect(await apiClient.getLocation('33137')).toEqual({
+      location: {
+        name: 'Miami',
+        region: 'Florida',
         country: 'United States',
-        places: [{ 'place name': 'Miami', state: 'Florida', latitude: '25.8', longitude: '-80.1' }],
+        lat: 25.8,
+        lon: -80.1,
+        timezone: 'America/New_York',
       },
     });
-    expect(await apiClient.getLocation('33137')).toEqual({
-      location: { name: 'Miami', region: 'Florida', country: 'United States', lat: 25.8, lon: -80.1 },
+    expect(axios.get).toHaveBeenLastCalledWith('https://api.open-meteo.com/v1/forecast', {
+      params: { latitude: 25.8, longitude: -80.1, timezone: 'auto' },
     });
+  });
+
+  it('getLocation still resolves with timezone null when Open-Meteo fails', async () => {
+    axios.get.mockImplementation((url) =>
+      url.includes('zippopotam')
+        ? Promise.resolve({
+            data: {
+              country: 'United States',
+              places: [{ 'place name': 'Miami', state: 'Florida', latitude: '25.8', longitude: '-80.1' }],
+            },
+          })
+        : Promise.reject(new Error('timeout'))
+    );
+    const { location } = await apiClient.getLocation('33137');
+    expect(location.timezone).toBeNull();
+    expect(location.name).toBe('Miami');
   });
 
   it('getWeather maps Open-Meteo + NWS into the Dark Sky shape', async () => {
@@ -83,6 +113,7 @@ describe('apiClient adapters', () => {
     expect(list.map((r) => r.name)).toEqual(['Near', 'Far']);
     expect(list[0]).toMatchObject({ address: '1 Main St', url: 'https://www.openstreetmap.org/way/3' });
     expect(list[1].cuisine).toBe('cuban');
+    expect(list[0]).toMatchObject({ lat: 25.8157, lon: -80.19 });
   });
 
   it('getNewsByLocation maps GNews articles and caches per query', async () => {
