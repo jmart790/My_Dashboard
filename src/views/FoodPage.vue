@@ -4,7 +4,6 @@ import PageHeader from "@/components/base/PageHeader.vue";
 import ErrorCard from "@/components/base/ErrorCard.vue";
 import Skeleton from "@/components/base/Skeleton.vue";
 import SkeletonItem from "@/components/base/SkeletonItem.vue";
-import FeaturedRestaurant from "@/components/food/FeaturedRestaurant.vue";
 import RestaurantList from "@/components/food/RestaurantList.vue";
 import RestaurantMap from "@/components/food/RestaurantMap.vue";
 
@@ -15,7 +14,6 @@ export default {
     ErrorCard,
     Skeleton,
     SkeletonItem,
-    FeaturedRestaurant,
     RestaurantList,
     RestaurantMap
   },
@@ -55,9 +53,8 @@ export default {
     <PageHeader class="food-page__header" title="Food" :subtitle="cityState" />
 
     <template v-if="status === 'loading'">
-      <Skeleton class="food-page__featured food-page__sk-featured">
-        <SkeletonItem height="200px" width="200px" />
-        <SkeletonItem shape="text" :lines="6" width="100%" />
+      <Skeleton class="food-page__map food-page__sk-map">
+        <SkeletonItem height="100%" width="100%" />
       </Skeleton>
       <Skeleton class="food-page__extra">
         <SkeletonItem shape="text" :lines="12" width="100%" />
@@ -66,7 +63,7 @@ export default {
 
     <ErrorCard
       v-else-if="status === 'error'"
-      class="food-page__featured"
+      class="food-page__map"
       category="FOOD"
       :message-option="1"
       show-refresh-btn
@@ -75,13 +72,12 @@ export default {
       <inline-svg src="@/assets/illustrations/undraw_cooking.svg" />
     </ErrorCard>
 
-    <div v-else-if="status === 'empty'" class="food-page__featured food-page__empty card">
+    <div v-else-if="status === 'empty'" class="food-page__map food-page__empty card">
       <h2>No restaurants found near {{ cityState }}</h2>
       <p>OpenStreetMap doesn't list any within about a mile. Try another zip code.</p>
     </div>
 
     <template v-else>
-      <FeaturedRestaurant class="food-page__featured" />
       <RestaurantMap class="food-page__map" />
       <RestaurantList class="food-page__extra" />
     </template>
@@ -93,39 +89,22 @@ export default {
   min-height: 100%;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-areas: "header" "featured" "map" "extra";
+  grid-template-areas: "header" "map" "extra";
   gap: $gap-4;
   margin-bottom: 80px;
   @media screen and (min-width: $tablet) {
     gap: $gap-6;
   }
   @media screen and (min-width: $laptop) {
-    grid-template-columns: 1fr 1fr 400px;
-    grid-template-rows: auto repeat(3, 1fr) repeat(3, auto);
+    grid-template-columns: minmax(0, 1fr) 400px;
+    grid-template-rows: auto 1fr;
     grid-template-areas:
-      "header header extra"
-      "featured  featured  extra"
-      "featured  featured  extra"
-      "featured  featured  extra"
-      "map  map  map"
-      "map  map  map"
-      "map  map  map";
+      "header extra"
+      "map    extra";
     gap: $gap-8;
-  }
-  @media screen and (min-width: $desktop) {
-    height: 100%;
-    grid-template-areas:
-      "header header    extra"
-      "map    featured  extra"
-      "map    featured  extra"
-      "map    featured  extra"
-      "map    featured  extra";
   }
   &__header {
     grid-area: header;
-  }
-  &__featured {
-    grid-area: featured;
   }
   &__map {
     grid-area: map;
@@ -133,9 +112,11 @@ export default {
   &__extra {
     grid-area: extra;
   }
-  &__sk-featured {
-    display: flex;
-    gap: $gap-6;
+  &__sk-map {
+    min-height: 60vh;
+    @media screen and (min-width: $laptop) {
+      min-height: 560px;
+    }
   }
   &__empty {
     display: grid;

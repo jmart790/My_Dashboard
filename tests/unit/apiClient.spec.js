@@ -104,7 +104,7 @@ describe('apiClient adapters', () => {
   it('getRestaurants drops unnamed places and sorts nearest first', async () => {
     axios.get.mockResolvedValue({
       data: [
-        { name: 'Far', osm_type: 'node', osm_id: 1, lat: '25.83', lon: '-80.19', extratags: { cuisine: 'cuban;american' } },
+        { name: 'Far', osm_type: 'node', osm_id: 1, lat: '25.83', lon: '-80.19', extratags: { cuisine: 'cuban;american', image: 'https://commons.wikimedia.org/wiki/File:X.jpg?x' } },
         { name: '', osm_type: 'node', osm_id: 2, lat: '25.81', lon: '-80.19' },
         { name: 'Near', osm_type: 'way', osm_id: 3, lat: '25.8157', lon: '-80.19', address: { house_number: '1', road: 'Main St' } },
       ],
@@ -114,6 +114,7 @@ describe('apiClient adapters', () => {
     expect(list[0]).toMatchObject({ address: '1 Main St', url: 'https://www.openstreetmap.org/way/3' });
     expect(list[1].cuisine).toBe('cuban');
     expect(list[0]).toMatchObject({ lat: 25.8157, lon: -80.19 });
+    expect(list[1].image).toBeNull();
   });
 
   it('getNewsByLocation maps GNews articles and caches per query', async () => {

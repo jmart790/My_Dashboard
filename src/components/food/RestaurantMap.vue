@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import RestaurantPopup from "@/components/food/RestaurantPopup.vue";
 
 const store = useStore();
 const el = ref(null);
@@ -10,13 +11,29 @@ const el = ref(null);
 const restaurants = computed(() => store.getters["restaurants/filteredRestaurants"]);
 const featured = computed(() => store.getters["restaurants/featured"]);
 const center = computed(() => store.getters["location/coordinates"]);
+// the pick can be hidden by filters; then there's no pin to anchor the popup to
+const visibleFeatured = computed(() =>
+  restaurants.value.find((r) => r.id === featured.value?.id) || null
+);
 
 // Theme colors ($salmon-lt, $salmon, $dark); circle markers need no image assets
 const PIN = { fill: "#ff9c93", featured: "#ff6f61", stroke: "#22262D" };
 
+// The popup's DOM node: Leaflet positions it, Vue teleports RestaurantPopup into it.
+const popupEl = document.createElement("div");
+
 // Plain variables, not refs: Leaflet objects must stay out of Vue's reactive proxies
 let map = null;
 let pins = null;
+let popup = null;
+
+function openPopup() {
+  const r = visibleFeatured.value;
+  if (!r) return popup.close();
+  popup.setLatLng([r.lat, r.lon]);
+  if (!map.hasLayer(popup)) popup.openOn(map);
+  else popup.update();
+}
 
 function drawPins() {
   pins.clearLayers();
@@ -31,7 +48,11 @@ function drawPins() {
       fillOpacity: isFeatured ? 1 : 0.8
     })
       .bindTooltip(r.name)
-      .on("click", () => store.dispatch("restaurants/selectRestaurant", r.id))
+      .on("click", () => {
+        // re-clicking the current pick only reopens its popup (the store won't change)
+        if (r.id === featured.value?.id) openPopup();
+        else store.dispatch("restaurants/selectRestaurant", r.id);
+      })
       .addTo(pins);
     if (isFeatured) featuredPin = pin;
   });
@@ -54,22 +75,45 @@ onMounted(() => {
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
   pins = L.layerGroup().addTo(map);
+  popup = L.popup({
+    className: "restaurant-popup",
+    maxWidth: 300,
+    minWidth: 300,
+    offset: [0, -8],
+    autoPanPaddingTopLeft: [16, 16],
+    autoPanPaddingBottomRight: [16, 16]
+  }).setContent(popupEl);
   drawPins();
   fitToPins();
+  openPopup();
 });
 
 watch(restaurants, () => {
   drawPins();
   fitToPins();
+  openPopup();
 });
 
-watch(featured, (r) => {
-  drawPins();
-  if (r) map.panTo([r.lat, r.lon]);
-});
+// post flush: open the popup after Vue has rendered the new restaurant into it,
+// so Leaflet measures the right size and auto-pans it fully into view
+watch(
+  featured,
+  () => {
+    drawPins();
+    openPopup();
+    // On phones the list sits below the map: picking from it would open the popup
+    // off-screen, so bring the map back into view when it's mostly scrolled away.
+    const { top, bottom } = el.value.getBoundingClientRect();
+    if (bottom < 120 || top > window.innerHeight - 120) {
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      el.value.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    }
+  },
+  { flush: "post" }
+);
 
 onBeforeUnmount(() => {
-  map?.stop(); // cancel an in-flight panTo before tearing down
+  map?.stop(); // cancel an in-flight auto-pan before tearing down
   map?.remove();
 });
 </script>
@@ -82,20 +126,31 @@ onBeforeUnmount(() => {
       role="region"
       aria-label="Map of nearby restaurants"
     />
+    <Teleport :to="popupEl">
+      <RestaurantPopup
+        v-if="visibleFeatured"
+        :restaurant="visibleFeatured"
+        @resize="popup && popup.update()"
+      />
+    </Teleport>
   </div>
 </template>
 
 <style lang="scss">
 .restaurant-map {
+  display: flex;
   padding: $gap-2 !important;
   &__canvas {
+    flex: 1;
     width: 100%;
-    height: 100%;
-    min-height: 320px;
+    min-height: 60vh;
     border-radius: $round-2 - $gap-2;
     background: $grey-8;
+    @media screen and (min-width: $laptop) {
+      min-height: 560px;
+    }
   }
-  // Dark tiles to match the app; markers, tooltips and attribution stay untouched
+  // Dark tiles to match the app; markers, popups and attribution stay untouched
   .leaflet-tile-pane {
     filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9);
   }
@@ -104,6 +159,39 @@ onBeforeUnmount(() => {
     color: $grey-3;
     a {
       color: $salmon-lt;
+    }
+  }
+  .restaurant-popup {
+    .leaflet-popup-content-wrapper {
+      padding: 0;
+      border-radius: $round-1;
+      background: $grey-8;
+      color: $grey-2;
+      box-shadow: $main-shadow;
+      overflow: hidden;
+    }
+    .leaflet-popup-content {
+      width: 300px !important;
+      margin: 0;
+      line-height: 1.4;
+    }
+    .leaflet-popup-tip {
+      background: $grey-8;
+    }
+    .leaflet-popup-close-button {
+      z-index: 1;
+      top: $gap-2;
+      right: $gap-2;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba($dark, 0.7);
+      color: $white;
+      font-size: 20px;
+      line-height: 26px;
+      &:hover {
+        color: $salmon-lt;
+      }
     }
   }
 }

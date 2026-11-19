@@ -105,3 +105,16 @@ Mutations and actions:
 ## Out of scope
 
 Favorites, a search box, paging past 40 results, and ratings, photos, or prices (OSM has none).
+
+## Revision 2026-11-19: map-first layout
+
+Approved after the first build. It supersedes sections 4 and 7's Featured card.
+
+- The map takes the main panel; the list stays beside it on desktop and below it on phones. `FeaturedRestaurant.vue` is removed.
+- The featured pick shows as a Leaflet popup on its pin (`RestaurantPopup.vue`, teleported into the popup so it stays reactive). It opens automatically after each load, moves when a pin or list item is picked, and closes when filters hide the pick. Clicking the current pick's pin reopens a closed popup. On phones, picking from the list scrolls the map back into view.
+- Popup photo (`src/dishPhotos.js`), in order of preference:
+  1. The restaurant's own OSM `image` tag. Only direct image links count, not wiki or Flickr pages. This is rare: 1 in about 120 sampled restaurants.
+  2. A TheMealDB dish photo for the cuisine, from a fixed cuisine-to-dish map, captioned "Example dish: …".
+  3. The unDraw illustration.
+- Lookups are cached per dish, and failures aren't cached.
+- List items use 88px art on phones so names and addresses fit.

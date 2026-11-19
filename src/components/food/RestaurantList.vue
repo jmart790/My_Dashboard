@@ -138,7 +138,8 @@ export default {
     display: grid;
     align-content: start;
     row-gap: $gap-6;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     &::-webkit-scrollbar {
       width: 10px;
     }

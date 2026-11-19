@@ -22,6 +22,10 @@ function describeWeather(code, isDay = 1) {
 
 const pct = (n) => (n ?? 0) / 100;
 
+// OSM `image` tags are often wiki or Flickr pages, which an <img> can't show
+const isDirectImage = (url = '') =>
+  /^https:\/\/\S+\.(jpe?g|png|webp)(\?\S*)?$/i.test(url) && !url.includes('/wiki/');
+
 // Haversine distance in miles
 function milesBetween(lat1, lon1, lat2, lon2) {
   const rad = (d) => (d * Math.PI) / 180;
@@ -216,6 +220,8 @@ export default {
           lon: Number(place.lon),
           distance: milesBetween(lat, lon, Number(place.lat), Number(place.lon)),
           url: t.website || `https://www.openstreetmap.org/${place.osm_type}/${place.osm_id}`,
+          // rare in OSM; only direct image links render (not Commons/Flickr pages)
+          image: isDirectImage(t.image) ? t.image : null,
         };
       })
       .sort((x, y) => x.distance - y.distance);

@@ -73,8 +73,9 @@ export default {
   width: 100%;
   display: flex;
   align-content: center;
+  min-height: 104px;
   padding: $gap-2;
-  gap: $gap-6;
+  gap: $gap-4;
   border: 0;
   border-radius: $round-1;
   background: none;
@@ -93,14 +94,23 @@ export default {
     position: relative;
     z-index: 1;
     flex-shrink: 0;
+    // 130px art leaves no room for text on phones
+    width: 88px;
+    height: 88px;
     object-fit: contain;
     border-radius: $round-1;
+    @media screen and (min-width: $tablet) {
+      width: 130px;
+      height: 130px;
+    }
   }
   &__content {
     position: relative;
     z-index: 1;
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
     h4 {
       display: -webkit-box;
       -webkit-box-orient: vertical;
@@ -113,9 +123,9 @@ export default {
     }
   }
   &__details {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+    // in flow (not pinned to the bottom) so long names and addresses can't run under it
+    margin-top: auto;
+    padding-top: $gap-2;
     display: flex;
     align-items: center;
     justify-content: space-between;
