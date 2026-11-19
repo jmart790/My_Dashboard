@@ -27,6 +27,7 @@ const popupEl = document.createElement("div");
 let map = null;
 let pins = null;
 let popup = null;
+let resizeObserver = null;
 const markers = new Map(); // restaurant id -> circleMarker, for restyling on hover
 
 // Featured: big + salmon. Hovered in the list: salmon at normal size (no popup).
@@ -101,12 +102,26 @@ onMounted(() => {
   drawPins();
   fitToPins();
   openPopup();
+  // On large screens the map's height follows the window, and Leaflet doesn't
+  // notice container resizes by itself (gray tiles, drifting popup).
+  resizeObserver = new ResizeObserver(() => {
+    map.invalidateSize({ pan: false });
+    if (map.hasLayer(popup)) popup.update(); // re-runs auto-pan so it stays in view
+  });
+  resizeObserver.observe(el.value);
 });
 
 watch(restaurants, () => {
   drawPins();
   fitToPins();
   openPopup();
+  // On large screens the map's height follows the window, and Leaflet doesn't
+  // notice container resizes by itself (gray tiles, drifting popup).
+  resizeObserver = new ResizeObserver(() => {
+    map.invalidateSize({ pan: false });
+    if (map.hasLayer(popup)) popup.update(); // re-runs auto-pan so it stays in view
+  });
+  resizeObserver.observe(el.value);
 });
 
 // post flush: open the popup after Vue has rendered the new restaurant into it,
@@ -130,6 +145,7 @@ watch(
 );
 
 onBeforeUnmount(() => {
+  resizeObserver?.disconnect();
   map?.stop(); // cancel an in-flight auto-pan before tearing down
   map?.remove();
 });
@@ -207,7 +223,7 @@ onBeforeUnmount(() => {
     border-radius: $round-2 - $gap-2;
     background: $grey-8;
     @media screen and (min-width: $laptop) {
-      min-height: 560px;
+      min-height: 0; // fills the viewport-tall grid row instead
     }
   }
   // Dark tiles to match the app; markers, popups and attribution stay untouched

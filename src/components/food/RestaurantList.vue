@@ -171,8 +171,12 @@ export default {
     position: relative; // offsetTop of items is measured against the list
     flex: 1;
     min-height: 0;
-    // bounded at every width: the grid stretches neighbouring rows to this column's height
+    // stacked: cap it so the page doesn't become 40 items long;
+    // side by side: fill the viewport-tall column and scroll inside
     max-height: 70vh;
+    @media screen and (min-width: $laptop) {
+      max-height: none;
+    }
     padding-right: $gap-4;
     display: grid;
     align-content: start;

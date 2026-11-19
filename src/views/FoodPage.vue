@@ -95,9 +95,15 @@ export default {
   @media screen and (min-width: $tablet) {
     gap: $gap-6;
   }
+  // Side by side: the page is exactly the viewport tall and never scrolls;
+  // the map and the list fill it and the list scrolls inside itself.
+  // Stacked (tablet/phone) the page scrolls as normal.
   @media screen and (min-width: $laptop) {
+    height: 100%;
+    min-height: 0;
+    margin-bottom: 0;
     grid-template-columns: minmax(0, 1fr) 400px;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
     grid-template-areas:
       "header extra"
       "map    extra";
@@ -115,7 +121,7 @@ export default {
   &__sk-map {
     min-height: 60vh;
     @media screen and (min-width: $laptop) {
-      min-height: 560px;
+      min-height: 0;
     }
   }
   &__empty {
