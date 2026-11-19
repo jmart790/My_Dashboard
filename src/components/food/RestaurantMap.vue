@@ -40,8 +40,10 @@ function drawPins() {
 
 function fitToPins() {
   const points = restaurants.value.map((r) => [r.lat, r.lon]);
-  if (points.length) map.fitBounds(points, { padding: [32, 32], maxZoom: 16 });
-  else map.setView([center.value.lat, center.value.lon], 14);
+  // no zoom animation: Leaflet finishes it on a timer that throws if the map was
+  // unmounted mid-animation (a new zip search swaps the map for the skeleton)
+  if (points.length) map.fitBounds(points, { padding: [32, 32], maxZoom: 16, animate: false });
+  else map.setView([center.value.lat, center.value.lon], 14, { animate: false });
 }
 
 onMounted(() => {
@@ -66,7 +68,10 @@ watch(featured, (r) => {
   if (r) map.panTo([r.lat, r.lon]);
 });
 
-onBeforeUnmount(() => map?.remove());
+onBeforeUnmount(() => {
+  map?.stop(); // cancel an in-flight panTo before tearing down
+  map?.remove();
+});
 </script>
 
 <template>

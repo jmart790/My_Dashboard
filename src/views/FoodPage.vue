@@ -1,47 +1,90 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import PageHeader from "@/components/base/PageHeader.vue";
+import ErrorCard from "@/components/base/ErrorCard.vue";
+import Skeleton from "@/components/base/Skeleton.vue";
+import SkeletonItem from "@/components/base/SkeletonItem.vue";
+import FeaturedRestaurant from "@/components/food/FeaturedRestaurant.vue";
 import RestaurantList from "@/components/food/RestaurantList.vue";
+import RestaurantMap from "@/components/food/RestaurantMap.vue";
 
 export default {
   name: "FoodPage",
   components: {
     PageHeader,
-    RestaurantList
+    ErrorCard,
+    Skeleton,
+    SkeletonItem,
+    FeaturedRestaurant,
+    RestaurantList,
+    RestaurantMap
   },
-  mounted() {
-    if (this.location.name) this.getRestaurantsData(this.location);
+  computed: {
+    ...mapGetters("location", ["cityState", "location"]),
+    ...mapGetters("restaurants", ["restaurants", "isLoading", "error"]),
+    status() {
+      if (this.isLoading || !this.location.name) return "loading";
+      if (this.error) return "error";
+      if (!this.restaurants.length) return "empty";
+      return "ready";
+    }
   },
   watch: {
     location: {
       deep: true,
-      handler(location) {
-        if (location.name) this.getRestaurantsData(location);
+      handler() {
+        this.load();
       }
     }
   },
-  computed: {
-    ...mapGetters("location", ["cityState", "location"]),
-    ...mapGetters("restaurants", ["restaurants"])
+  mounted() {
+    this.load();
   },
   methods: {
     ...mapActions("restaurants", ["getRestaurants"]),
-    getRestaurantsData({ lat, lon }) {
-      return this.getRestaurants({ lat, lon });
+    load() {
+      const { name, lat, lon } = this.location;
+      if (name) this.getRestaurants({ lat, lon });
     }
   }
 };
 </script>
+
 <template>
   <div class="food-page">
     <PageHeader class="food-page__header" title="Food" :subtitle="cityState" />
-    <div class="food-page__featured card">
-      Featured
+
+    <template v-if="status === 'loading'">
+      <Skeleton class="food-page__featured food-page__sk-featured">
+        <SkeletonItem height="200px" width="200px" />
+        <SkeletonItem shape="text" :lines="6" width="100%" />
+      </Skeleton>
+      <Skeleton class="food-page__extra">
+        <SkeletonItem shape="text" :lines="12" width="100%" />
+      </Skeleton>
+    </template>
+
+    <ErrorCard
+      v-else-if="status === 'error'"
+      class="food-page__featured"
+      category="FOOD"
+      :message-option="1"
+      show-refresh-btn
+      @request-data="load"
+    >
+      <inline-svg src="@/assets/illustrations/undraw_cooking.svg" />
+    </ErrorCard>
+
+    <div v-else-if="status === 'empty'" class="food-page__featured food-page__empty card">
+      <h2>No restaurants found near {{ cityState }}</h2>
+      <p>OpenStreetMap doesn't list any within about a mile. Try another zip code.</p>
     </div>
-    <RestaurantList class="food-page__extra" />
-    <div class="food-page__map card">
-      map
-    </div>
+
+    <template v-else>
+      <FeaturedRestaurant class="food-page__featured" />
+      <RestaurantMap class="food-page__map" />
+      <RestaurantList class="food-page__extra" />
+    </template>
   </div>
 </template>
 
@@ -84,11 +127,23 @@ export default {
   &__featured {
     grid-area: featured;
   }
-  &__top {
-    grid-area: top;
+  &__map {
+    grid-area: map;
   }
   &__extra {
     grid-area: extra;
+  }
+  &__sk-featured {
+    display: flex;
+    gap: $gap-6;
+  }
+  &__empty {
+    display: grid;
+    align-content: center;
+    gap: $gap-3;
+    h2 {
+      color: $white;
+    }
   }
 }
 </style>

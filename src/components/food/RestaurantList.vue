@@ -132,15 +132,13 @@ export default {
   &__list {
     flex: 1;
     min-height: 0;
+    // bounded at every width: the grid stretches neighbouring rows to this column's height
     max-height: 70vh;
     padding-right: $gap-4;
     display: grid;
     align-content: start;
     row-gap: $gap-6;
     overflow: auto;
-    @media screen and (min-width: $laptop) {
-      max-height: none;
-    }
     &::-webkit-scrollbar {
       width: 10px;
     }

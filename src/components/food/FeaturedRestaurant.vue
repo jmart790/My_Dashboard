@@ -33,7 +33,7 @@ export default {
 
 <template>
   <section class="featured card" aria-labelledby="featured-title">
-    <template v-if="hasPick">
+    <div v-if="hasPick" class="featured__layout">
       <img
         class="featured__img"
         :src="img"
@@ -87,7 +87,7 @@ export default {
           >Directions</a>
         </div>
       </div>
-    </template>
+    </div>
     <div v-else class="featured__empty">
       <h2 id="featured-title" class="featured__name">
         Nothing matches these filters
@@ -101,19 +101,24 @@ export default {
 
 <style lang="scss">
 .featured {
-  display: flex;
-  flex-direction: column;
-  gap: $gap-6;
-  @media screen and (min-width: $tablet) {
-    flex-direction: row;
-    align-items: center;
+  // side-by-side depends on the card's own width, not the viewport's:
+  // at laptop widths the card sits in a narrow grid column
+  container-type: inline-size;
+  &__layout {
+    display: flex;
+    flex-direction: column;
+    gap: $gap-6;
+    @container (min-width: 560px) {
+      flex-direction: row;
+      align-items: center;
+    }
   }
   &__img {
     width: 160px;
     height: 160px;
     flex-shrink: 0;
     object-fit: contain;
-    @media screen and (min-width: $tablet) {
+    @container (min-width: 560px) {
       width: 220px;
       height: 220px;
     }
