@@ -1,5 +1,4 @@
 import apiClient from '@/apiClient';
-import { isOpenNow } from '@/openingHours';
 
 const getDefaultFilters = () => ({
   sort: 'distance', // 'distance' | 'name'
@@ -12,6 +11,7 @@ const getDefaultState = () => ({
   isLoading: false,
   error: null,
   featuredId: null,
+  openStatus: {}, // { [id]: 'open' | 'closed' | 'unknown' }
   ...getDefaultFilters(),
 });
 
@@ -43,6 +43,9 @@ export default {
     CLEAR_FILTERS(state) {
       Object.assign(state, getDefaultFilters());
     },
+    SET_OPEN_STATUS(state, value) {
+      state.openStatus = value;
+    },
     SET_FEATURED_ID(state, value) {
       state.featuredId = value;
     },
@@ -57,16 +60,7 @@ export default {
     sort: (state) => state.sort,
     openNow: (state) => state.openNow,
     cuisine: (state) => state.cuisine,
-    // ponytail: cached until the list or location changes, so status can go stale
-    // on a page left open for hours; add a minute ticker in state if that matters.
-    openStatus(state, _getters, _rootState, rootGetters) {
-      const { timezone } = rootGetters['location/location'];
-      const now = new Date();
-      const label = { true: 'open', false: 'closed', null: 'unknown' };
-      return Object.fromEntries(
-        state.restaurants.map((r) => [r.id, label[isOpenNow(r.hours, { timezone, lat: r.lat, lon: r.lon }, now)]])
-      );
-    },
+    openStatus: (state) => state.openStatus,
     filteredRestaurants(state, getters) {
       let list = state.restaurants;
       if (state.cuisine) list = list.filter((r) => r.cuisine === state.cuisine);
@@ -88,16 +82,34 @@ export default {
     featured: (state) => state.restaurants.find((r) => r.id === state.featuredId) || null,
   },
   actions: {
-    async getRestaurants({ commit, dispatch }, coordinates) {
+    async getRestaurants({ commit, dispatch, rootGetters }, coordinates) {
       commit('SET_IS_LOADING', true);
       commit('SET_ERROR', null);
       commit('CLEAR_FILTERS');
       commit('SET_FEATURED_ID', null);
       try {
-        commit('SET_RESTAURANTS', await apiClient.getRestaurants(coordinates));
+        // opening_hours (~150KB gz) is loaded on demand so it stays out of the main bundle;
+        // the store itself loads at startup.
+        const [list, { isOpenNow }] = await Promise.all([
+          apiClient.getRestaurants(coordinates),
+          import('@/openingHours'),
+        ]);
+        // ponytail: status is computed once per load, so it can go stale on a page
+        // left open for hours; recompute on a timer if that matters.
+        const { timezone } = rootGetters['location/location'];
+        const now = new Date();
+        const label = { true: 'open', false: 'closed', null: 'unknown' };
+        commit(
+          'SET_OPEN_STATUS',
+          Object.fromEntries(
+            list.map((r) => [r.id, label[isOpenNow(r.hours, { timezone, lat: r.lat, lon: r.lon }, now)]])
+          )
+        );
+        commit('SET_RESTAURANTS', list);
         dispatch('pickInitialFeatured');
       } catch (error) {
         commit('SET_RESTAURANTS', []);
+        commit('SET_OPEN_STATUS', {});
         commit('SET_ERROR', error);
       } finally {
         commit('SET_IS_LOADING', false);
