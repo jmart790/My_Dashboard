@@ -10,6 +10,7 @@ const el = ref(null);
 
 const restaurants = computed(() => store.getters["restaurants/filteredRestaurants"]);
 const featured = computed(() => store.getters["restaurants/featured"]);
+const hoveredId = computed(() => store.getters["restaurants/hoveredId"]);
 const center = computed(() => store.getters["location/coordinates"]);
 // the pick can be hidden by filters; then there's no pin to anchor the popup to
 const visibleFeatured = computed(() =>
@@ -26,6 +27,26 @@ const popupEl = document.createElement("div");
 let map = null;
 let pins = null;
 let popup = null;
+const markers = new Map(); // restaurant id -> circleMarker, for restyling on hover
+
+// Featured: big + salmon. Hovered in the list: salmon at normal size (no popup).
+function pinStyle(id) {
+  const isFeatured = id === featured.value?.id;
+  const isHovered = id === hoveredId.value;
+  return {
+    radius: isFeatured ? 11 : 7,
+    color: PIN.stroke,
+    weight: 2,
+    fillColor: isFeatured || isHovered ? PIN.featured : PIN.fill,
+    fillOpacity: isFeatured || isHovered ? 1 : 0.8
+  };
+}
+
+function restylePins() {
+  markers.forEach((pin, id) => pin.setStyle(pinStyle(id)));
+  markers.get(hoveredId.value)?.bringToFront();
+  markers.get(featured.value?.id)?.bringToFront(); // the pick always stays on top
+}
 
 function openPopup() {
   const r = visibleFeatured.value;
@@ -37,16 +58,9 @@ function openPopup() {
 
 function drawPins() {
   pins.clearLayers();
-  let featuredPin = null;
+  markers.clear();
   restaurants.value.forEach((r) => {
-    const isFeatured = r.id === featured.value?.id;
-    const pin = L.circleMarker([r.lat, r.lon], {
-      radius: isFeatured ? 11 : 7,
-      color: PIN.stroke,
-      weight: 2,
-      fillColor: isFeatured ? PIN.featured : PIN.fill,
-      fillOpacity: isFeatured ? 1 : 0.8
-    })
+    const pin = L.circleMarker([r.lat, r.lon], pinStyle(r.id))
       .bindTooltip(r.name)
       .on("click", () => {
         // re-clicking the current pick only reopens its popup (the store won't change)
@@ -54,9 +68,9 @@ function drawPins() {
         else store.dispatch("restaurants/selectRestaurant", r.id);
       })
       .addTo(pins);
-    if (isFeatured) featuredPin = pin;
+    markers.set(r.id, pin);
   });
-  featuredPin?.bringToFront();
+  restylePins();
 }
 
 function fitToPins() {
@@ -80,7 +94,8 @@ onMounted(() => {
     maxWidth: 300,
     minWidth: 300,
     offset: [0, -8],
-    autoPanPaddingTopLeft: [16, 16],
+    // [x, y]: 64px from the top keeps the popup clear of the Shuffle button
+    autoPanPaddingTopLeft: [16, 64],
     autoPanPaddingBottomRight: [16, 16]
   }).setContent(popupEl);
   drawPins();
@@ -96,10 +111,12 @@ watch(restaurants, () => {
 
 // post flush: open the popup after Vue has rendered the new restaurant into it,
 // so Leaflet measures the right size and auto-pans it fully into view
+watch(hoveredId, () => restylePins());
+
 watch(
   featured,
   () => {
-    drawPins();
+    restylePins();
     openPopup();
     // On phones the list sits below the map: picking from it would open the popup
     // off-screen, so bring the map back into view when it's mostly scrolled away.
@@ -126,6 +143,16 @@ onBeforeUnmount(() => {
       role="region"
       aria-label="Map of nearby restaurants"
     />
+    <button
+      type="button"
+      class="restaurant-map__shuffle"
+      aria-label="Pick a random restaurant"
+      :disabled="!restaurants.length"
+      @click="store.dispatch('restaurants/shuffleFeatured')"
+    >
+      <span class="icon-actions-linear-refresh" aria-hidden="true" />
+      Shuffle
+    </button>
     <Teleport :to="popupEl">
       <RestaurantPopup
         v-if="visibleFeatured"
@@ -138,7 +165,40 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 .restaurant-map {
+  position: relative;
   display: flex;
+  &__shuffle {
+    position: absolute;
+    top: $gap-6;
+    right: $gap-6;
+    z-index: 1000; // above Leaflet panes and controls
+    display: inline-flex;
+    align-items: center;
+    gap: $gap-2;
+    padding: $gap-2 $gap-4;
+    border: 0;
+    border-radius: 999px;
+    background: $salmon;
+    color: $white;
+    box-shadow: $secondary-shadow;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    span {
+      color: inherit;
+    }
+    &:hover {
+      background: $salmon-dk;
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: $focus-shadow;
+    }
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
   padding: $gap-2 !important;
   &__canvas {
     flex: 1;

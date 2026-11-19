@@ -1,5 +1,5 @@
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import { artFor } from "@/components/food/foodArt";
 import { photoFor } from "@/dishPhotos";
 
@@ -46,7 +46,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions("restaurants", ["shuffleFeatured"]),
     async loadPhoto() {
       const id = this.restaurant.id;
       this.photo = null;
@@ -111,10 +110,6 @@ export default {
         </div>
       </dl>
       <div class="popup__actions">
-        <button type="button" class="popup__shuffle" @click="shuffleFeatured">
-          <span class="icon-actions-linear-refresh" aria-hidden="true" />
-          Shuffle
-        </button>
         <a
           class="popup__link"
           :href="restaurant.url"
@@ -243,31 +238,6 @@ export default {
     align-items: center;
     gap: $gap-3;
     margin-top: $gap-1;
-  }
-  &__shuffle {
-    display: inline-flex;
-    align-items: center;
-    gap: $gap-1;
-    padding: $gap-1 $gap-3;
-    border: 0;
-    border-radius: 999px;
-    background: $salmon;
-    color: $white;
-    font: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    span {
-      color: inherit;
-      font-size: 13px;
-    }
-    &:hover {
-      background: $salmon-dk;
-    }
-    &:focus-visible {
-      outline: none;
-      box-shadow: $focus-shadow;
-    }
   }
   &__link {
     color: $salmon-lt !important;

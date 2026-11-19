@@ -138,6 +138,17 @@ describe('restaurants store', () => {
     expect(store.getters['restaurants/sort']).toBe('distance');
   });
 
+  it('tracks the hovered restaurant and clears it on a new load', async () => {
+    const store = await loaded();
+    await store.dispatch('restaurants/setHovered', 'n/2');
+    expect(store.getters['restaurants/hoveredId']).toBe('n/2');
+    await store.dispatch('restaurants/setHovered', null);
+    expect(store.getters['restaurants/hoveredId']).toBeNull();
+    await store.dispatch('restaurants/setHovered', 'n/3');
+    await store.dispatch('restaurants/getRestaurants', { lat: 0, lon: 0 });
+    expect(store.getters['restaurants/hoveredId']).toBeNull();
+  });
+
   it('records errors and stops loading', async () => {
     const store = makeStore();
     apiClient.getRestaurants.mockRejectedValue(new Error('down'));

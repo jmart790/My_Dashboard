@@ -11,6 +11,7 @@ const getDefaultState = () => ({
   isLoading: false,
   error: null,
   featuredId: null,
+  hoveredId: null, // list item under the pointer/focus; the map tints its pin
   openStatus: {}, // { [id]: 'open' | 'closed' | 'unknown' }
   ...getDefaultFilters(),
 });
@@ -46,6 +47,9 @@ export default {
     SET_OPEN_STATUS(state, value) {
       state.openStatus = value;
     },
+    SET_HOVERED_ID(state, value) {
+      state.hoveredId = value;
+    },
     SET_FEATURED_ID(state, value) {
       state.featuredId = value;
     },
@@ -61,6 +65,7 @@ export default {
     openNow: (state) => state.openNow,
     cuisine: (state) => state.cuisine,
     openStatus: (state) => state.openStatus,
+    hoveredId: (state) => state.hoveredId,
     filteredRestaurants(state, getters) {
       let list = state.restaurants;
       if (state.cuisine) list = list.filter((r) => r.cuisine === state.cuisine);
@@ -87,6 +92,7 @@ export default {
       commit('SET_ERROR', null);
       commit('CLEAR_FILTERS');
       commit('SET_FEATURED_ID', null);
+      commit('SET_HOVERED_ID', null);
       try {
         // opening_hours (~150KB gz) is loaded on demand so it stays out of the main bundle;
         // the store itself loads at startup.
@@ -124,6 +130,9 @@ export default {
       const list = getters.filteredRestaurants;
       const pool = list.length > 1 ? list.filter((r) => r.id !== state.featuredId) : list;
       commit('SET_FEATURED_ID', pool.length ? pickRandom(pool).id : null);
+    },
+    setHovered({ commit }, id) {
+      commit('SET_HOVERED_ID', id);
     },
     selectRestaurant({ commit }, id) {
       commit('SET_FEATURED_ID', id);

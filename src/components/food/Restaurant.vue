@@ -18,7 +18,8 @@ export default {
       default: "unknown"
     }
   },
-  emits: ["select"],
+  // hover: id while pointed at or focused, null when left (the map tints that pin)
+  emits: ["select", "hover"],
   computed: {
     img: ({ restaurant }) => artFor(restaurant.id),
     details: ({ restaurant }) =>
@@ -37,6 +38,10 @@ export default {
     :class="{ 'restaurant--featured': isFeatured }"
     :aria-current="isFeatured ? 'true' : null"
     @click="$emit('select', restaurant.id)"
+    @mouseenter="$emit('hover', restaurant.id)"
+    @mouseleave="$emit('hover', null)"
+    @focus="$emit('hover', restaurant.id)"
+    @blur="$emit('hover', null)"
   >
     <img
       :src="img"
@@ -86,9 +91,6 @@ export default {
   &:focus-visible {
     outline: none;
     box-shadow: $focus-shadow;
-  }
-  &--featured {
-    box-shadow: inset 0 0 0 2px $salmon;
   }
   &__img {
     position: relative;
@@ -180,6 +182,10 @@ export default {
   &:focus-visible::before,
   &--featured::before {
     opacity: 1;
+  }
+  // the ring lives on the overlay: a shadow on the button itself would sit under it
+  &--featured::before {
+    box-shadow: inset 0 0 0 2px $salmon;
   }
 }
 </style>

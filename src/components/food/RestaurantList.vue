@@ -16,9 +16,42 @@ export default {
       "cuisine"
     ])
   },
+  watch: {
+    // keep the active pick visible in the list, whichever side (map or list) picked it
+    "featured.id": {
+      flush: "post",
+      handler(id) {
+        if (id) this.revealInList(id);
+      }
+    },
+    // filters and sorting reorder the list; the pick may have moved out of view
+    filteredRestaurants: {
+      flush: "post",
+      handler() {
+        if (this.featured) this.revealInList(this.featured.id);
+      }
+    }
+  },
   methods: {
+    // Scrolls only the list container, never the page (scrollIntoView would also
+    // scroll the page on phones, pulling the map out of view).
+    revealInList(id) {
+      const list = this.$refs.list;
+      const item = list && list.querySelector(`[data-id="${CSS.escape(id)}"]`);
+      if (!item) return;
+      const top = item.offsetTop;
+      const bottom = top + item.offsetHeight;
+      const visible = top >= list.scrollTop && bottom <= list.scrollTop + list.clientHeight;
+      if (visible) return;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      list.scrollTo({
+        top: top - (list.clientHeight - item.offsetHeight) / 2,
+        behavior: reduceMotion ? "auto" : "smooth"
+      });
+    },
     ...mapActions("restaurants", [
       "selectRestaurant",
+      "setHovered",
       "setSort",
       "setOpenNow",
       "setCuisine",
@@ -91,13 +124,18 @@ export default {
         Clear filters
       </button>
     </div>
-    <ul v-else class="restaurants__list">
-      <li v-for="restaurant in filteredRestaurants" :key="restaurant.id">
+    <ul v-else ref="list" class="restaurants__list">
+      <li
+        v-for="restaurant in filteredRestaurants"
+        :key="restaurant.id"
+        :data-id="restaurant.id"
+      >
         <Restaurant
           :restaurant="restaurant"
           :is-featured="featured !== null && featured.id === restaurant.id"
           :status="openStatus[restaurant.id]"
           @select="selectRestaurant"
+          @hover="setHovered"
         />
       </li>
     </ul>
@@ -130,6 +168,7 @@ export default {
     gap: $gap-3;
   }
   &__list {
+    position: relative; // offsetTop of items is measured against the list
     flex: 1;
     min-height: 0;
     // bounded at every width: the grid stretches neighbouring rows to this column's height
