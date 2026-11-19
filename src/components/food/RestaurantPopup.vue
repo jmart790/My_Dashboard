@@ -1,7 +1,6 @@
 <script>
 import { mapGetters } from "vuex";
-import { artFor } from "@/components/food/foodArt";
-import { photoFor } from "@/dishPhotos";
+import RestaurantPhoto from "@/components/food/RestaurantPhoto.vue";
 
 const STATUS = {
   open: "Open now",
@@ -11,6 +10,7 @@ const STATUS = {
 
 export default {
   name: "RestaurantPopup",
+  components: { RestaurantPhoto },
   props: {
     restaurant: {
       type: Object,
@@ -19,17 +19,10 @@ export default {
   },
   // emitted when the content changes size, so Leaflet can re-position the popup
   emits: ["resize"],
-  data() {
-    return {
-      photo: null, // { url, caption } once loaded
-      photoState: "loading" // loading | ready | none
-    };
-  },
   computed: {
     ...mapGetters("restaurants", ["openStatus"]),
     status: ({ restaurant, openStatus }) => openStatus[restaurant.id] || "unknown",
     statusLabel: ({ status }) => STATUS[status],
-    illustration: ({ restaurant }) => artFor(restaurant.id),
     websiteLabel: ({ restaurant }) =>
       restaurant.url.startsWith("https://www.openstreetmap.org/")
         ? "OpenStreetMap"
@@ -37,53 +30,16 @@ export default {
     directionsUrl: ({ restaurant }) =>
       `https://www.google.com/maps/dir/?api=1&destination=${restaurant.lat},${restaurant.lon}`
   },
-  watch: {
-    "restaurant.id": {
-      immediate: true,
-      handler() {
-        this.loadPhoto();
-      }
-    }
-  },
-  methods: {
-    async loadPhoto() {
-      const id = this.restaurant.id;
-      this.photo = null;
-      this.photoState = "loading";
-      const photo = await photoFor(this.restaurant);
-      if (this.restaurant.id !== id) return; // a newer pick replaced this one
-      this.photo = photo;
-      this.photoState = photo ? "ready" : "none";
-    },
-    onPhotoError() {
-      this.photo = null;
-      this.photoState = "none";
-    }
-  }
 };
 </script>
 
 <template>
   <article class="popup" aria-labelledby="popup-title">
-    <figure class="popup__media" :class="`popup__media--${photoState}`">
-      <img
-        v-if="photo"
-        :src="photo.url"
-        alt=""
-        class="popup__photo"
-        @load="$emit('resize')"
-        @error="onPhotoError"
-      />
-      <img
-        v-else-if="photoState === 'none'"
-        :src="illustration"
-        alt=""
-        class="popup__art"
-      />
-      <figcaption v-if="photo && photo.caption" class="popup__caption">
-        {{ photo.caption }}
-      </figcaption>
-    </figure>
+    <RestaurantPhoto
+      class="popup__media"
+      :restaurant="restaurant"
+      @resize="$emit('resize')"
+    />
 
     <div class="popup__body">
       <h3 id="popup-title" class="popup__name">
@@ -132,45 +88,7 @@ export default {
   width: 300px;
   max-width: 100%;
   &__media {
-    position: relative;
     height: 150px;
-    margin: 0;
-    background: $grey-7;
-    overflow: hidden;
-    &--loading {
-      background: linear-gradient(90deg, $grey-7 0%, $grey-6 50%, $grey-7 100%);
-      background-size: 200% 100%;
-      animation: popup-shimmer 1.2s infinite linear;
-    }
-    &--none {
-      background: $grey-8;
-    }
-  }
-  &__photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  &__art {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: $gap-3;
-  }
-  &__caption {
-    position: absolute;
-    left: $gap-2;
-    bottom: $gap-2;
-    max-width: calc(100% - #{$gap-4});
-    padding: 2px $gap-2;
-    border-radius: 6px;
-    background: rgba($dark, 0.75);
-    color: $grey-2;
-    font-size: 11px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
   &__body {
     display: grid;
@@ -254,12 +172,4 @@ export default {
   }
 }
 
-@keyframes popup-shimmer {
-  from {
-    background-position: 200% 0;
-  }
-  to {
-    background-position: -200% 0;
-  }
-}
 </style>

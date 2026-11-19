@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// OpenStreetMap almost never has restaurant photos (1 in ~120 sampled), so the popup
-// shows a representative dish for the cuisine from TheMealDB (free, keyless), captioned
-// "Example dish" so it never passes as the restaurant's own food.
+// Fallback when a restaurant has no photo of its own: a representative dish for its
+// cuisine from TheMealDB (free, keyless), captioned "Example dish" so it never passes
+// as the restaurant's own food.
 // Keys are OSM cuisine values as apiClient normalizes them (lowercase, "_" -> " ").
 // Values are exact TheMealDB meal names, each checked to return a photo; the first
 // search hit is often odd ("Cassava pizza"), so we pick the dish by name.
@@ -57,18 +57,17 @@ function fetchDish(dish) {
 }
 
 /**
- * @param {{ cuisine?: string, image?: string }} restaurant
- * @returns {Promise<{ url: string, caption: string|null } | null>} caption is null for the restaurant's own photo
+ * @param {string} cuisine OSM cuisine as apiClient normalizes it
+ * @returns {Promise<{ url: string, caption: string } | null>} a representative dish, or null
  */
-export function photoFor({ cuisine = '', image } = {}) {
-  if (image) return Promise.resolve({ url: image, caption: null });
+export function dishPhotoFor(cuisine = '') {
   const dish = DISH[cuisine.toLowerCase()];
   if (!dish) return Promise.resolve(null);
   if (!cache.has(dish)) {
     cache.set(
       dish,
       fetchDish(dish).catch(() => {
-        cache.delete(dish); // don't cache failures; the next popup retries
+        cache.delete(dish); // don't cache failures; the next lookup retries
         return null;
       })
     );

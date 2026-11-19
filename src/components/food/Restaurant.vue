@@ -1,8 +1,9 @@
 <script>
-import { artFor } from "@/components/food/foodArt";
+import RestaurantPhoto from "@/components/food/RestaurantPhoto.vue";
 
 export default {
   name: "Restaurant",
+  components: { RestaurantPhoto },
   props: {
     restaurant: {
       type: Object,
@@ -21,7 +22,6 @@ export default {
   // hover: id while pointed at or focused, null when left (the map tints that pin)
   emits: ["select", "hover"],
   computed: {
-    img: ({ restaurant }) => artFor(restaurant.id),
     details: ({ restaurant }) =>
       [restaurant.address, restaurant.hours].filter(Boolean).join(" · ") ||
       "No address or hours listed",
@@ -43,12 +43,12 @@ export default {
     @focus="$emit('hover', restaurant.id)"
     @blur="$emit('hover', null)"
   >
-    <img
-      :src="img"
-      alt=""
-      width="130"
-      height="130"
+    <!-- lazy: 40 items would otherwise ask the server for 40 websites at once -->
+    <RestaurantPhoto
       class="restaurant__img"
+      :restaurant="restaurant"
+      lazy
+      compact
     />
     <div class="restaurant__content">
       <h4>{{ restaurant.name }}</h4>
@@ -96,10 +96,9 @@ export default {
     position: relative;
     z-index: 1;
     flex-shrink: 0;
-    // 130px art leaves no room for text on phones
+    // 130px leaves no room for text on phones
     width: 88px;
     height: 88px;
-    object-fit: contain;
     border-radius: $round-1;
     @media screen and (min-width: $tablet) {
       width: 130px;
