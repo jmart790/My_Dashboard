@@ -29,6 +29,7 @@ describe('apiClient adapters', () => {
         lat: 25.8,
         lon: -80.1,
         timezone: 'America/New_York',
+        zip: '33137',
       },
     });
     expect(axios.get).toHaveBeenLastCalledWith('https://api.open-meteo.com/v1/forecast', {
@@ -50,6 +51,48 @@ describe('apiClient adapters', () => {
     const { location } = await apiClient.getLocation('33137');
     expect(location.timezone).toBeNull();
     expect(location.name).toBe('Miami');
+  });
+
+  it('reverseGeocode names the place and keeps the 5-digit zip', async () => {
+    axios.get.mockImplementation((url) =>
+      url.includes('nominatim')
+        ? Promise.resolve({
+            data: {
+              address: {
+                village: 'Grand Canyon Village',
+                county: 'Coconino County',
+                state: 'Arizona',
+                country: 'United States',
+                postcode: '86023-1234',
+              },
+            },
+          })
+        : Promise.resolve({ data: { timezone: 'America/Phoenix' } })
+    );
+    expect(await apiClient.reverseGeocode({ lat: 36.1069, lon: -112.1129 })).toEqual({
+      location: {
+        name: 'Grand Canyon Village',
+        region: 'Arizona',
+        country: 'United States',
+        lat: 36.1069,
+        lon: -112.1129,
+        timezone: 'America/Phoenix',
+        zip: '86023',
+      },
+    });
+  });
+
+  it('reverseGeocode prefers the city', async () => {
+    axios.get.mockImplementation((url) =>
+      url.includes('nominatim')
+        ? Promise.resolve({
+            data: { address: { city: 'Denver', hamlet: 'Civic Center', county: 'Denver County', state: 'Colorado', country: 'United States' } },
+          })
+        : Promise.resolve({ data: { timezone: 'America/Denver' } })
+    );
+    const { location } = await apiClient.reverseGeocode({ lat: 39.74, lon: -104.99 });
+    expect(location.name).toBe('Denver');
+    expect(location.zip).toBe(''); // no postcode in the response
   });
 
   it('getWeather maps Open-Meteo + NWS into the Dark Sky shape', async () => {

@@ -2,11 +2,12 @@
 import { mapActions } from "vuex";
 export default {
   name: "AppLayout",
-  async created() {
-    await this.getLocation("33137");
+  // saved location if there is one, else the device's, else a default zip
+  created() {
+    this.init();
   },
   methods: {
-    ...mapActions("location", ["getLocation"])
+    ...mapActions("location", ["init"])
   }
 };
 </script>

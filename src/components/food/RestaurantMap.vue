@@ -12,6 +12,12 @@ const restaurants = computed(() => store.getters["restaurants/filteredRestaurant
 const featured = computed(() => store.getters["restaurants/featured"]);
 const hoveredId = computed(() => store.getters["restaurants/hoveredId"]);
 const center = computed(() => store.getters["location/coordinates"]);
+// Only a device location is "where you are"; a searched zip is just an area.
+const userPosition = computed(() => {
+  if (store.getters["location/source"] !== "gps") return null;
+  const { lat, lon } = store.getters["location/location"];
+  return lat === "" || lon === "" ? null : [lat, lon];
+});
 // the pick can be hidden by filters; then there's no pin to anchor the popup to
 const visibleFeatured = computed(() =>
   restaurants.value.find((r) => r.id === featured.value?.id) || null
@@ -28,6 +34,7 @@ let map = null;
 let pins = null;
 let popup = null;
 let resizeObserver = null;
+let userMarker = null;
 const markers = new Map(); // restaurant id -> circleMarker, for restyling on hover
 
 // Featured: big + salmon. Hovered in the list: salmon at normal size (no popup).
@@ -74,8 +81,30 @@ function drawPins() {
   restylePins();
 }
 
+// Blue (not salmon) so it never reads as a restaurant. A divIcon is plain HTML,
+// so the pulse is CSS and there are no image assets to bundle.
+function drawUser() {
+  userMarker?.remove();
+  userMarker = null;
+  if (!userPosition.value) return;
+  userMarker = L.marker(userPosition.value, {
+    icon: L.divIcon({
+      className: "user-location",
+      html: '<span class="user-location__pulse"></span><span class="user-location__dot"></span>',
+      iconSize: [22, 22]
+    }),
+    keyboard: false,
+    alt: "Your location",
+    zIndexOffset: -1000 // under the featured pin's popup and tooltips
+  })
+    .bindTooltip("You are here", { direction: "top", offset: [0, -10] })
+    .addTo(map);
+}
+
 function fitToPins() {
+  // include you, so every restaurant is shown relative to where you are
   const points = restaurants.value.map((r) => [r.lat, r.lon]);
+  if (userPosition.value) points.push(userPosition.value);
   // no zoom animation: Leaflet finishes it on a timer that throws if the map was
   // unmounted mid-animation (a new zip search swaps the map for the skeleton)
   if (points.length) map.fitBounds(points, { padding: [32, 32], maxZoom: 16, animate: false });
@@ -90,6 +119,7 @@ onMounted(() => {
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
   pins = L.layerGroup().addTo(map);
+  drawUser();
   popup = L.popup({
     className: "restaurant-popup",
     maxWidth: 300,
@@ -127,6 +157,11 @@ watch(restaurants, () => {
 // post flush: open the popup after Vue has rendered the new restaurant into it,
 // so Leaflet measures the right size and auto-pans it fully into view
 watch(hoveredId, () => restylePins());
+
+watch(userPosition, () => {
+  drawUser();
+  fitToPins();
+});
 
 watch(
   featured,
@@ -226,6 +261,25 @@ onBeforeUnmount(() => {
       min-height: 0; // fills the viewport-tall grid row instead
     }
   }
+  .user-location {
+    position: relative;
+    &__dot,
+    &__pulse {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+    }
+    &__dot {
+      inset: 3px;
+      background: $royal-lt;
+      border: 3px solid $white;
+      box-shadow: 0 0 0 1px rgba($dark, 0.4), 0 2px 6px rgba($dark, 0.5);
+    }
+    &__pulse {
+      background: rgba($royal-lt, 0.35);
+      animation: user-location-pulse 2s ease-out infinite;
+    }
+  }
   // Dark tiles to match the app; markers, popups and attribution stay untouched
   .leaflet-tile-pane {
     filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9);
@@ -269,6 +323,23 @@ onBeforeUnmount(() => {
         color: $salmon-lt;
       }
     }
+  }
+}
+
+@keyframes user-location-pulse {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .user-location__pulse {
+    animation: none;
+    transform: scale(1.6);
   }
 }
 </style>

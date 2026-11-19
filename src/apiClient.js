@@ -64,6 +64,17 @@ function cached(key, fetcher) {
   });
 }
 
+// Zippopotam and Nominatim have no timezone; Open-Meteo resolves it from coordinates.
+// Optional: "open now" falls back to the browser's timezone without it.
+function timezoneFor(lat, lon) {
+  return axios
+    .get('https://api.open-meteo.com/v1/forecast', {
+      params: { latitude: lat, longitude: lon, timezone: 'auto' },
+    })
+    .then(({ data }) => data.timezone)
+    .catch(() => null);
+}
+
 export default {
   /** @param zipcode 5 digit US zip -> { location } */
   async getLocation(zipcode) {
@@ -71,14 +82,6 @@ export default {
     const place = data.places[0];
     const lat = Number(place.latitude);
     const lon = Number(place.longitude);
-    // Zippopotam has no timezone; Open-Meteo resolves it from coordinates.
-    // Optional: "open now" falls back to the browser's timezone without it.
-    const timezone = await axios
-      .get('https://api.open-meteo.com/v1/forecast', {
-        params: { latitude: lat, longitude: lon, timezone: 'auto' },
-      })
-      .then(({ data: tz }) => tz.timezone)
-      .catch(() => null);
     return {
       location: {
         name: place['place name'],
@@ -86,7 +89,32 @@ export default {
         country: data.country,
         lat,
         lon,
+        timezone: await timezoneFor(lat, lon),
+        zip: zipcode,
+      },
+    };
+  },
+
+  /** Device coordinates -> { location } via OSM Nominatim reverse geocoding */
+  async reverseGeocode({ lat, lon }) {
+    const [{ data }, timezone] = await Promise.all([
+      axios.get('https://nominatim.openstreetmap.org/reverse', {
+        // zoom 18 (address level) is the only level that includes the postcode
+        params: { lat, lon, format: 'jsonv2', zoom: 18, addressdetails: 1 },
+      }),
+      timezoneFor(lat, lon),
+    ]);
+    const a = data.address || {};
+    return {
+      location: {
+        // rural spots (campgrounds, parks) often have no city: use the village, else county
+        name: a.city || a.town || a.village || a.hamlet || a.county || 'Current location',
+        region: a.state || '',
+        country: a.country || '',
+        lat,
+        lon,
         timezone,
+        zip: (/^\d{5}/.exec(a.postcode || '') || [''])[0], // "86023-1234" -> "86023"
       },
     };
   },
@@ -220,6 +248,7 @@ export default {
           lon: Number(place.lon),
           distance: milesBetween(lat, lon, Number(place.lat), Number(place.lon)),
           url: t.website || `https://www.openstreetmap.org/${place.osm_type}/${place.osm_id}`,
+          website: t.website || null, // the photo pipeline reads its share image
           // rare in OSM; only direct image links render (not Commons/Flickr pages)
           image: isDirectImage(t.image) ? t.image : null,
         };
