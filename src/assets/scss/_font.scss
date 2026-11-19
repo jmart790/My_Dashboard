@@ -1,8 +1,6 @@
+@use "vars" as *;
 
 
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@200;400;600;800&display=swap');
-$base-font: 'Nunito', sans-serif;
-$heading-font: 'Nunito', sans-serif;
 
 * {
   font-family: $base-font;

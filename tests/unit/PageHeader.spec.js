@@ -1,37 +1,44 @@
 import { shallowMount } from '@vue/test-utils';
+import { createStore } from 'vuex';
 import PageHeader from '@/components/base/PageHeader.vue';
 
-describe('PageHeader.vue', () => {
-  const title = 'New Title';
+const mountHeader = (props = {}) => {
+  const getLocation = vi.fn();
+  const store = createStore({ modules: { location: { namespaced: true, actions: { getLocation } } } });
   const wrapper = shallowMount(PageHeader, {
-    propsData: { title },
+    props: { title: 'New Title', ...props },
+    global: { plugins: [store] },
   });
-  const input = wrapper.find('input');
-  const button = wrapper.find('button');
+  return { wrapper, getLocation };
+};
 
-
-
+describe('PageHeader.vue', () => {
   it('renders props.title when passed', () => {
-    expect(wrapper.text()).toMatch(title);
+    expect(mountHeader().wrapper.text()).toMatch('New Title');
   });
 
   it('renders props.subtitle when passed', () => {
-    const subtitle = 'New Sub Title';
-    const anotherWrapper = shallowMount(PageHeader, {
-      propsData: { title, subtitle },
-    });
-    expect(anotherWrapper.text()).toMatch(subtitle);
+    expect(mountHeader({ subtitle: 'New Sub Title' }).wrapper.text()).toMatch('New Sub Title');
   });
 
   it('sets the value', async () => {
+    const input = mountHeader().wrapper.find('input');
     await input.setValue('33137');
     expect(input.element.value).toBe('33137');
   });
 
-  it('zipcode submits', async () => {
-    await input.setValue('33137');
-    await button.trigger('click');
-    // assert some action has been performed, like an emitted event.
-    expect(wrapper.emitted()).toHaveProperty('submit')
+  it('dispatches getLocation on valid zipcode submit', async () => {
+    const { wrapper, getLocation } = mountHeader();
+    await wrapper.find('input').setValue('33137');
+    await wrapper.find('form').trigger('submit');
+    expect(getLocation).toHaveBeenCalledWith(expect.anything(), '33137');
+  });
+
+  it('shows error and skips dispatch on invalid zipcode', async () => {
+    const { wrapper, getLocation } = mountHeader();
+    await wrapper.find('input').setValue('12a');
+    await wrapper.find('form').trigger('submit');
+    expect(getLocation).not.toHaveBeenCalled();
+    expect(wrapper.find('form').classes()).toContain('page-header__search--error');
   });
 });

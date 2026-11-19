@@ -1,6 +1,6 @@
 <script>
 import { mapGetters } from "vuex";
-import PageHeader from "@/components/base/PageHeader";
+import PageHeader from "@/components/base/PageHeader.vue";
 
 export default {
   name: 'Home',

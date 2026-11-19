@@ -1,5 +1,5 @@
 <script>
-import Restaurant from "@/components/food/Restaurant";
+import Restaurant from "@/components/food/Restaurant.vue";
 
 export default {
   name: "RestaurantList",
@@ -15,13 +15,19 @@ export default {
 
 <template>
   <div class="restaurants card">
-    <div class="restaurants__sort-btns">sort btns go here</div>
+    <div class="restaurants__sort-btns">
+      sort btns go here
+    </div>
     <ul class="restaurants__list">
       <li
         v-for="(restaurant, index) in restaurants"
-        :key="`RESTAURANT-${index}`"
+        :key="`RESTAURANT-${restaurant.id}`"
       >
-        <Restaurant class="restaurants__restaurant" :restaurant="restaurant" />
+        <Restaurant
+          class="restaurants__restaurant"
+          :restaurant="restaurant"
+          :index="index"
+        />
       </li>
     </ul>
   </div>

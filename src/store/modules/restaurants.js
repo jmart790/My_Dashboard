@@ -2,7 +2,6 @@ import apiClient from '@/apiClient';
 
 const getDefaultState = () => ({
   restaurants: [],
-  featuredRestaurant: {},
   isLoading: false,
   error: null,
 });
@@ -13,9 +12,6 @@ export default {
   mutations: {
     SET_RESTAURANTS(state, value) {
       state.restaurants = value;
-    },
-    SET_FEAUTURED_RESTAURANT(state, value) {
-      state.featuredRestaurant = value;
     },
     SET_IS_LOADING(state, value) {
       state.isLoading = value;
@@ -31,23 +27,14 @@ export default {
     error: (state) => state.error,
     isLoading: (state) => state.isLoading,
     restaurants: (state) => state.restaurants,
-    featuredRestaurant: (state) => state.featuredRestaurant
   },
   actions: {
-    async getRestaurants({ commit }, payload) {
+    async getRestaurants({ commit }, coordinates) {
       commit('SET_IS_LOADING', true);
+      commit('SET_ERROR', null);
       await apiClient
-        .getRestaurants(payload)
-        .then(({ results }) => commit('SET_RESTAURANTS', results.venues))
-        .catch((error) => commit('SET_ERROR', error))
-        .finally(() => commit('SET_IS_LOADING', false));
-    },
-    async getFeaturedRestaurant({ commit }, restaurantId) {
-      commit('SET_IS_LOADING', true);
-      const payload = {id: restaurantId };
-      await apiClient
-        .getFeaturedRestaurant(payload)
-        .then((data) => commit('SET_FEATURED_RESTAURANT', data))
+        .getRestaurants(coordinates)
+        .then((venues) => commit('SET_RESTAURANTS', venues))
         .catch((error) => commit('SET_ERROR', error))
         .finally(() => commit('SET_IS_LOADING', false));
     },

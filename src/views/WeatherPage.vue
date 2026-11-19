@@ -1,9 +1,9 @@
 <script>
-import PageHeader from "@/components/base/PageHeader";
-import WeatherNow from "@/components/weather/WeatherNow";
-import WeatherDaily from "@/components/weather/WeatherDaily";
-import WeatherHourly from "@/components/weather/WeatherHourly";
-import WeatherExtraDetails from "@/components/weather/WeatherExtraDetails";
+import PageHeader from "@/components/base/PageHeader.vue";
+import WeatherNow from "@/components/weather/WeatherNow.vue";
+import WeatherDaily from "@/components/weather/WeatherDaily.vue";
+import WeatherHourly from "@/components/weather/WeatherHourly.vue";
+import WeatherExtraDetails from "@/components/weather/WeatherExtraDetails.vue";
 import { mapGetters, mapActions } from "vuex";
 import { formatMixins } from "@/mixins/formatMixins";
 

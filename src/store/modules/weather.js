@@ -1,9 +1,8 @@
-// import apiClient from '@/apiClient';
-import weatherResponse from '@/test-responses/weatherResponse.json';
+import apiClient from '@/apiClient';
 
 function getTimeOfDay(date, timezone) {
   if (date) {
-    let time = new Date(date * 1000).toLocaleTimeString('en-US', { timezone });
+    let time = new Date(date * 1000).toLocaleTimeString('en-US', { timeZone: timezone });
     let hour = time.split(' ')[0].split(':')[0];
     let ampm = time.split(' ')[1];
     return [hour, ampm];
@@ -97,18 +96,18 @@ export default {
       return [];
     },
     currentDetails({ weather }, { hasWeatherData }) {
-      if (hasWeatherData) return weather.daily.data[0];
+      if (hasWeatherData) return { ...weather.daily.data[0], timezone: weather.timezone };
       return {};
     },
   },
   actions: {
-    async getWeather({ commit }, _coordinates) {
+    async getWeather({ commit }, coordinates) {
       commit('SET_IS_LOADING', true);
-      commit('SET_WEATHER', weatherResponse);
-      // await apiClient
-      //   .getWeather(coordinates)
-      //   .then((data) => commit('SET_WEATHER', data))
-      //   .catch((error) => commit('SET_ERROR', error));
+      commit('SET_ERROR', null);
+      await apiClient
+        .getWeather(coordinates)
+        .then((data) => commit('SET_WEATHER', data))
+        .catch((error) => commit('SET_ERROR', error));
       commit('SET_IS_LOADING', false);
     },
     resetState: {

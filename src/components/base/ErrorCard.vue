@@ -49,7 +49,7 @@ export default {
     }"
   >
     <slot>
-      <inline-svg :src="require(`@/assets/illustrations/undraw_warning.svg`)" />
+      <inline-svg src="@/assets/illustrations/undraw_warning.svg" />
     </slot>
     <div>
       <p>{{ message }}</p>

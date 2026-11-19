@@ -1,5 +1,5 @@
 <script>
-import NewsSnippet from "@/components/news/NewsSnippet";
+import NewsSnippet from "@/components/news/NewsSnippet.vue";
 
 export default {
   name: "NewsList",
@@ -13,7 +13,7 @@ export default {
     },
     label: {
       type: String,
-      default: false,
+      default: "",
     },
   },
 };

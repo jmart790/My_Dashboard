@@ -1,6 +1,6 @@
 <script>
-import Skeleton from "@/components/base/Skeleton";
-import SkeletonItem from "@/components/base/SkeletonItem";
+import Skeleton from "@/components/base/Skeleton.vue";
+import SkeletonItem from "@/components/base/SkeletonItem.vue";
 
 export default {
   name: "SkeletonLocalNews",

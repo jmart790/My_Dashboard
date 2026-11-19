@@ -1,67 +1,57 @@
 <script>
-import StarRatings from "@/components/base/StarRatings";
+import streetFood from "@/assets/illustrations/undraw_Street_food.svg?url";
+import breakfast from "@/assets/illustrations/undraw_breakfast.svg?url";
+import cooking from "@/assets/illustrations/undraw_cooking.svg?url";
+
+// OpenStreetMap has no photos, so cards rotate through the food illustrations
+const art = [streetFood, breakfast, cooking];
 
 export default {
-  name: "restaurant",
-  components: { StarRatings },
+  name: "Restaurant",
   props: {
     restaurant: {
       type: Object,
-      Required: true
+      required: true
+    },
+    index: {
+      type: Number,
+      default: 0
     }
   },
   computed: {
-    name: ({ restaurant }) => restaurant.venue.name,
-    neighborhood: ({ restaurant }) => restaurant.venue.location.neighborhood,
-    rating: ({ restaurant }) => restaurant.venue.rating,
-    totalRatings: ({ restaurant }) => restaurant.venue.total_ratings,
-    priceRange: ({ restaurant }) => restaurant.venue.price_range,
-    distance: ({ restaurant }) => restaurant.venue.travel_time.distance,
-    foodType: ({ restaurant }) => restaurant.venue.type,
-    copy: ({ restaurant }) => restaurant.venue.content[0].body,
-    img: ({ restaurant }) => {
-      const fileNames = restaurant.venue.responsive_images.file_names;
-      const urls = restaurant.venue.responsive_images.urls;
-      return urls[fileNames[0]]["1:1"]["200"];
-    }
+    img: ({ index }) => art[index % art.length],
+    details: ({ restaurant }) =>
+      [restaurant.address, restaurant.hours].filter(Boolean).join(" · ") ||
+      "No address or hours listed"
   }
 };
 </script>
 
 <template>
-  <div tabindex="0" class="restaurant">
+  <a
+    class="restaurant"
+    :href="restaurant.url"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
     <img
       :src="img"
-      alt="restaurant image"
-      height="130px"
+      alt=""
+      width="130"
+      height="130"
       class="restaurant__img"
     />
     <div class="restaurant__content">
-      <h4>{{ name }}</h4>
-      <StarRatings
-        class="restaurant__ratings"
-        :rating="rating"
-        :totalRatings="totalRatings"
-      />
+      <h4>{{ restaurant.name }}</h4>
       <p class="restaurant__copy">
-        {{
-          copy ||
-            `A brand new ${foodType} restaurant to embrace the ${neighborhood} scene.`
-        }}
+        {{ details }}
       </p>
       <div class="restaurant__details">
-        <span class="restaurant__type">{{ foodType }}</span>
-        <p>
-          <span
-            v-for="dollar in priceRange"
-            :key="`DOLLAR-SIGN--${dollar}`"
-            class="icon-rewards-solid-dollar-sign"
-          />
-        </p>
-        <span>{{ distance.toFixed(2) }} mi</span>
+        <span class="restaurant__type">{{ restaurant.cuisine }}</span>
+        <span>{{ restaurant.distance.toFixed(2) }} mi</span>
       </div>
     </div>
-  </div>
+  </a>
 </template>
 
 
@@ -77,6 +67,8 @@ export default {
   outline: none !important;
   &__img {
     position: inherit;
+    flex-shrink: 0;
+    object-fit: contain;
     border-radius: $round-1;
   }
   &__content {

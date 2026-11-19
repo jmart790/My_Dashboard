@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import AppLayout from "@/components/AppLayout";
+import AppLayout from "@/components/AppLayout.vue";
 
 export default {
   components: { AppLayout }  
@@ -15,7 +15,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./assets/style.css";
 
 * {
   box-sizing: border-box;

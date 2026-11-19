@@ -1,20 +1,9 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import { createStore } from 'vuex';
 
-Vue.use(Vuex);
+// module name = file name; modules must export default
+const files = import.meta.glob('./modules/*.js', { eager: true, import: 'default' });
+const modules = Object.fromEntries(
+  Object.entries(files).map(([path, mod]) => [path.match(/([^/]+)\.js$/)[1], mod])
+);
 
-// extracts js files inside modules
-const requireModule = require.context("./modules", false, /\.js$/);
-const modules = {}
-
-requireModule.keys().forEach(fileName => {
-	const moduleName = fileName.replace(/(\.\/|\.js)/g, "")
-	// modules must be export default
-	modules[moduleName] = requireModule(fileName).default;
-});
-
-export default new Vuex.Store({
-  nameSpaced: true,
-  modules,
-  strict: process.env.NODE_ENV !== "production"
-});
+export default createStore({ modules, strict: import.meta.env.DEV });

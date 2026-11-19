@@ -28,7 +28,7 @@ export default {
         </p>
         <inline-svg
           class="forecast-icon"
-          :src="require(`@/assets/icons/weather/${forecast.icon}.svg`)"
+          :src="iconUrl(forecast.icon)"
           height="30"
           width="40"
         />

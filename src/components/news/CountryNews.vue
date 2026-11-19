@@ -1,6 +1,6 @@
 <script>
-import NewsSnippet from "@/components/news/NewsSnippet";
-import NewsList from "@/components/news/NewsList";
+import NewsSnippet from "@/components/news/NewsSnippet.vue";
+import NewsList from "@/components/news/NewsList.vue";
 
 export default {
   name: "CountryNews",
@@ -24,11 +24,11 @@ export default {
 <template>
   <div class="national-news card">
     <article class="national-news__main-article">
-      <img :src="news[0].media" alt="Country News Image" />
+      <img :src="news[0].media" alt="" @error="$event.target.style.display = 'none'" />
       <NewsSnippet
         class="national-news__main-article-snippet"
         :article="news[0]"
-        isLarge
+        is-large
       />
     </article>
     <NewsList

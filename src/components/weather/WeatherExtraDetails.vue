@@ -21,11 +21,11 @@ export default {
     </figure>
     <figure>
       <figcaption>Sunrise</figcaption>
-      <p>{{ msToTime(currentDetails.sunriseTime) }}</p>
+      <p>{{ toLocalTime(currentDetails.sunriseTime, currentDetails.timezone) }}</p>
     </figure>
     <figure>
       <figcaption>Sunset</figcaption>
-      <p>{{ msToTime(currentDetails.sunsetTime) }}</p>
+      <p>{{ toLocalTime(currentDetails.sunsetTime, currentDetails.timezone) }}</p>
     </figure>
     <figure>
       <figcaption>Humidty</figcaption>

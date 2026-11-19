@@ -1,13 +1,13 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
-import PageHeader from "@/components/base/PageHeader";
-import CountryNews from "@/components/news/CountryNews";
-import LocalNews from "@/components/news/LocalNews";
-import StateNews from "@/components/news/StateNews";
-import SkeletonLocalNews from "@/components/skeletons/SkeletonLocalNews";
-import SkeletonStateNews from "@/components/skeletons/SkeletonStateNews";
-import SkeletonNationNews from "@/components/skeletons/SkeletonNationNews";
-import ErrorCard from "@/components/base/ErrorCard";
+import PageHeader from "@/components/base/PageHeader.vue";
+import CountryNews from "@/components/news/CountryNews.vue";
+import LocalNews from "@/components/news/LocalNews.vue";
+import StateNews from "@/components/news/StateNews.vue";
+import SkeletonLocalNews from "@/components/Skeletons/SkeletonLocalNews.vue";
+import SkeletonStateNews from "@/components/Skeletons/SkeletonStateNews.vue";
+import SkeletonNationNews from "@/components/Skeletons/SkeletonNationNews.vue";
+import ErrorCard from "@/components/base/ErrorCard.vue";
 
 export default {
   name: "NewsPage",
@@ -22,13 +22,13 @@ export default {
     ErrorCard
   },
   mounted() {
-    if (this.location) this.getNews(this.location);
+    if (this.location.name) this.getNews(this.location);
   },
   watch: {
     location: {
       deep: true,
       handler(location) {
-        this.getNews(location);
+        if (location.name) this.getNews(location);
       }
     }
   },
@@ -44,15 +44,17 @@ export default {
       newsError: "error"
     }),
     isLoading() {
-      return this.locationLoading || this.newsLoading;
+      const { local, state, country } = this.newsLoading;
+      const loc = this.locationLoading;
+      return { local: loc || local, state: loc || state, country: loc || country };
     }
   },
   methods: {
-    ...mapActions("news", ["getLocalNews", "getStateNews", "getCountryNews"]),
-    async getNews({ name, region, country }) {
-      await this.getLocalNews(name);
-      await this.getStateNews(region);
-      await this.getCountryNews(country);
+    ...mapActions("news", { fetchNews: "getNews" }),
+    getNews({ name, region, country }) {
+      this.fetchNews({ key: "local", query: name });
+      this.fetchNews({ key: "state", query: region });
+      this.fetchNews({ key: "country", query: country });
     }
   }
 };
@@ -62,31 +64,36 @@ export default {
   <div class="news">
     <PageHeader class="news__header" title="News" :subtitle="cityState" />
 
-    <SkeletonLocalNews v-if="isLoading" class="news__local" />
+    <SkeletonLocalNews v-if="isLoading.local" class="news__local" />
     <ErrorCard
       v-else-if="newsError.local || news.local.length <= 0"
       class="news__local"
       category="NEWS"
-      :messageOption="1"
-      showRefreshBtn
+      :message-option="1"
+      show-refresh-btn
       @request-data="getNews(location)"
     >
       <inline-svg
-        :src="require(`@/assets/illustrations/undraw_newspaper.svg`)"
+        src="@/assets/illustrations/undraw_newspaper.svg"
       />
     </ErrorCard>
-    <LocalNews v-else label="Local" :news="news.local" class="news__local" />
+    <LocalNews
+      v-else
+      label="Local"
+      :news="news.local"
+      class="news__local"
+    />
 
-    <SkeletonNationNews v-if="isLoading" class="news__country" />
+    <SkeletonNationNews v-if="isLoading.country" class="news__country" />
     <ErrorCard
       v-else-if="newsError.country || news.country.length <= 0"
       class="news__country"
       category="NEWS"
-      :messageOption="2"
-      isVertical
+      :message-option="2"
+      is-vertical
     >
       <inline-svg
-        :src="require(`@/assets/illustrations/undraw_Sharing_articles.svg`)"
+        src="@/assets/illustrations/undraw_Sharing_articles.svg"
       />
     </ErrorCard>
     <CountryNews
@@ -96,15 +103,20 @@ export default {
       class="news__country"
     />
 
-    <SkeletonStateNews v-if="isLoading" class="news__state" />
+    <SkeletonStateNews v-if="isLoading.state" class="news__state" />
     <ErrorCard
       v-else-if="newsError.state || news.state.length <= 0"
       class="news__state"
       category="NEWS"
-      :messageOption="3"
-      isReverse
+      :message-option="3"
+      is-reverse
     />
-    <StateNews v-else label="State" :news="news.state" class="news__state" />
+    <StateNews
+      v-else
+      label="State"
+      :news="news.state"
+      class="news__state"
+    />
   </div>
 </template>
 

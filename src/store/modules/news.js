@@ -1,51 +1,36 @@
 import apiClient from '@/apiClient';
 
+const sections = () => ({ local: [], state: [], country: [] });
+const flags = (value) => ({ local: value, state: value, country: value });
+
 const getDefaultState = () => ({
-  news: {
-    local: [],
-    state: [],
-    country: [],
-  },
-  error: {
-    local: false,
-    state: false,
-    country: false,
-  },
-  isLoading: false,
+  news: sections(),
+  error: flags(false),
+  isLoading: flags(false),
 });
 
 function filterArticles(articles) {
-  if (articles.length < 1) return [];
-  const articlesWithContent = articles.filter(
-    (article) => article.media && article.clean_url && article.title && article.summary
-  );
   const seen = new Set();
-  const articlesWithoutDupes = articlesWithContent.filter((article) => {
+  return articles.filter((article) => {
+    if (!(article.media && article.title && article.summary)) return false;
     const duplicate = seen.has(article.title);
     seen.add(article.title);
     return !duplicate;
   });
-  return articlesWithoutDupes;
 }
 
 export default {
   namespaced: true,
   state: getDefaultState(),
   mutations: {
-    SET_LOCAL_NEWS(state, value) {
-      state.news.local = value;
+    SET_NEWS(state, { key, value }) {
+      state.news[key] = value;
     },
-    SET_STATE_NEWS(state, value) {
-      state.news.state = value;
+    SET_IS_LOADING(state, { key, value }) {
+      state.isLoading[key] = value;
     },
-    SET_COUNTRY_NEWS(state, value) {
-      state.news.country = value;
-    },
-    SET_IS_LOADING(state, value) {
-      state.isLoading = value;
-    },
-    SET_ERROR(state, { key, error }) {
-      state[key] = error;
+    SET_ERROR(state, { key, value }) {
+      state.error[key] = value;
     },
     RESET_DATA(state) {
       Object.assign(state, getDefaultState());
@@ -57,35 +42,15 @@ export default {
     news: (state) => state.news,
   },
   actions: {
-    async getLocalNews({ commit }, payload) {
-      commit('SET_IS_LOADING', true);
+    /** key is local | state | country, query is the place name to search */
+    async getNews({ commit }, { key, query }) {
+      commit('SET_IS_LOADING', { key, value: true });
+      commit('SET_ERROR', { key, value: false });
       await apiClient
-        .getNewsByLocation(payload)
-        .then((data) => commit('SET_LOCAL_NEWS', filterArticles(data.articles)))
-        .catch(({ response }) => commit('SET_ERROR', { response, errorType: 'local' }));
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      commit('SET_ERROR', { key: 'local', error: false });
-      commit('SET_IS_LOADING', false);
-    },
-    async getStateNews({ commit }, payload) {
-      commit('SET_IS_LOADING', true);
-      await apiClient
-        .getNewsByLocation(payload)
-        .then((data) => commit('SET_STATE_NEWS', filterArticles(data.articles)))
-        .catch(({ response }) => commit('SET_ERROR', { response, errorType: 'state' }));
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      commit('SET_ERROR', { key: 'state', error: false });
-      commit('SET_IS_LOADING', false);
-    },
-    async getCountryNews({ commit }, payload) {
-      commit('SET_IS_LOADING', true);
-      await apiClient
-        .getNewsByLocation(payload)
-        .then((data) => commit('SET_COUNTRY_NEWS', filterArticles(data.articles)))
-        .catch(({ response }) => commit('SET_ERROR', { response, errorType: 'country' }));
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      commit('SET_ERROR', { key: 'country', error: false });
-      commit('SET_IS_LOADING', false);
+        .getNewsByLocation(query)
+        .then((data) => commit('SET_NEWS', { key, value: filterArticles(data.articles) }))
+        .catch(() => commit('SET_ERROR', { key, value: true }));
+      commit('SET_IS_LOADING', { key, value: false });
     },
     resetState: {
       root: true,

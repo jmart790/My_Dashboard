@@ -1,6 +1,6 @@
 <script>
-import NewsSnippet from "@/components/news/NewsSnippet";
-import NewsList from "@/components/news/NewsList";
+import NewsSnippet from "@/components/news/NewsSnippet.vue";
+import NewsList from "@/components/news/NewsList.vue";
 
 export default {
   name: "LocalNews",
@@ -20,11 +20,11 @@ export default {
 <template>
   <div class="local-news card">
     <article class="local-news__main-article">
-      <img :src="news[0].media" alt="Local News Image" />
+      <img :src="news[0].media" alt="" @error="$event.target.style.display = 'none'" />
       <NewsSnippet
         class="local-news__main-article-snippet"
         :article="news[0]"
-        isLarge
+        is-large
       />
     </article>
     <NewsList

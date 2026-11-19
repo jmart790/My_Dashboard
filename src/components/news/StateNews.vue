@@ -1,6 +1,6 @@
 <script>
-import NewsSnippet from "@/components/news/NewsSnippet";
-import NewsList from "@/components/news/NewsList";
+import NewsSnippet from "@/components/news/NewsSnippet.vue";
+import NewsList from "@/components/news/NewsList.vue";
 
 export default {
   name: "StateNews",
@@ -28,7 +28,7 @@ export default {
       <NewsSnippet
         class="state-news__main-article-snippet"
         :article="news[0]"
-        showImage
+        show-image
       />
     </article>
   </div>

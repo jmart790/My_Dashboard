@@ -1,10 +1,8 @@
 import apiClient from '@/apiClient';
-// import locationResponse from '@/test-responses/locationResponse';
 
 const getDefaultState = () => ({
   location: {
     country: '',
-    localtime: '',
     name: '',
     region: '',
     lat: '',
@@ -38,7 +36,6 @@ export default {
   getters: {
     error: (state) => state.error,
     isLoading: (state) => state.isLoading,
-    weather: (state) => state.weather,
     location: (state) => state.location,
     coordinates: ({ location }) => ({ lat: location.lat, lon: location.lon }),
     cityState: ({ location }) => `${location.name}, ${location.region}`,
@@ -47,7 +44,7 @@ export default {
   actions: {
     async getLocation({ commit }, zipcode) {
       commit('SET_IS_LOADING', true);
-      // commit('SET_LOCATION', locationResponse.location);
+      commit('SET_ERROR', null);
       await apiClient
         .getLocation(zipcode)
         .then((data) => commit('SET_LOCATION', data.location))

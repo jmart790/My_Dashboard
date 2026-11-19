@@ -1,13 +1,7 @@
 export const formatMixins = {
 	methods: {
-    msToTime(time) {
-      var date = new Date(time);
-        let hours = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
-        const am_pm = date.getHours() >= 12 ? "PM" : "AM";
-        hours = hours < 10 ? "0" + hours : hours;
-        const minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
-        const result = `${hours}:${minutes} ${am_pm}`;
-        return result
+    toLocalTime(seconds, timeZone) {
+      return new Date(seconds * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone });
     },
     formatPercent(percent) {
       return `${Math.round(percent * 100)}%`;

@@ -27,7 +27,7 @@ export default {
         <div class="weather-daily__icon-group">
           <inline-svg
             class="weather-daily__icon"
-            :src="require(`@/assets/icons/weather/${forecast.icon}.svg`)"
+            :src="iconUrl(forecast.icon)"
             height="25"
             width="30"
           />
@@ -37,8 +37,12 @@ export default {
             </span>
           </p>
         </div>
-        <p class="weather-daily__detail"><span>H</span> {{ forecast.high }}°</p>
-        <p class="weather-daily__detail"><span>L</span> {{ forecast.low }}°</p>
+        <p class="weather-daily__detail">
+          <span>H</span> {{ forecast.high }}°
+        </p>
+        <p class="weather-daily__detail">
+          <span>L</span> {{ forecast.low }}°
+        </p>
         <p class="weather-daily__detail">
           <span class="icon-humidity" />{{ formatPercent(forecast.humidity) }}
         </p>

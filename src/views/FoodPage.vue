@@ -1,7 +1,7 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
-import PageHeader from "@/components/base/PageHeader";
-import RestaurantList from "@/components/food/RestaurantList";
+import PageHeader from "@/components/base/PageHeader.vue";
+import RestaurantList from "@/components/food/RestaurantList.vue";
 
 export default {
   name: "FoodPage",
@@ -25,10 +25,9 @@ export default {
     ...mapGetters("restaurants", ["restaurants"])
   },
   methods: {
-    ...mapActions("restaurants", ["getRestaurants", "getFeaturedRestaurant"]),
-    async getRestaurantsData({ lat, lon, localtime }) {
-      const payload = { lat, long: lon, day: localtime.split(" ")[0] };
-      await this.getRestaurants(payload);
+    ...mapActions("restaurants", ["getRestaurants"]),
+    getRestaurantsData({ lat, lon }) {
+      return this.getRestaurants({ lat, lon });
     }
   }
 };
@@ -36,9 +35,13 @@ export default {
 <template>
   <div class="food-page">
     <PageHeader class="food-page__header" title="Food" :subtitle="cityState" />
-    <div class="food-page__featured card">Featured</div>
+    <div class="food-page__featured card">
+      Featured
+    </div>
     <RestaurantList class="food-page__extra" :restaurants="restaurants" />
-    <div class="food-page__map card">map</div>
+    <div class="food-page__map card">
+      map
+    </div>
   </div>
 </template>
 

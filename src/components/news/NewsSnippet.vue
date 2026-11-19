@@ -20,7 +20,12 @@ export default {
 
 <template>
   <div class="news-snippet" :class="{ 'news-snippet--large': isLarge }">
-    <img v-if="showImage" :src="article.media" alt="Article Image" />
+    <img
+      v-if="showImage"
+      :src="article.media"
+      alt=""
+      @error="$event.target.style.display = 'none'"
+    />
     <h4>{{ article.title }}</h4>
     <p>{{ article.summary }}</p>
     <a :href="article.link || '#'" target="_blank" rel="noopener noreferrer">

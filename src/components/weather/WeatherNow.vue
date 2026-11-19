@@ -1,9 +1,10 @@
 <script>
 import { formatMixins } from '@/mixins/formatMixins';
+import { weatherMixins } from '@/mixins/weatherMixins';
 
 export default {
   name: 'WeatherNow',
-  mixins: [formatMixins],
+  mixins: [formatMixins, weatherMixins],
   props: {
     time: {
       type: String,
@@ -33,7 +34,7 @@ export default {
     <div class="weather-now__icon-summary">
       <inline-svg
         class="weather-now__icon"
-        :src="require(`@/assets/icons/weather/${currentWeather.icon}.svg`)"
+        :src="iconUrl(currentWeather.icon)"
         title="My Image"
         height="130"
       />

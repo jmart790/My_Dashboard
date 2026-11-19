@@ -1,6 +1,3 @@
-@import "./colors";
-@import "./sizes";
-@import "./font";
-@import "./ctas";
-@import "./layouts";
-@import "./utilities";
+@use "font";
+@use "layouts";
+@use "utilities";
