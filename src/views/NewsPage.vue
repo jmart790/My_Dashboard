@@ -62,7 +62,7 @@ export default {
 
 <template>
   <div class="news">
-    <PageHeader class="news__header" title="News" :subtitle="cityState" />
+    <PageHeader class="news__header" title="The Daily Report" :subtitle="cityState" />
 
     <SkeletonLocalNews v-if="isLoading.local" class="news__local" />
     <ErrorCard

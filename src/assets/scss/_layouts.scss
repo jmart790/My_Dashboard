@@ -1,18 +1,52 @@
 @use "vars" as *;
+
+// A boxed newspaper column: hairline frame with a heavy rule across the top.
 .card {
-    width: 100%;
-    padding: $gap-6;
-    border-radius: $round-2;
-    box-shadow: $main-shadow;
-    background: $card-bg-color;
-    overflow: hidden;
-    &__header {
-      font-size: 20px;
-      color: $white;
-    }
-    &__subheader {
-      font-family: $base-font;
-      font-size: 18px;
-      font-weight: 400;
-    }
+  width: 100%;
+  padding: $gap-5;
+  border: 1px solid $ink;
+  border-top-width: 4px;
+  border-radius: 0;
+  background: $card-bg-color;
+  overflow: hidden;
+  &__header {
+    font-size: 20px;
   }
+  &__subheader {
+    font-family: $base-font;
+    font-size: 18px;
+    font-weight: 400;
+  }
+}
+
+// Section kicker above a column: "MORE LOCAL NEWS" with a rule under it
+.kicker {
+  margin-bottom: $gap-3;
+  padding-bottom: $gap-1;
+  border-bottom: 1px solid $ink;
+  font-family: $heading-font;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+// newsprint scrollbars: thin ink thumb on a light rail
+.ink-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: $ink transparent;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $ink;
+    border-radius: 0;
+  }
+}
+
+// The weather icons were drawn for a dark background (white-to-lavender fills). A
+// thin ink keyline makes them read on newsprint while keeping their colors.
+.ink-keyline {
+  filter: drop-shadow(1px 0 0 $ink) drop-shadow(-1px 0 0 $ink) drop-shadow(0 1px 0 $ink)
+    drop-shadow(0 -1px 0 $ink);
+}

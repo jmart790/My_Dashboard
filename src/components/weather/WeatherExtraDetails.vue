@@ -15,6 +15,9 @@ export default {
 
 <template>
   <div class="weather-details card">
+    <h3 class="kicker weather-details__kicker">
+      The Almanac
+    </h3>
     <figure>
       <figcaption>Daily Summary</figcaption>
       <p>{{ currentDetails.summary }}</p>
@@ -53,6 +56,9 @@ export default {
   gap: $gap-4;
   background: unset !important;
   box-shadow: unset !important;
+  &__kicker {
+    grid-column: 1/-1;
+  }
   figure {
     &:first-of-type {
       grid-column: 1/-1;
@@ -62,7 +68,7 @@ export default {
       font-size: 14px;
     }
     p {
-      color: $white;
+      color: $ink;
     }
   }
 

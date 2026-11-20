@@ -56,8 +56,8 @@ export default {
 
   height: $height;
   width: $width;
-  border-radius: $round-1;
-  background-color: #9ea6ac;
+  border-radius: 0;
+  background-color: $paper-deep;
 
   &--square,
   &--circle {
@@ -69,7 +69,7 @@ export default {
   }
   &--text {
     margin-bottom: 12px;
-    border-radius: $round-1;
+    border-radius: 0;
     &:last-of-type {
       margin-bottom: unset;
       width: calc(var(--width) * 0.8);

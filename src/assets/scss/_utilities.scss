@@ -30,29 +30,36 @@
   display: inline-flex;
   align-items: center;
   gap: $gap-1;
-  padding: $gap-1 $gap-3;
-  border: 1px solid $grey-6;
-  border-radius: 999px;
+  padding: 3px $gap-3;
+  border: 1px solid $ink;
+  border-radius: 0;
   background: transparent;
-  color: $grey-2;
-  font-size: 13px;
-  text-transform: capitalize;
+  color: $ink;
+  font-family: $heading-font;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   white-space: nowrap;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition: background 0.15s, color 0.15s;
   &:hover {
-    border-color: $grey-4;
+    background: $paper-dark;
   }
   &:focus-visible {
     outline: none;
     box-shadow: $focus-shadow;
   }
+  // pressed reads as reversed type: paper on ink
   &[aria-pressed="true"] {
-    background: $salmon;
-    border-color: $salmon;
-    color: $white;
+    background: $ink;
+    color: $paper;
+    .chip__count {
+      color: $paper;
+    }
   }
   &__count {
+    font-family: $heading-font;
     font-size: 11px;
     opacity: 0.7;
   }

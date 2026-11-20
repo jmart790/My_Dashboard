@@ -43,7 +43,7 @@ export default {
     object-fit: cover;
     height: 150px;
     width: 100%;
-    border-radius: 20px;
+    border-radius: 0;
   }
   h4 {
     margin-bottom: $gap-2;
@@ -51,7 +51,7 @@ export default {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     overflow: hidden;
-    color: $white;
+    color: $ink;
   }
   p {
     margin-bottom: $gap-2;
@@ -65,17 +65,19 @@ export default {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    color: $primary;
+    color: $ink;
+    font-family: $heading-font;
+    font-style: italic;
+    text-decoration: underline;
+    text-underline-offset: 3px;
     transition: color 0.2s;
     b {
       margin-left: $gap-2;
       color: inherit;
+      font-style: normal;
     }
     &:hover {
-      color: $primary-lt;
-      span {
-        color: $white;
-      }
+      color: $spot;
     }
     span {
       transition: color 0.2s;

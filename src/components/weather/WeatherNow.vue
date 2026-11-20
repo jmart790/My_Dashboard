@@ -28,12 +28,12 @@ export default {
 
 <template>
   <div class="weather-now card">
-    <p class="weather-now__time">
-      {{ time }}
-    </p>
+    <h3 class="kicker weather-now__time">
+      Conditions Now · {{ time }}
+    </h3>
     <div class="weather-now__icon-summary">
       <inline-svg
-        class="weather-now__icon"
+        class="weather-now__icon ink-keyline"
         :src="iconUrl(currentWeather.icon)"
         title="My Image"
         height="130"
@@ -77,7 +77,7 @@ export default {
   grid-template-rows: auto 200px auto auto;
 
   .flip-icon {
-    color: $grey-2;
+    color: $ink;
     transition: color 0.3s ease;
   }
   &__time {
@@ -100,14 +100,14 @@ export default {
       font-size: 80px;
       font-weight: 300;
       line-height: 0.75;
-      color: $white;
+      color: $ink;
     }
     &__meta {
       display: grid;
       grid-template-columns: 2rem 1fr;
       grid-row-gap: 0.5rem;
       span {
-        color: $grey-2;
+        color: $ink;
       }
     }
   }
@@ -127,7 +127,7 @@ export default {
     white-space: nowrap;
     &__icon {
       margin-right: 0.5rem;
-      color: $yellow !important;
+      color: $spot !important;
     }
   }
 }

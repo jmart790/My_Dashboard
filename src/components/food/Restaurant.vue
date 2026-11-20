@@ -82,7 +82,7 @@ export default {
   padding: $gap-2;
   gap: $gap-4;
   border: 0;
-  border-radius: $round-1;
+  border-radius: 0;
   background: none;
   color: inherit;
   font: inherit;
@@ -99,7 +99,7 @@ export default {
     // 130px leaves no room for text on phones
     width: 88px;
     height: 88px;
-    border-radius: $round-1;
+    border-radius: 0;
     @media screen and (min-width: $tablet) {
       width: 130px;
       height: 130px;
@@ -146,23 +146,27 @@ export default {
     display: inline-flex;
     align-items: center;
     gap: $gap-2;
-    background: $grey-6;
-    padding: $gap-1 $gap-2;
-    border-radius: 7px;
-    text-transform: capitalize;
+    background: $paper-dark;
+    padding: 2px $gap-2;
+    border-radius: 0;
+    font-family: $heading-font;
+    font-size: 11px !important;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
   &__dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
     &--open {
-      background: $forest;
+      background: $ink;
     }
     &--closed {
-      background: $red-2;
+      background: $spot;
     }
     &--unknown {
-      background: $grey-4;
+      border: 1px solid $ink-muted; // hollow: no hours listed
     }
   }
   &::before {
@@ -172,8 +176,8 @@ export default {
     top: 0;
     width: 100%;
     height: 100%;
-    background: $dark;
-    border-radius: $round-1;
+    background: $paper-dark;
+    border-radius: 0;
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
   }
@@ -184,7 +188,7 @@ export default {
   }
   // the ring lives on the overlay: a shadow on the button itself would sit under it
   &--featured::before {
-    box-shadow: inset 0 0 0 2px $salmon;
+    box-shadow: inset 0 0 0 2px $spot;
   }
 }
 </style>

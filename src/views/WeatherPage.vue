@@ -70,7 +70,7 @@ export default {
 
 <template>
   <div class="weather">
-    <PageHeader class="weather__header" title="Weather" :subtitle="cityState" />
+    <PageHeader class="weather__header" title="Today's Forecast" :subtitle="cityState" />
     <template v-if="status === 'loading'">
       <Skeleton class="weather__now">
         <SkeletonItem height="180px" width="100%" />

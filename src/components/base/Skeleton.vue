@@ -14,13 +14,13 @@ export default {
 <style lang="scss">
 .skeleton {
   @mixin background-gradient {
-    background: #656871;
+    background: $paper-dark;
     background-image: linear-gradient(
       to right,
-      #656871 0%,
-      #888b94 20%,
-      #656871 40%,
-      #656871 100%
+      $paper-dark 0%,
+      $paper 20%,
+      $paper-dark 40%,
+      $paper-dark 100%
     );
     background-size: 150%;
     background-repeat: no-repeat;
@@ -39,8 +39,9 @@ export default {
   height: auto;
   width: 100%;
   padding: $gap-6;
-  border-radius: $round-2;
-  background: #414247;
+  border-radius: 0;
+  border: 1px solid $rule-soft;
+  background: transparent;
   overflow: hidden;
 
   &::before {
@@ -53,7 +54,7 @@ export default {
     @include background-gradient;
     animation: placeHolderShimmer 1s infinite linear;
     animation-fill-mode: forwards;
-    mix-blend-mode: darken;
+    mix-blend-mode: multiply;
   }
 }
 </style>

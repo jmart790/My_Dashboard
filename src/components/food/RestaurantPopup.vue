@@ -96,7 +96,7 @@ export default {
     padding: $gap-4;
   }
   &__name {
-    color: $white;
+    color: $ink;
     font-size: 18px;
     line-height: 1.2;
     text-transform: capitalize;
@@ -106,28 +106,34 @@ export default {
     flex-wrap: wrap;
     gap: $gap-2;
   }
+  // printed stamps: bordered small caps
   &__tag,
   &__status {
-    padding: 2px $gap-2;
-    border-radius: 6px;
-    font-size: 12px;
-    text-transform: capitalize;
+    padding: 1px $gap-2;
+    border: 1px solid transparent;
+    border-radius: 0;
+    font-family: $heading-font;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
   &__tag {
-    background: $grey-6;
+    background: $paper-dark;
   }
   &__status {
     &--open {
-      background: rgba($forest, 0.2);
-      color: $forest-lt;
+      border-color: $ink;
+      color: $ink;
     }
     &--closed {
-      background: rgba($red-2, 0.2);
-      color: $red-lt;
+      border-color: $spot;
+      color: $spot;
     }
     &--unknown {
-      background: $grey-7;
-      color: $grey-3;
+      border-color: $rule-soft;
+      border-style: dashed;
+      color: $ink-muted;
     }
   }
   &__facts {
@@ -140,7 +146,7 @@ export default {
       gap: $gap-2;
     }
     dt {
-      color: $grey-4;
+      color: $ink-muted;
       font-size: 12px;
       margin: 0;
     }
@@ -158,7 +164,9 @@ export default {
     margin-top: $gap-1;
   }
   &__link {
-    color: $salmon-lt !important;
+    color: $ink !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
     font-size: 13px;
     font-weight: 600;
     &:hover {

@@ -14,48 +14,7 @@ export default {
 </script>
 <template>
   <div class="home page">
-    <PageHeader title="Dashboard" :subtitle="cityState" />
+    <PageHeader title="The Front Page" :subtitle="cityState" />
   </div>
 </template>
 
-<style lang="scss">
-.home {
-  &__search {
-    position: relative;
-    display: flex;
-    align-items: center;
-    width: 200px;
-    padding: $gap-1 $gap-4;
-    border-radius: 50px;
-    background: $main-gradiant;
-    box-shadow: $main-shadow;
-    button {
-      margin-right: $gap-4;
-      background: $third-gradiant;
-      border-radius: 100%;
-      border: none;
-      outline: none;
-      height: 30px;
-      width: 30px;
-      span {
-        color: #878A94;
-        font-size: 12px;
-      }
-      &:hover {
-        cursor: pointer;
-        background: $second-gradiant;
-      }
-    }
-    input {
-      outline: none;
-      background: transparent;
-      border: none;
-      width: 100%;
-    }
-    &:focus-within {
-      box-shadow: $focus-shadow;
-    }
-  }
-}
-
-</style>

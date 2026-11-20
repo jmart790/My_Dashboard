@@ -57,21 +57,29 @@ $second-gradiant:         linear-gradient(45deg, #22262D 15%, #101115 100%);
 $third-gradiant:          linear-gradient(45deg, #2D3038 25%, #1F2228 100%);
 $theme-gradiant:          linear-gradient(45deg #ca473b, #ff9c93);
 $shadow:                rgba(0, 0, 0, 0.16);
-$main-shadow:             0 2.8px 2.2px rgba(0, 0, 0, 0.034),
-                          0 6.7px 5.3px rgba(0, 0, 0, 0.048),
-                          0 12.5px 10px rgba(0, 0, 0, 0.06),
-                          0 22.3px 17.9px rgba(0, 0, 0, 0.072),
-                          0 41.8px 33.4px rgba(0, 0, 0, 0.086);
-$secondary-shadow:        0px 7px 10px rgba(black, 0.5);
-$focus-shadow:            0 3px 3px $salmon-lt, 0px -3px 3px $salmon-lt, 3px 0 3px $salmon-lt, -3px 0 3px $salmon-lt;
 
 
-// Color Assignments 
-$app-bg:                  $dark;
-$card-bg-color:           $main-gradiant;
-$nav-btn-gradiant:        $second-gradiant;
-$primary:                 $salmon;
-$primary-lt:              $salmon-lt;
-$primary-dk:              $salmon-dk;
-$danger:                  $apricot;
+// The iHerald newsprint palette: ink on off-white, one spot red used sparingly.
+// Photos and icons keep their own colors.
+$paper:                   #f3eee3;  // page background
+$paper-dark:              #e6dfcf;  // hover, insets, tags
+$paper-deep:              #d6ccb6;  // skeleton shimmer
+$ink:                     #161514;  // text, rules, solid fills
+$ink-soft:                #3a3631;  // secondary text
+$ink-muted:               #6e685d;  // captions, labels
+$rule-soft:               #b9af9a;  // light dividers
+$spot:                    #b0261c;  // newspaper red: active, featured, closed
+$spot-dk:                 #861b13;
 
+// Color Assignments
+$app-bg:                  $paper;
+$card-bg-color:           transparent;
+$nav-btn-gradiant:        none;
+$primary:                 $spot;
+$primary-lt:              $spot;
+$primary-dk:              $spot-dk;
+$danger:                  $spot;
+// flat print: no glow or drop shadows; focus is a crisp ink ring
+$main-shadow:             none;
+$secondary-shadow:        none;
+$focus-shadow:            0 0 0 2px $paper, 0 0 0 4px $ink;

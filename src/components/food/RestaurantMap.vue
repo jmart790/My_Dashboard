@@ -23,8 +23,8 @@ const visibleFeatured = computed(() =>
   restaurants.value.find((r) => r.id === featured.value?.id) || null
 );
 
-// Theme colors ($salmon-lt, $salmon, $dark); circle markers need no image assets
-const PIN = { fill: "#ff9c93", featured: "#ff6f61", stroke: "#22262D" };
+// Newsprint pins ($ink dots, $spot for the pick, $paper outline); circle markers need no images
+const PIN = { fill: "#161514", featured: "#b0261c", stroke: "#f3eee3" };
 
 // The popup's DOM node: Leaflet positions it, Vue teleports RestaurantPopup into it.
 const popupEl = document.createElement("div");
@@ -227,19 +227,22 @@ onBeforeUnmount(() => {
     align-items: center;
     gap: $gap-2;
     padding: $gap-2 $gap-4;
-    border: 0;
-    border-radius: 999px;
-    background: $salmon;
-    color: $white;
-    box-shadow: $secondary-shadow;
-    font: inherit;
-    font-weight: 600;
+    border: 1px solid $ink;
+    border-radius: 0;
+    background: $ink;
+    color: $paper;
+    font-family: $heading-font;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     cursor: pointer;
     span {
       color: inherit;
     }
     &:hover {
-      background: $salmon-dk;
+      background: $spot;
+      border-color: $spot;
     }
     &:focus-visible {
       outline: none;
@@ -255,8 +258,8 @@ onBeforeUnmount(() => {
     flex: 1;
     width: 100%;
     min-height: 60vh;
-    border-radius: $round-2 - $gap-2;
-    background: $grey-8;
+    border-radius: 0;
+    background: $paper;
     @media screen and (min-width: $laptop) {
       min-height: 0; // fills the viewport-tall grid row instead
     }
@@ -272,32 +275,34 @@ onBeforeUnmount(() => {
     &__dot {
       inset: 3px;
       background: $royal-lt;
-      border: 3px solid $white;
-      box-shadow: 0 0 0 1px rgba($dark, 0.4), 0 2px 6px rgba($dark, 0.5);
+      border: 3px solid $paper;
+      box-shadow: 0 0 0 1px rgba($ink, 0.5), 0 2px 6px rgba($ink, 0.35);
     }
     &__pulse {
       background: rgba($royal-lt, 0.35);
       animation: user-location-pulse 2s ease-out infinite;
     }
   }
-  // Dark tiles to match the app; markers, popups and attribution stay untouched
+  // Printed-map look: grayscale tiles warmed toward the paper; pins and popups stay untouched
   .leaflet-tile-pane {
-    filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9);
+    filter: grayscale(1) sepia(0.15) contrast(0.95) brightness(1.02);
   }
   .leaflet-control-attribution {
-    background: rgba($dark, 0.8);
-    color: $grey-3;
+    background: rgba($paper, 0.85);
+    color: $ink-muted;
     a {
-      color: $salmon-lt;
+      color: $spot;
     }
   }
   .restaurant-popup {
     .leaflet-popup-content-wrapper {
       padding: 0;
-      border-radius: $round-1;
-      background: $grey-8;
-      color: $grey-2;
-      box-shadow: $main-shadow;
+      border-radius: 0;
+      border: 1px solid $ink;
+      border-top-width: 4px;
+      background: $paper;
+      color: $ink;
+      box-shadow: 4px 4px 0 rgba($ink, 0.18); // a flat offset, like a pasted-up clipping
       overflow: hidden;
     }
     .leaflet-popup-content {
@@ -306,7 +311,7 @@ onBeforeUnmount(() => {
       line-height: 1.4;
     }
     .leaflet-popup-tip {
-      background: $grey-8;
+      background: $ink;
     }
     .leaflet-popup-close-button {
       z-index: 1;
@@ -315,12 +320,12 @@ onBeforeUnmount(() => {
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: rgba($dark, 0.7);
-      color: $white;
+      background: rgba($ink, 0.82);
+      color: $paper;
       font-size: 20px;
       line-height: 26px;
       &:hover {
-        color: $salmon-lt;
+        color: $spot;
       }
     }
   }

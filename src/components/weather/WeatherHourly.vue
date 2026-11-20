@@ -15,6 +15,9 @@ export default {
 
 <template>
   <div class="weather-hourly card">
+    <h3 class="kicker">
+      Hour by Hour
+    </h3>
     <ul class="weather-hourly__forecasts">
       <li v-for="(forecast, id) in hourlyForecast" :key="`HOURLYFORECAST${id}`">
         <p class="forecast-hour">
@@ -27,7 +30,7 @@ export default {
           </span>
         </p>
         <inline-svg
-          class="forecast-icon"
+          class="forecast-icon ink-keyline"
           :src="iconUrl(forecast.icon)"
           height="30"
           width="40"
@@ -66,7 +69,7 @@ export default {
     }
   }
   .forecast-precipitation span {
-    color: $sky;
+    color: $ink-soft;
     font-size: 12px;
   }
   &__temp {

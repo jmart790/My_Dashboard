@@ -16,6 +16,9 @@ export default {
 
 <template>
   <div class="weather-daily card">
+    <h3 class="kicker">
+      The Week Ahead
+    </h3>
     <ul class="weather-daily__forecasts">
       <li
         v-for="(forecast, index) in dailyForecast"
@@ -26,7 +29,7 @@ export default {
         </p>
         <div class="weather-daily__icon-group">
           <inline-svg
-            class="weather-daily__icon"
+            class="weather-daily__icon ink-keyline"
             :src="iconUrl(forecast.icon)"
             height="25"
             width="30"
@@ -100,7 +103,7 @@ export default {
     margin-right: $gap-1;
   }
   .forecast-precipitation span {
-    color: $sky;
+    color: $ink-soft;
     font-size: 12px;
   }
   &__detail span {

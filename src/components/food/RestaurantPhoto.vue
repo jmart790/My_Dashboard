@@ -113,7 +113,7 @@ export default {
   margin: 0;
   overflow: hidden;
   &--loading {
-    background: linear-gradient(90deg, $grey-7 0%, $grey-6 50%, $grey-7 100%);
+    background: linear-gradient(90deg, $paper-dark 0%, $rule-soft 50%, $paper-dark 100%);
     background-size: 200% 100%;
     animation: r-photo-shimmer 1.2s infinite linear;
   }
@@ -135,9 +135,11 @@ export default {
     bottom: 6px;
     max-width: calc(100% - 12px);
     padding: 2px 6px;
-    border-radius: 6px;
-    background: rgba($dark, 0.75);
-    color: $grey-2;
+    border-radius: 0;
+    background: rgba($ink, 0.82);
+    color: $paper;
+    font-family: $heading-font;
+    letter-spacing: 0.04em;
     font-size: 11px;
     line-height: 1.4;
     white-space: nowrap;

@@ -60,8 +60,8 @@ export default {
   &__snippets {
     height: 100%;
     padding: $gap-6;
-    border-radius: $round-1;
-    background-color: #3b3c40;
+    border-radius: 0;
+    background-color: $paper-dark;
     @media screen and (min-width: $laptop-lg) {
       height: 100%;
       grid-column: 1/2;

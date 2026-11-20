@@ -53,7 +53,7 @@ export default {
       width: -webkit-fill-available;
       object-fit: cover;
       object-position: center;
-      border-radius: $round-1;
+      border-radius: 0;
     }
   }
   &__list {

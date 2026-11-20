@@ -148,22 +148,24 @@ export default {
   @media screen and (min-width: $laptop-lg) {
     margin-bottom: $gap-8;
   }
+  // headline with its dateline underneath, at every width
   &__title-group {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    @media screen and (min-width: 500px) {
-      display: unset;
-    }
+    display: block;
   }
+  // the section's headline, with the city as its dateline underneath
   &__title {
-    font-size: 24px;
-    letter-spacing: 2px;
-    color: $white;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.05;
+    color: $ink;
   }
   &__sub-title {
-    font-family: $base-font;
-    font-weight: 400;
+    margin-top: $gap-1;
+    font-family: $heading-font;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $ink-muted;
   }
   &__controls {
     position: relative;
@@ -181,14 +183,16 @@ export default {
     flex-shrink: 0;
     display: grid;
     place-items: center;
-    border: 0;
+    border: 1px solid $ink;
     border-radius: 50%;
-    background: $main-gradiant;
-    box-shadow: $main-shadow;
+    background: transparent;
     cursor: pointer;
     transition: background 0.2s;
+    &:hover {
+      background: $paper-dark;
+    }
     span {
-      color: #878a94;
+      color: $ink;
       font-size: 20px;
       transition: color 0.2s;
     }
@@ -231,9 +235,9 @@ export default {
     display: flex;
     align-items: center;
     padding: $gap-1 $gap-3;
-    border-radius: 50px;
-    background: $main-gradiant;
-    box-shadow: $main-shadow;
+    border: 1px solid $ink;
+    border-radius: 0;
+    background: transparent;
     @media screen and (min-width: $tablet) {
       flex: none;
       width: 200px;
@@ -252,12 +256,12 @@ export default {
         margin-right: $gap-4;
       }
       span {
-        color: #878a94;
+        color: $ink;
         font-size: 12px;
       }
       &:hover {
         cursor: pointer;
-        background: $third-gradiant;
+        background: $paper-dark;
       }
     }
     input {
@@ -266,6 +270,12 @@ export default {
       border: none;
       width: 100%;
       min-width: 0;
+      font-family: $heading-font;
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      &::placeholder {
+        color: $ink-muted;
+      }
     }
     // shown on hover, or while the bar has focus (keyboard and touch have no hover)
     .page-header__clear {
@@ -292,10 +302,7 @@ export default {
       pointer-events: auto;
     }
     &:focus-within {
-      box-shadow: 0 3px 3px $salmon-lt, 0px -3px 3px $salmon-lt,
-        3px 0 3px $salmon-lt, -3px 0 3px $salmon-lt,
-        0 2.8px 2.2px rgba(0, 0, 0, 0.034), 0 6.7px 5.3px rgba(0, 0, 0, 0.048),
-        0 12.5px 10px rgba(0, 0, 0, 0.06);
+      box-shadow: $focus-shadow;
     }
     p {
       position: absolute;

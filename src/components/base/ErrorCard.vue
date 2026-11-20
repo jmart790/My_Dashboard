@@ -84,7 +84,9 @@ export default {
   }
 
   p {
-    max-width: 20ch;
+    max-width: 22ch;
+    font-family: $heading-font;
+    font-style: italic;
     font-size: 20px;
     text-align: center;
     @media screen and (min-width: $laptop-lg) {
@@ -99,11 +101,15 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50px;
-    border: none;
-    background: $primary;
-    color: $white;
-    font-size: 18px;
+    border-radius: 0;
+    border: 1px solid $ink;
+    background: $ink;
+    color: $paper;
+    font-family: $heading-font;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     outline: none;
     transition: all 0.2s ease;
     span {
@@ -112,7 +118,8 @@ export default {
     }
     &:hover {
       cursor: pointer;
-      background: $primary-dk;
+      background: $spot;
+      border-color: $spot;
     }
     &:focus {
       box-shadow: $focus-shadow;

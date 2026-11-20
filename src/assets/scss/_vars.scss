@@ -1,4 +1,6 @@
 @forward "colors";
 @forward "sizes";
-$base-font: 'Nunito', sans-serif;
-$heading-font: 'Nunito', sans-serif;
+// The iHerald: newsprint typography
+$base-font: 'Libre Caslon Text', Georgia, 'Times New Roman', serif; // body copy
+$heading-font: 'Old Standard TT', Georgia, 'Times New Roman', serif; // headlines, labels
+$masthead-font: 'UnifrakturMaguntia', 'Old English Text MT', serif; // the nameplate only

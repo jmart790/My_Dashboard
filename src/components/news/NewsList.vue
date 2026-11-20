@@ -21,7 +21,9 @@ export default {
 
 <template>
   <div class="news-list">
-    <h3>{{ label }}</h3>
+    <h3 class="kicker">
+      {{ label }}
+    </h3>
     <div class="news-list__articles">
       <NewsSnippet
         v-for="article in news.slice(1)"
@@ -37,8 +39,9 @@ export default {
 .news-list {
   padding: $gap-6;
   padding-right: $gap-4;
-  background: $app-bg;
-  border-radius: $round-2;
+  background: transparent;
+  border-top: 1px solid $ink;
+  border-radius: 0;
   overflow-y: hidden;
   h3 {
     margin-bottom: $gap-4;
@@ -52,20 +55,13 @@ export default {
     column-gap: $gap-4;
     row-gap: $gap-6;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    scrollbar-width: thin;
+    scrollbar-color: $ink transparent;
     &::-webkit-scrollbar {
-      width: 10px;
+      width: 6px;
     }
     &::-webkit-scrollbar-thumb {
-      background-color: $primary;
-      background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.2, $primary-lt),
-        color-stop(0.7, $primary),
-        color-stop(1, $primary-dk)
-      );
-      border-radius: 8px;
+      background: $ink;
     }
   }
   &__article {

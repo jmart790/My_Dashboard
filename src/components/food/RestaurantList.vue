@@ -63,6 +63,9 @@ export default {
 
 <template>
   <div class="restaurants card">
+    <h3 class="kicker">
+      Nearby Eateries
+    </h3>
     <div class="restaurants__controls">
       <div class="restaurants__row" role="group" aria-label="Sort and filter">
         <button
@@ -150,7 +153,7 @@ export default {
   flex-direction: column;
   gap: $gap-4;
   padding-right: $gap-3 !important;
-  border-radius: $round-2;
+  border-radius: 0;
   overflow: hidden;
   &__controls {
     display: grid;
@@ -183,20 +186,13 @@ export default {
     row-gap: $gap-6;
     overflow-x: hidden;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: $ink transparent;
     &::-webkit-scrollbar {
-      width: 10px;
+      width: 6px;
     }
     &::-webkit-scrollbar-thumb {
-      background-color: $primary;
-      background-image: -webkit-gradient(
-        linear,
-        left bottom,
-        left top,
-        color-stop(0.2, $primary-lt),
-        color-stop(0.7, $primary),
-        color-stop(1, $primary-dk)
-      );
-      border-radius: 8px;
+      background: $ink;
     }
   }
 }

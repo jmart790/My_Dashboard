@@ -1,7 +1,62 @@
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
+
+const SECTIONS = [
+  { name: "Home", label: "Front Page" },
+  { name: "Weather", label: "Weather" },
+  { name: "News", label: "News" },
+  { name: "Food", label: "Dining" },
+  { name: "Media", label: "Media" }
+];
+
+function toRoman(n) {
+  const numerals = [
+    [1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"],
+    [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]
+  ];
+  let out = "";
+  for (const [value, numeral] of numerals) {
+    while (n >= value) {
+      out += numeral;
+      n -= value;
+    }
+  }
+  return out;
+}
+
 export default {
   name: "AppLayout",
+  data() {
+    return { today: new Date(), sections: SECTIONS };
+  },
+  computed: {
+    ...mapGetters("location", ["cityState"]),
+    // the edition is the date: volume = the year, issue = the day of the year
+    volume: ({ today }) => toRoman(today.getFullYear()),
+    issue: ({ today }) =>
+      Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000),
+    dateLine: ({ today }) =>
+      today.toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      })
+  },
+  watch: {
+    // phones: the section bar scrolls sideways; keep the current section in view
+    $route: {
+      immediate: true,
+      handler() {
+        this.$nextTick(() => {
+          const nav = this.$refs.nav;
+          const active = nav && nav.querySelector(".router-link-exact-active");
+          if (!active || nav.scrollWidth <= nav.clientWidth) return;
+          nav.scrollLeft = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+        });
+      }
+    }
+  },
   // saved location if there is one, else the device's, else a default zip
   created() {
     this.init();
@@ -14,158 +69,162 @@ export default {
 
 <template>
   <div class="app-layout">
-    <nav>
-      <router-link class="nav-logo" :to="{ name: 'Home' }">
-        <span class="icon-reddit" />
-      </router-link>
-      <router-link class="nav-link" :to="{ name: 'Home' }" exact>
-        <span class="icon-house" />
-      </router-link>
-      <router-link class="nav-link" :to="{ name: 'Weather' }">
-        <span class="icon-weather-app" />
-      </router-link>
-      <router-link class="nav-link" :to="{ name: 'News' }">
-        <span class="icon-news" />
-      </router-link>
-      <router-link class="nav-link" :to="{ name: 'Food' }">
-        <span class="icon-waze" />
-      </router-link>
-      <router-link class="nav-link" :to="{ name: 'Media' }">
-        <span class="icon-tv-app" />
-      </router-link>
-    </nav>
+    <header class="masthead">
+      <div class="masthead__inner">
+        <div class="masthead__ears">
+          <span class="masthead__edition">Vol. {{ volume }} · No. {{ issue }}</span>
+          <time class="masthead__date" :datetime="today.toISOString().slice(0, 10)">
+            {{ dateLine }}
+          </time>
+          <span class="masthead__place">{{ cityState }}</span>
+        </div>
+        <router-link class="masthead__nameplate" :to="{ name: 'Home' }">
+          The iHerald
+        </router-link>
+        <nav ref="nav" class="masthead__nav" aria-label="Sections">
+          <router-link
+            v-for="section in sections"
+            :key="section.name"
+            class="masthead__link"
+            :to="{ name: section.name }"
+          >
+            {{ section.label }}
+          </router-link>
+        </nav>
+      </div>
+    </header>
     <main>
       <slot />
     </main>
   </div>
 </template>
 
-
 <style lang="scss">
 .app-layout {
-  position: relative;
   width: 100vw;
   height: 100vh;
   display: flex;
-  background: $app-bg;
-  flex-direction: column-reverse;
+  flex-direction: column;
+  background-color: $paper;
+  // faint newsprint grain (SVG noise, ~5% ink)
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.masthead {
+  flex: none;
+  padding: $gap-3 $gap-4 0;
   @media screen and (min-width: $tablet) {
-    flex-direction: unset;
+    padding: $gap-4 $gap-5 0;
   }
-
-  nav {
-    position: absolute;
-    z-index: 5;
-    width: 100%;
+  &__inner {
+    max-width: 1620px;
+    margin: 0 auto;
+    // the heavy double rule that closes a classic masthead
+    border-bottom: 3px double $ink;
+  }
+  &__ears {
     display: flex;
-    justify-content: space-around;
-    gap: $gap-4;
-    border-top: 1px solid rgba(128, 128, 128, 0.13);
-    box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.5);
-    background-color: rgba($app-bg, 0.45);
-    backdrop-filter: blur(5px);
-    @media screen and (min-width: $tablet) {
-      position: unset;
-      flex-direction: column;
-      justify-content: unset;
-      width: 100px;
-      border-top: unset;
-      box-shadow: unset;
-      background-color: unset;
-      backdrop-filter: unset;
-    }
-    @media screen and (min-width: $laptop-lg) {
-      width: 150px;
-    }
-
-    .nav-logo {
-      display: none;
-      margin-bottom: $gap-6;
-      padding: $gap-4;
-      justify-content: center;
-      align-items: center;
-      span {
-        font-size: 36px;
-        color: $primary;
-        background: -webkit-linear-gradient($primary-dk, $primary-lt);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: $gap-1 $gap-4;
+    padding-bottom: $gap-2;
+    border-bottom: 1px solid $ink;
+    span,
+    time {
+      font-family: $heading-font;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
       @media screen and (min-width: $tablet) {
-        display: flex;
-      }
-      @media screen and (min-width: $laptop-lg) {
-        span {
-          font-size: 48px;
-        }
-      }
-    }
-    .nav-link {
-      height: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      span {
-        position: relative;
-        display: block;
-        padding: $gap-3;
-        border-radius: $round-1;
-        color: #9598a1;
-        font-size: 24px;
-        transition: all 0.3s ease-out;
-      }
-      &:hover span {
-        color: $primary;
-        @media screen and (min-width: $tablet) {
-          background: $nav-btn-gradiant;
-        }
-      }
-      @media screen and (min-width: $laptop-lg) {
-        height: 80px;
-        span {
-          font-size: 32px;
-          padding: $gap-4;
-        }
-      }
-    }
-    .nav-link.router-link-active,
-    .nav-link.router-link-exact-path-active {
-      @media screen and (min-width: $tablet) {
-        border-left: 2px solid $primary;
-      }
-      span {
-        color: $primary;
-        @media screen and (min-width: $tablet) {
-          background: $nav-btn-gradiant;
-        }
+        font-size: 12px;
       }
     }
   }
-  main {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    padding: $gap-4 $gap-5;
-    // margin: 0 $gap-5;
-    /* Hide scrollbar for Chrome, Safari and Opera */
+  // phones: the date takes its own centered line
+  &__date {
+    order: -1;
+    flex-basis: 100%;
+    text-align: center;
+    @media screen and (min-width: $tablet) {
+      order: 0;
+      flex-basis: auto;
+    }
+  }
+  &__nameplate {
+    display: block;
+    padding: $gap-2 0 $gap-1;
+    text-align: center;
+    text-decoration: none;
+    font-family: $masthead-font;
+    font-size: clamp(44px, 9vw, 96px);
+    line-height: 1.05;
+    color: $ink;
+  }
+  &__nav {
+    position: relative; // offsetLeft of links is measured against the bar
+    display: flex;
+    justify-content: center;
+    gap: $gap-1;
+    padding: $gap-1 0;
+    border-top: 1px solid $ink;
+    overflow-x: auto;
+    scrollbar-width: none;
     &::-webkit-scrollbar {
       display: none;
     }
+    @media screen and (max-width: 499px) {
+      justify-content: flex-start;
+    }
+  }
+  &__link {
+    flex: none;
+    padding: $gap-1 $gap-3;
+    font-family: $heading-font;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: $ink;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    & + & {
+      border-left: 1px solid $rule-soft;
+    }
+    &:hover {
+      color: $spot;
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: $focus-shadow;
+    }
+    // the section you're reading: the one touch of red
+    &.router-link-exact-active {
+      color: $spot;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 5px;
+    }
+  }
+}
 
-    /* Hide scrollbar for IE, Edge and Firefox */
-    & {
-      -ms-overflow-style: none; /* IE and Edge */
-      scrollbar-width: none; /* Firefox */
-    }
-    @media screen and (min-width: $tablet) {
-      padding: $gap-6 $gap-5;
-      // margin: 0 $gap-5;
-    }
-    @media screen and (min-width: $laptop-lg) {
-      max-width: 1660px;
-      margin: 0 auto;
-    }
+main {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 1660px;
+  margin: 0 auto;
+  overflow-y: auto;
+  padding: $gap-4;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  @media screen and (min-width: $tablet) {
+    padding: $gap-5;
   }
 }
 </style>

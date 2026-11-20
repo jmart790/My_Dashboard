@@ -64,7 +64,7 @@ export default {
       margin-bottom: $gap-4;
       object-fit: cover;
       object-position: center;
-      border-radius: $round-1;
+      border-radius: 0;
       @media screen and (min-width: $laptop-lg) {
         width: 320px;
         height: 160px;

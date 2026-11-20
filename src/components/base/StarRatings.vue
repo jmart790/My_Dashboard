@@ -60,7 +60,7 @@ export default {
   &__total {
     font-size: 12px !important;
     font-weight: 600;
-    color: $grey-3;
+    color: $ink-muted;
   }
 
   &--large {

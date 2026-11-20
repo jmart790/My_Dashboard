@@ -1,10 +1,8 @@
 @use "vars" as *;
 
-
-
 * {
   font-family: $base-font;
-  color: $grey-2;
+  color: $ink;
 }
 
 h1,
@@ -12,28 +10,39 @@ h2,
 h3,
 h4,
 h5,
-h6,
+h6 {
+  font-family: $heading-font;
+  font-weight: 700;
+  line-height: 1.1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+p,
+span {
+  font-size: 16px;
+  font-weight: 400;
+  @media screen and (min-width: $laptop) {
+    font-size: 17px;
+  }
+}
+
+// labels read like newspaper kickers: small caps, letterspaced
 label,
 legend,
 figcaption {
   font-family: $heading-font;
-  font-weight: 800;
-  letter-spacing: 1px;
-  -webkit-font-soothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-p, span {
-  font-size: 16px;
-  font-weight: 400;
-  @media screen and (min-width: $laptop) {
-    font-size: 18px;
-  }
-}
-label, legend, figcaption {
   font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $ink-muted;
   margin-bottom: $gap-1;
   @media screen and (min-width: $laptop) {
-    font-size: 14px;
+    font-size: 13px;
   }
+}
+
+a {
+  color: inherit;
 }

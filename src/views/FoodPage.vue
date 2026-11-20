@@ -50,7 +50,7 @@ export default {
 
 <template>
   <div class="food-page">
-    <PageHeader class="food-page__header" title="Food" :subtitle="cityState" />
+    <PageHeader class="food-page__header" title="Where to Dine" :subtitle="cityState" />
 
     <template v-if="status === 'loading'">
       <Skeleton class="food-page__map food-page__sk-map">
@@ -129,7 +129,7 @@ export default {
     align-content: center;
     gap: $gap-3;
     h2 {
-      color: $white;
+      color: $ink;
     }
   }
 }
