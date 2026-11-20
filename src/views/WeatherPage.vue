@@ -4,6 +4,9 @@ import WeatherNow from "@/components/weather/WeatherNow.vue";
 import WeatherDaily from "@/components/weather/WeatherDaily.vue";
 import WeatherHourly from "@/components/weather/WeatherHourly.vue";
 import WeatherExtraDetails from "@/components/weather/WeatherExtraDetails.vue";
+import ErrorCard from "@/components/base/ErrorCard.vue";
+import Skeleton from "@/components/base/Skeleton.vue";
+import SkeletonItem from "@/components/base/SkeletonItem.vue";
 import { mapGetters, mapActions } from "vuex";
 import { formatMixins } from "@/mixins/formatMixins";
 
@@ -15,20 +18,33 @@ export default {
     WeatherNow,
     WeatherDaily,
     WeatherHourly,
-    WeatherExtraDetails
+    WeatherExtraDetails,
+    ErrorCard,
+    Skeleton,
+    SkeletonItem
   },
-  async mounted() {
-    if (this.coordinates.lat) {
-      await this.getWeather(this.coordinates);
-    }
+  mounted() {
+    this.load();
   },
   watch: {
     location() {
-      this.getWeather(this.coordinates);
+      this.load();
     }
   },
   computed: {
-    ...mapGetters("location", ["coordinates", "location", "cityState"]),
+    ...mapGetters("location", {
+      coordinates: "coordinates",
+      location: "location",
+      cityState: "cityState",
+      locationError: "error"
+    }),
+    ...mapGetters("weather", { weatherError: "error" }),
+    // ready: show data; error: nothing to show and a lookup failed; else still loading
+    status() {
+      if (this.hasWeatherData) return "ready";
+      if (this.weatherError || (this.locationError && !this.location.name)) return "error";
+      return "loading";
+    },
     ...mapGetters("weather", [
       "hasWeatherData",
       "weather",
@@ -39,7 +55,15 @@ export default {
     ])
   },
   methods: {
-    ...mapActions("weather", ["getWeather"])
+    ...mapActions("weather", ["getWeather"]),
+    ...mapActions("location", { retryLocation: "init" }),
+    load() {
+      if (this.coordinates.lat !== "") this.getWeather(this.coordinates);
+    },
+    retry() {
+      if (this.location.name) this.load();
+      else this.retryLocation();
+    }
   }
 };
 </script>
@@ -47,6 +71,28 @@ export default {
 <template>
   <div class="weather">
     <PageHeader class="weather__header" title="Weather" :subtitle="cityState" />
+    <template v-if="status === 'loading'">
+      <Skeleton class="weather__now">
+        <SkeletonItem height="180px" width="100%" />
+        <SkeletonItem shape="text" :lines="3" width="100%" />
+      </Skeleton>
+      <Skeleton class="weather__hourly">
+        <SkeletonItem shape="text" :lines="4" width="100%" />
+      </Skeleton>
+      <Skeleton class="weather__daily">
+        <SkeletonItem shape="text" :lines="7" width="100%" />
+      </Skeleton>
+    </template>
+    <ErrorCard
+      v-else-if="status === 'error'"
+      class="weather__hourly"
+      category="WEATHER"
+      :message-option="1"
+      show-refresh-btn
+      @request-data="retry"
+    >
+      <inline-svg src="@/assets/illustrations/undraw_Weather_notification.svg" />
+    </ErrorCard>
     <WeatherNow
       v-if="hasWeatherData"
       class="weather__now"

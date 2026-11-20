@@ -4,6 +4,10 @@ import apiClient from '@/apiClient';
 // other page, starts from it instead of the default.
 export const STORAGE_KEY = 'myDashboard.location.v1';
 const DEFAULT_ZIP = '33137'; // used only when there's no saved location and no GPS
+// An unanswered "Know your location?" prompt never times out by itself (the
+// geolocation timeout only starts once permission is granted), so stop waiting.
+const PROMPT_WAIT_MS = 8000;
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const emptyLocation = () => ({
   country: '',
@@ -115,17 +119,23 @@ export default {
     /** App start: use the saved location, else the device's, else the default zip. */
     async init({ state, commit, dispatch }) {
       if (state.location.name) return; // restored from storage by the state initializer
-      try {
-        await dispatch('locateMe');
-      } catch {
-        commit('SET_GEO_ERROR', null); // not asked for, so not an error to show
-        // Not saved: the default isn't the user's choice, so the next visit tries the
-        // device location again (browsers don't re-prompt after a denial).
-        await dispatch('getLocation', { zipcode: DEFAULT_ZIP, remember: false });
-      }
+      const located = dispatch('locateMe').then(
+        () => true,
+        () => {
+          commit('SET_GEO_ERROR', null); // not asked for, so not an error to show
+          return false;
+        }
+      );
+      const answer = await Promise.race([located, wait(PROMPT_WAIT_MS).then(() => null)]);
+      if (answer === true) return;
+      // Denied, unavailable, or the prompt is still open: show the default meanwhile.
+      // If the user allows later, locateMe finishes and replaces it. Not saved: the
+      // default isn't their choice, so the next visit tries the device location again
+      // (browsers don't re-prompt after a denial).
+      await dispatch('getLocation', { zipcode: DEFAULT_ZIP, remember: false });
     },
     /** @param payload a zip string, or { zipcode, remember } (remember defaults to true) */
-    async getLocation({ commit }, payload) {
+    async getLocation({ state, commit }, payload) {
       const { zipcode, remember = true } =
         typeof payload === 'string' ? { zipcode: payload } : payload;
       commit('SET_IS_LOADING', true);
@@ -134,6 +144,8 @@ export default {
       await apiClient
         .getLocation(zipcode)
         .then(({ location }) => {
+          // a background default must not replace a device location that arrived first
+          if (!remember && state.source === 'gps') return;
           commit('SET_LOCATION', location);
           commit('SET_SOURCE', remember ? 'zip' : null);
           if (remember) save(location, 'zip');

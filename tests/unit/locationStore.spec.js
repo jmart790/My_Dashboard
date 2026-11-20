@@ -90,6 +90,47 @@ describe('location store', () => {
     expect(store.getters['location/source']).toBeNull();
   });
 
+  it('first visit does not wait forever on an unanswered permission prompt', async () => {
+    vi.useFakeTimers();
+    let grantLater;
+    vi.stubGlobal('navigator', {
+      geolocation: { getCurrentPosition: (ok) => (grantLater = () => ok({ coords: { latitude: 39.7, longitude: -105.0 } })) },
+    });
+    apiClient.getLocation.mockResolvedValue({ location: MIAMI });
+    apiClient.reverseGeocode.mockResolvedValue({ location: DENVER });
+    const store = makeStore();
+    const init = store.dispatch('location/init');
+    await vi.advanceTimersByTimeAsync(8000); // prompt still open
+    await init;
+    expect(store.getters['location/location']).toEqual(MIAMI); // pages can load meanwhile
+    // the user finally clicks Allow: their location replaces the default
+    grantLater();
+    await vi.runAllTimersAsync();
+    expect(store.getters['location/location']).toEqual(DENVER);
+    expect(store.getters['location/source']).toBe('gps');
+    vi.useRealTimers();
+  });
+
+  it('a slow default never overwrites a device location that arrived first', async () => {
+    vi.useFakeTimers();
+    let grantLater;
+    vi.stubGlobal('navigator', {
+      geolocation: { getCurrentPosition: (ok) => (grantLater = () => ok({ coords: { latitude: 39.7, longitude: -105.0 } })) },
+    });
+    let finishDefault;
+    apiClient.getLocation.mockReturnValue(new Promise((resolve) => (finishDefault = () => resolve({ location: MIAMI }))));
+    apiClient.reverseGeocode.mockResolvedValue({ location: DENVER });
+    const store = makeStore();
+    const init = store.dispatch('location/init');
+    await vi.advanceTimersByTimeAsync(8000); // timeout: default lookup starts
+    grantLater(); // ...but the user allows before it returns
+    await vi.runAllTimersAsync();
+    finishDefault();
+    await init;
+    expect(store.getters['location/location']).toEqual(DENVER);
+    vi.useRealTimers();
+  });
+
   it('ignores corrupt saved data', async () => {
     localStorage.setItem(STORAGE_KEY, '{not json');
     vi.stubGlobal('navigator', {});
