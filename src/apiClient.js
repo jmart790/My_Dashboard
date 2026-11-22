@@ -64,6 +64,28 @@ function cached(key, fetcher) {
   });
 }
 
+// The paper's news is set once per edition (5 AM, 4 PM) and kept until the next one,
+// so the stories don't shift under the reader and GNews stays well inside its cap.
+const EDITION_NEWS_KEY = 'myDashboard.news.v1';
+async function editionCached(edition, query, fetcher) {
+  let store = null;
+  try {
+    store = JSON.parse(localStorage.getItem(EDITION_NEWS_KEY));
+  } catch {
+    // unreadable: start fresh
+  }
+  if (!store || store.edition !== edition) store = { edition, entries: {} };
+  if (store.entries[query]) return store.entries[query];
+  const data = await fetcher();
+  store.entries[query] = data;
+  try {
+    localStorage.setItem(EDITION_NEWS_KEY, JSON.stringify(store));
+  } catch {
+    // storage full or blocked: refetches next visit
+  }
+  return data;
+}
+
 // Zippopotam and Nominatim have no timezone; Open-Meteo resolves it from coordinates.
 // Optional: "open now" falls back to the browser's timezone without it.
 function timezoneFor(lat, lon) {
@@ -148,6 +170,7 @@ export default {
 
     return {
       timezone: w.timezone,
+      elevation: w.elevation, // meters
       alerts,
       currently: {
         icon,
@@ -191,22 +214,30 @@ export default {
       const { data } = await axios.get('https://api.weather.gov/alerts/active', {
         params: { point: `${lat.toFixed(4)},${lon.toFixed(4)}` },
       });
-      return data.features.map((f) => ({ title: f.properties.event }));
+      return data.features.map((f) => ({ title: f.properties.event, id: f.properties.id, headline: f.properties.headline }));
     } catch {
       return [];
     }
   },
 
-  /** GNews search -> { articles } in the old free-news shape */
-  async getNewsByLocation(query) {
+  /**
+   * GNews search -> { articles } in the old free-news shape.
+   * @param {{ edition?: string, fresh?: boolean }} [opts] edition: keep the answer for that
+   *   edition id; fresh: skip every cache (the EXTRA check)
+   */
+  async getNewsByLocation(query, { edition, fresh } = {}) {
     const apikey = import.meta.env.VITE_GNEWS_API_KEY;
     if (!apikey) throw new Error('Missing VITE_GNEWS_API_KEY in .env.local');
-    const articles = await cached(`gnews:${query}`, async () => {
+    const load = async () => {
       const { data } = await throttled(() => axios.get('https://gnews.io/api/v4/search', {
         params: { q: `"${query}"`, lang: 'en', country: 'us', max: 10, sortby: 'publishedAt', apikey },
       }));
       return data.articles;
-    });
+    };
+    let articles;
+    if (fresh) articles = await load();
+    else if (edition) articles = await editionCached(edition, query, load);
+    else articles = await cached(`gnews:${query}`, load);
     return {
       articles: articles.map((a) => ({
         _id: a.id || a.url,

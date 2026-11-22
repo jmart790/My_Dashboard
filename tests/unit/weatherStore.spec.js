@@ -85,3 +85,14 @@ describe('weather store', () => {
     getItem.mockRestore();
   });
 });
+
+describe('dailyForecast day names', () => {
+  it('names days in the forecast timezone, not the browser one', async () => {
+    const { default: weather } = await import('@/store/modules/weather');
+    // midnight Nov 21 on Kiritimati (UTC+14) is still Nov 20 nearly everywhere else
+    const midnight = Date.UTC(2026, 10, 20, 10) / 1000;
+    const state = { weather: { timezone: 'Pacific/Kiritimati', daily: { data: [{ time: midnight, temperatureHigh: 70, temperatureLow: 50, precipProbability: 0 }] } } };
+    const days = weather.getters.dailyForecast(state, { hasWeatherData: true });
+    expect(days[0].time).toBe('Saturday');
+  });
+});

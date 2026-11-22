@@ -22,14 +22,12 @@ export default {
     ErrorCard
   },
   mounted() {
-    if (this.location.name) this.getNews(this.location);
+    this.loadEdition(this.location);
   },
   watch: {
-    location: {
-      deep: true,
-      handler(location) {
-        if (location.name) this.getNews(location);
-      }
+    // a new place, or a new edition coming off the press while the page is open
+    editionKey() {
+      this.loadEdition(this.location);
     }
   },
   computed: {
@@ -38,6 +36,8 @@ export default {
       location: "location",
       cityState: "cityState"
     }),
+    ...mapGetters("edition", ["edition"]),
+    editionKey: ({ edition, location }) => `${edition.id}|${location.name}|${location.region}`,
     ...mapGetters("news", {
       news: "news",
       newsLoading: "isLoading",
@@ -50,12 +50,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("news", { fetchNews: "getNews" }),
-    getNews({ name, region, country }) {
-      this.fetchNews({ key: "local", query: name });
-      this.fetchNews({ key: "state", query: region });
-      this.fetchNews({ key: "country", query: country });
-    }
+    ...mapActions("news", ["loadEdition"])
   }
 };
 </script>

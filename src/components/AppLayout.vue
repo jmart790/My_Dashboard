@@ -1,12 +1,15 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
+import PaperArrival from "@/components/PaperArrival.vue";
+import ExtraBanner from "@/components/ExtraBanner.vue";
 
 const SECTIONS = [
   { name: "Home", label: "Front Page" },
   { name: "Weather", label: "Weather" },
   { name: "News", label: "News" },
   { name: "Food", label: "Dining" },
-  { name: "Media", label: "Media" }
+  { name: "Media", label: "Media" },
+  { name: "Puzzles", label: "Puzzles" }
 ];
 
 function toRoman(n) {
@@ -26,11 +29,15 @@ function toRoman(n) {
 
 export default {
   name: "AppLayout",
+  components: { PaperArrival, ExtraBanner },
   data() {
-    return { today: new Date(), sections: SECTIONS };
+    return { sections: SECTIONS };
   },
   computed: {
     ...mapGetters("location", ["cityState"]),
+    ...mapGetters("edition", ["edition", "age"]),
+    // the paper's date: before 5 AM that's still yesterday's evening paper
+    today: ({ edition }) => new Date(`${edition.date}T12:00:00`),
     // the edition is the date: volume = the year, issue = the day of the year
     volume: ({ today }) => toRoman(today.getFullYear()),
     issue: ({ today }) =>
@@ -61,20 +68,29 @@ export default {
   created() {
     this.init();
   },
+  mounted() {
+    this.clock = setInterval(() => this.tick(), 60 * 1000);
+  },
+  beforeUnmount() {
+    clearInterval(this.clock);
+  },
   methods: {
-    ...mapActions("location", ["init"])
+    ...mapActions("location", ["init"]),
+    tick() {
+      this.$store.commit("edition/TICK");
+    }
   }
 };
 </script>
 
 <template>
-  <div class="app-layout">
+  <div class="app-layout" :style="{ '--age': age.toFixed(2) }">
     <header class="masthead">
       <div class="masthead__inner">
         <div class="masthead__ears">
           <span class="masthead__edition">Vol. {{ volume }} · No. {{ issue }}</span>
-          <time class="masthead__date" :datetime="today.toISOString().slice(0, 10)">
-            {{ dateLine }}
+          <time class="masthead__date" :datetime="edition.date">
+            {{ dateLine }} <span class="masthead__edition-name">&middot; {{ edition.name }}</span>
           </time>
           <span class="masthead__place">{{ cityState }}</span>
         </div>
@@ -93,9 +109,11 @@ export default {
         </nav>
       </div>
     </header>
+    <ExtraBanner />
     <main>
       <slot />
     </main>
+    <PaperArrival />
   </div>
 </template>
 
@@ -106,12 +124,16 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: $paper;
+  background-image: var(--paper-texture);
+  // the paper yellows through the day: --age runs 0 at 5 AM to 1 late at night
+  --paper-tint: linear-gradient(rgba(176, 128, 48, calc(var(--age, 0) * 0.14)), rgba(176, 128, 48, calc(var(--age, 0) * 0.14)));
   // newsprint, all SVG noise so nothing to download. Top to bottom:
   // edges darkened like a handled page, fine grain, stretched fibers, and broad
   // uneven toning (on a big tile so the repeat isn't noticeable). Keep each
   // tile size × baseFrequency a whole number, or stitching leaves a seam, and keep
   // the toning alpha unclipped, or blotches get hard edges that read as creases
-  background-image:
+  --paper-texture:
+    var(--paper-tint),
     radial-gradient(ellipse at center, transparent 55%, rgba(92, 70, 38, 0.13) 100%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.025 .9' numOctaves='2' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.25 0 0 0 0 0.2 0 0 0 0 0.12 0 0 0 1.2 -0.72'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"),

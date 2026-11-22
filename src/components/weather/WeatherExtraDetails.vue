@@ -16,7 +16,7 @@ export default {
 <template>
   <div class="weather-details card">
     <h3 class="kicker weather-details__kicker">
-      The Almanac
+      Today's Details
     </h3>
     <figure>
       <figcaption>Daily Summary</figcaption>

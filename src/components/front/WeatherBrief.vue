@@ -12,7 +12,9 @@ export default {
     ...mapGetters("weather", ["weather", "hasWeatherData", "highAndLows", "dailyForecast", "error"]),
     now: ({ weather }) => weather.currently,
     alert: ({ weather }) => (weather.alerts || [])[0] || null,
-    nextDays: ({ dailyForecast }) => dailyForecast.slice(1, 4)
+    // the week ahead, today first
+    week: ({ dailyForecast }) =>
+      dailyForecast.slice(0, 7).map((day, i) => ({ ...day, label: i === 0 ? "Today" : day.time.slice(0, 3) }))
   }
 };
 </script>
@@ -40,11 +42,15 @@ export default {
       <p v-if="alert" class="w-brief__alert">
         {{ alert.title }}
       </p>
+      <h3 class="w-brief__week-title">
+        The Week Ahead
+      </h3>
       <ul class="w-brief__days">
-        <li v-for="day in nextDays" :key="day.time">
-          <span class="w-brief__day">{{ day.time.slice(0, 3) }}</span>
+        <li v-for="day in week" :key="day.time">
+          <span class="w-brief__day">{{ day.label }}</span>
           <img class="w-brief__mini" :src="iconUrl(day.icon)" alt="" />
-          <span>{{ day.high }}&deg; / {{ day.low }}&deg;</span>
+          <span class="w-brief__temps">{{ day.high }}&deg; / {{ day.low }}&deg;</span>
+          <span class="w-brief__rain">{{ day.precipProbability }} rain</span>
         </li>
       </ul>
     </template>
@@ -91,7 +97,7 @@ export default {
     color: $spot;
   }
   &__days {
-    margin: $gap-3 0 0;
+    margin: $gap-1 0 0;
     padding: 0;
     list-style: none;
     li {
@@ -102,6 +108,21 @@ export default {
       border-top: 1px solid $rule-soft;
       font-size: 14px;
     }
+  }
+  &__week-title {
+    margin-top: $gap-4;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $ink-muted;
+  }
+  &__temps {
+    flex: 1;
+  }
+  &__rain {
+    font-size: 13px;
+    font-style: italic;
+    color: $ink-muted;
   }
   &__day {
     width: 3.5em;

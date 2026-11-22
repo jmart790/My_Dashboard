@@ -13,21 +13,16 @@ function formatPercent(percent) {
   return `${Math.round(percent * 100)}%`;
 }
 
-function getDay(date) {
-  const days = {
-    0: 'Sunday',
-    1: 'Monday',
-    2: 'Tuesday',
-    3: 'Wednesday',
-    4: 'Thursday',
-    5: 'Friday',
-    6: 'Saturday',
-  };
-  if (date) {
-    let day = new Date(date * 1000).getDay();
-    return days[day];
+// The forecast's days start at local midnight in the forecast's own timezone, so
+// name the day there too; in the browser's zone it can land on the day before.
+function getDay(date, timeZone) {
+  if (!date) return '';
+  const name = (zone) => new Date(date * 1000).toLocaleDateString('en-US', { weekday: 'long', timeZone: zone });
+  try {
+    return name(timeZone || undefined);
+  } catch {
+    return name(undefined); // unknown zone name
   }
-  return '';
 }
 
 const getDefaultState = () => ({
@@ -118,7 +113,7 @@ export default {
       if (hasWeatherData) {
         return weather.daily.data.map((forecast) => {
           return {
-            time: getDay(forecast.time),
+            time: getDay(forecast.time, weather.timezone),
             icon: forecast.icon,
             precipProbability: formatPercent(forecast.precipProbability),
             high: Math.round(forecast.temperatureHigh),

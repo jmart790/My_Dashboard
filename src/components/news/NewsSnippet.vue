@@ -21,7 +21,8 @@ export default {
 <template>
   <div class="news-snippet" :class="{ 'news-snippet--large': isLarge }">
     <img
-      v-if="showImage"
+      v-if="showImage && article.media"
+      class="news-snippet__photo"
       :src="article.media"
       alt=""
       @error="$event.target.style.display = 'none'"
@@ -38,12 +39,12 @@ export default {
 
 <style lang="scss">
 .news-snippet {
-  img {
+  &__photo {
+    display: block;
     margin-bottom: $gap-2;
-    object-fit: cover;
-    height: 150px;
     width: 100%;
-    border-radius: 0;
+    height: 150px;
+    object-fit: cover;
   }
   h4 {
     margin-bottom: $gap-2;

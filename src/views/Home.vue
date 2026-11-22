@@ -5,6 +5,9 @@ import JumpLine from "@/components/front/JumpLine.vue";
 import WeatherBrief from "@/components/front/WeatherBrief.vue";
 import DiningBrief from "@/components/front/DiningBrief.vue";
 import ArtsBrief from "@/components/front/ArtsBrief.vue";
+import AlmanacBox from "@/components/front/AlmanacBox.vue";
+import AroundTown from "@/components/front/AroundTown.vue";
+import YearsAgo from "@/components/front/YearsAgo.vue";
 
 const SECTION_LABELS = { local: "Local", state: "State", country: "Nation" };
 
@@ -13,9 +16,10 @@ const SECTION_LABELS = { local: "Local", state: "State", country: "Nation" };
 // no extra requests and the pages agree with it (same forecast, same dining pick).
 export default {
   name: "Home",
-  components: { PageHeader, JumpLine, WeatherBrief, DiningBrief, ArtsBrief },
+  components: { PageHeader, JumpLine, WeatherBrief, DiningBrief, ArtsBrief, AlmanacBox, AroundTown, YearsAgo },
   computed: {
     ...mapGetters("location", ["cityState", "location"]),
+    ...mapGetters("edition", ["edition"]),
     ...mapGetters("news", { news: "news", newsLoading: "isLoading", newsError: "error" }),
     // every story, local first, each tagged with its section
     stories: ({ news }) =>
@@ -38,6 +42,10 @@ export default {
       handler() {
         this.load();
       }
+    },
+    // the evening paper comes out while the page is open
+    "edition.id"() {
+      this.loadEdition(this.location);
     }
   },
   mounted() {
@@ -45,16 +53,14 @@ export default {
   },
   methods: {
     ...mapActions("weather", ["getWeather"]),
-    ...mapActions("news", ["getNews"]),
+    ...mapActions("news", ["loadEdition"]),
     ...mapActions("restaurants", ["getRestaurants"]),
     load() {
       const { name, region, country, lat, lon } = this.location;
       if (!name) return;
       this.getWeather({ lat, lon });
       this.getRestaurants({ lat, lon });
-      this.getNews({ key: "local", query: name });
-      this.getNews({ key: "state", query: region });
-      this.getNews({ key: "country", query: country });
+      this.loadEdition({ name, region, country });
     }
   }
 };
@@ -111,6 +117,13 @@ export default {
       </section>
       <DiningBrief class="front__col" />
       <ArtsBrief class="front__col" />
+    </div>
+
+    <!-- below the briefs: the features a real local paper ran every day -->
+    <div class="front__columns front__band">
+      <AlmanacBox class="front__col" />
+      <AroundTown class="front__col" />
+      <YearsAgo class="front__col" />
     </div>
   </div>
 </template>
@@ -235,6 +248,11 @@ export default {
         }
       }
     }
+  }
+  &__band {
+    margin-top: $gap-8;
+    padding-top: $gap-6;
+    border-top: 3px double $ink;
   }
   &__briefs {
     margin: 0;

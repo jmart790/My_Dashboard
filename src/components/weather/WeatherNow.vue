@@ -1,10 +1,35 @@
 <script>
 import { formatMixins } from '@/mixins/formatMixins';
 import { weatherMixins } from '@/mixins/weatherMixins';
+import { mapGetters } from 'vuex';
+import { fetchCityPhoto } from '@/features/sources';
 
 export default {
   name: 'WeatherNow',
   mixins: [formatMixins, weatherMixins],
+  data() {
+    return { photo: null };
+  },
+  computed: {
+    ...mapGetters('location', ['location']),
+    place: ({ location }) => `${location.name}|${location.region}`,
+  },
+  watch: {
+    // a picture of the town behind the conditions, from its Wikipedia article
+    place: {
+      immediate: true,
+      async handler() {
+        const { name, region } = this.location;
+        this.photo = null;
+        if (!name) return;
+        try {
+          this.photo = await fetchCityPhoto({ name, region });
+        } catch {
+          // no picture: the plain paper card
+        }
+      },
+    },
+  },
   props: {
     time: {
       type: String,
@@ -27,7 +52,21 @@ export default {
 </script>
 
 <template>
-  <div class="weather-now card">
+  <div class="weather-now card" :class="{ 'weather-now--photo': photo }">
+    <template v-if="photo">
+      <img
+        class="weather-now__photo"
+        :src="photo.src"
+        alt=""
+        @error="photo = null"
+      />
+      <a
+        class="weather-now__credit"
+        :href="photo.file"
+        target="_blank"
+        rel="noopener noreferrer"
+      >Photo: {{ photo.page }}, Wikimedia Commons</a>
+    </template>
     <h3 class="kicker weather-now__time">
       Conditions Now · {{ time }}
     </h3>
@@ -71,7 +110,40 @@ export default {
 
 <style lang="scss">
 .weather-now {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   min-width: 320px;
+  // the town's photo sits under a paper wash, light at the top so the place shows,
+  // heavier toward the bottom where the big temperature prints
+  &__photo {
+    position: absolute;
+    inset: 0;
+    z-index: -2; // under the wash
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(0.25) saturate(0.85);
+  }
+  &--photo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgba($paper, 0.5) 0%, rgba($paper, 0.62) 45%, rgba($paper, 0.9) 100%);
+  }
+  &__credit {
+    position: absolute;
+    right: $gap-2;
+    bottom: $gap-1;
+    font-size: 10px;
+    font-style: italic;
+    color: $ink-muted;
+    &:hover {
+      color: $spot;
+      text-decoration: underline;
+    }
+  }
   display: grid;
   grid-row-gap: $gap-6;
   grid-template-rows: auto 200px auto auto;

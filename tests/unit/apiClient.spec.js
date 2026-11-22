@@ -127,7 +127,7 @@ describe('apiClient adapters', () => {
     );
 
     const w = await apiClient.getWeather({ lat: 25.8, lon: -80.1 });
-    expect(w.alerts).toEqual([{ title: 'Flood Watch' }]);
+    expect(w.alerts).toMatchObject([{ title: 'Flood Watch' }]);
     expect(w.currently).toMatchObject({ icon: 'storm', summary: 'Thunderstorms', windSpeed: 9, precipProbability: 0.4 });
     expect(w.daily.data[0]).toMatchObject({
       icon: 'partly-cloudy-day',
