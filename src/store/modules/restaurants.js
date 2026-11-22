@@ -13,6 +13,7 @@ const getDefaultState = () => ({
   featuredId: null,
   hoveredId: null, // list item under the pointer/focus; the map tints its pin
   openStatus: {}, // { [id]: 'open' | 'closed' | 'unknown' }
+  loadedFor: null, // 'lat,lon' of the list above, so revisits don't refetch or re-pick
   ...getDefaultFilters(),
 });
 
@@ -49,6 +50,9 @@ export default {
     },
     SET_HOVERED_ID(state, value) {
       state.hoveredId = value;
+    },
+    SET_LOADED_FOR(state, value) {
+      state.loadedFor = value;
     },
     SET_FEATURED_ID(state, value) {
       state.featuredId = value;
@@ -87,7 +91,10 @@ export default {
     featured: (state) => state.restaurants.find((r) => r.id === state.featuredId) || null,
   },
   actions: {
-    async getRestaurants({ commit, dispatch, rootGetters }, coordinates) {
+    async getRestaurants({ state, commit, dispatch, rootGetters }, coordinates) {
+      // the Front Page and Food share one list and one featured pick per place
+      const place = `${coordinates.lat},${coordinates.lon}`;
+      if (state.loadedFor === place && state.restaurants.length) return;
       commit('SET_IS_LOADING', true);
       commit('SET_ERROR', null);
       commit('CLEAR_FILTERS');
@@ -112,6 +119,7 @@ export default {
           )
         );
         commit('SET_RESTAURANTS', list);
+        commit('SET_LOADED_FOR', place);
         dispatch('pickInitialFeatured');
       } catch (error) {
         commit('SET_RESTAURANTS', []);

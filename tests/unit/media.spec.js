@@ -149,4 +149,12 @@ describe('cached', () => {
     expect(await cached('k', -1, load)).toBe('data');
     expect(load).toHaveBeenCalledTimes(2);
   });
+
+  it('takes the TTL from the answer when given a function', async () => {
+    const load = vi.fn(async () => ({ games: [] }));
+    const ttl = (data) => (data.games.length ? 1000 : -1); // empty: always stale
+    await cached('s', ttl, load);
+    await cached('s', ttl, load);
+    expect(load).toHaveBeenCalledTimes(2);
+  });
 });

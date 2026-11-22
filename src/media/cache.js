@@ -13,12 +13,14 @@ function readAll() {
 
 /**
  * @param {string} key unique per feed and its inputs (e.g. 'tv|2026-11-20')
- * @param {number} ttl milliseconds an answer stays fresh
+ * @param {number | ((data: any) => number)} ttl milliseconds an answer stays fresh,
+ *   or a function of the answer (e.g. shorter for an empty one)
  * @param {() => Promise<any>} load fetches the data when there's no fresh copy
  */
 export async function cached(key, ttl, load) {
   const hit = readAll()[key];
-  if (hit && Date.now() - hit.at < ttl) return hit.data;
+  const ttlFor = (data) => (typeof ttl === 'function' ? ttl(data) : ttl);
+  if (hit && Date.now() - hit.at < ttlFor(hit.data)) return hit.data;
   const data = await load();
   try {
     const now = Date.now();

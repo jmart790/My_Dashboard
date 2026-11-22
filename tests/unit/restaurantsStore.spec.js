@@ -74,6 +74,14 @@ describe('restaurants store', () => {
     }
   });
 
+  it('keeps the list and featured pick when the same place is loaded again', async () => {
+    const store = await loaded();
+    const featured = store.getters['restaurants/featured'].id;
+    await store.dispatch('restaurants/getRestaurants', { lat: 25.81, lon: -80.19 });
+    expect(apiClient.getRestaurants).toHaveBeenCalledTimes(1);
+    expect(store.getters['restaurants/featured'].id).toBe(featured);
+  });
+
   it('features any restaurant when none are open', async () => {
     const store = makeStore();
     apiClient.getRestaurants.mockResolvedValue([LIST[1], LIST[2]]);

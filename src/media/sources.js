@@ -196,7 +196,9 @@ export function fetchLocalSports(coordinates) {
   const { teams, nearby } = localTeams(coordinates);
   const localKeys = new Set(teams.map((t) => `${t.league}|${t.abbr}`));
   const key = `sports|${[...localKeys].join(',')}`;
-  return cached(key, 10 * 60 * 1000, async () => {
+  // an empty week is re-checked within a minute: a blip from ESPN shouldn't blank the column for 10
+  const ttl = (data) => (data.games.length ? 10 * 60 * 1000 : 60 * 1000);
+  return cached(key, ttl, async () => {
     const schedules = await Promise.allSettled(
       teams.map((t) =>
         getJson(`https://site.api.espn.com/apis/site/v2/sports/${t.league}/teams/${t.id}/schedule`).then(
