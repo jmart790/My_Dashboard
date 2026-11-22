@@ -15,9 +15,9 @@ export default {
 
 <template>
   <div class="weather-details card">
-    <h3 class="kicker weather-details__kicker">
+    <h2 class="kicker weather-details__kicker">
       Today's Details
-    </h3>
+    </h2>
     <figure>
       <figcaption>Daily Summary</figcaption>
       <p>{{ currentDetails.summary }}</p>

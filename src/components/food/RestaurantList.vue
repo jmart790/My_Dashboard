@@ -63,9 +63,9 @@ export default {
 
 <template>
   <div class="restaurants card">
-    <h3 class="kicker">
+    <h2 class="kicker">
       Nearby Eateries
-    </h3>
+    </h2>
     <div class="restaurants__controls">
       <div class="restaurants__row" role="group" aria-label="Sort and filter">
         <button

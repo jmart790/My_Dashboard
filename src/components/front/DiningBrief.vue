@@ -1,5 +1,5 @@
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import RestaurantPhoto from "@/components/food/RestaurantPhoto.vue";
 import JumpLine from "@/components/front/JumpLine.vue";
 
@@ -11,7 +11,22 @@ export default {
     ...mapGetters("restaurants", ["featured", "restaurants", "openStatus", "isLoading", "error"]),
     status: ({ featured, openStatus }) => openStatus[featured.id],
     openCount: ({ restaurants, openStatus }) => restaurants.filter((r) => openStatus[r.id] === "open").length,
-    statusLabel: ({ status }) => ({ open: "Open now", closed: "Closed now" })[status] || "Hours unknown"
+    statusLabel: ({ status }) => ({ open: "Open now", closed: "Closed now" })[status] || "Hours unknown",
+    ...mapGetters("location", ["location"]),
+    placeKey: ({ location }) => `${location.lat},${location.lon}`
+  },
+  watch: {
+    // shares the Food page's list: a place already loaded isn't fetched again
+    placeKey: {
+      immediate: true,
+      handler() {
+        const { lat, lon } = this.location;
+        if (lat !== "" && lat != null) this.getRestaurants({ lat, lon });
+      }
+    }
+  },
+  methods: {
+    ...mapActions("restaurants", ["getRestaurants"])
   }
 };
 </script>

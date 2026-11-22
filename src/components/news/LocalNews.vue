@@ -64,14 +64,14 @@ export default {
       flex-direction: row;
     }
     img {
-      max-height: 300px;
+      height: 300px; // fixed, so the list below doesn't jump when the photo arrives
       width: 100%;
       object-fit: cover;
       object-position: center;
       border-radius: 0;
 
       @media screen and (min-width: $desktop) {
-        max-height: 372px;
+        height: 372px;
         max-width: 500px;
       }
     }

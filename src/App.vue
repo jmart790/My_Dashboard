@@ -2,7 +2,7 @@
   <div id="app">
     <AppLayout>
       <router-view v-slot="{ Component, route }">
-        <transition name="ink" mode="out-in" @after-leave="toTop">
+        <transition :name="inked ? 'ink' : 'none'" mode="out-in" @after-leave="toTop">
           <component :is="Component" :key="route.name" />
         </transition>
       </router-view>
@@ -15,6 +15,13 @@ import AppLayout from "@/components/AppLayout.vue";
 
 export default {
   components: { AppLayout },
+  data() {
+    // the first page just appears; the ink fade is for moving between sections
+    return { inked: false };
+  },
+  mounted() {
+    this.$router.isReady().then(() => setTimeout(() => (this.inked = true)));
+  },
   methods: {
     // the new section starts at the top of the column
     toTop() {

@@ -54,15 +54,24 @@ export default {
         </li>
       </ul>
     </template>
-    <p v-else class="front-note">
-      {{ error ? "The forecast didn't make this edition." : "Setting type…" }}
+    <p v-else-if="error" class="front-note">
+      The forecast didn't make this edition.
     </p>
+    <!-- holds the box's height while the forecast loads -->
+    <div v-else class="w-brief__placeholder">
+      <span class="sr-only">Setting type…</span>
+    </div>
     <JumpLine to="Weather" section="Weather" :page="2" />
   </section>
 </template>
 
 <style lang="scss">
 .w-brief {
+  // about the height of the loaded box: conditions, a line, and the week
+  &__placeholder {
+    height: 460px;
+    background: linear-gradient(rgba($ink, 0.07), rgba($ink, 0.07)) 0 0 / 100% 88px no-repeat;
+  }
   &__now {
     display: flex;
     align-items: center;

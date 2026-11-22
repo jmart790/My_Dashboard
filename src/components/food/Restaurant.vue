@@ -51,7 +51,7 @@ export default {
       compact
     />
     <div class="restaurant__content">
-      <h4>{{ restaurant.name }}</h4>
+      <h3>{{ restaurant.name }}</h3>
       <p class="restaurant__copy">
         {{ details }}
       </p>
@@ -112,7 +112,7 @@ export default {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    h4 {
+    h3 {
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;

@@ -28,6 +28,7 @@ export default {
       async handler() {
         this.page = undefined;
         this.failed = false;
+        if (!this.location.name) return; // wait for a place, or it fetches twice
         try {
           this.page = await fetchYearsAgo(this.edition.date, this.location.region);
         } catch {
@@ -56,6 +57,7 @@ export default {
         :src="page.image"
         :alt="`Front page of the ${page.paper}, ${when}`"
         loading="lazy"
+        crossorigin="anonymous"
       />
     </a>
     <template v-if="page">

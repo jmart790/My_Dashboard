@@ -3,11 +3,17 @@ import { mapGetters, mapActions } from "vuex";
 import PageHeader from "@/components/base/PageHeader.vue";
 import JumpLine from "@/components/front/JumpLine.vue";
 import WeatherBrief from "@/components/front/WeatherBrief.vue";
-import DiningBrief from "@/components/front/DiningBrief.vue";
-import ArtsBrief from "@/components/front/ArtsBrief.vue";
-import AlmanacBox from "@/components/front/AlmanacBox.vue";
-import AroundTown from "@/components/front/AroundTown.vue";
-import YearsAgo from "@/components/front/YearsAgo.vue";
+import WhenVisible from "@/components/base/WhenVisible.vue";
+import { defineAsyncComponent } from "vue";
+
+// Below the fold: their code and their feeds wait until the reader scrolls near them,
+// so the lead story and the weather get the network to themselves at first.
+const later = (load) => defineAsyncComponent(load);
+const DiningBrief = later(() => import("@/components/front/DiningBrief.vue"));
+const ArtsBrief = later(() => import("@/components/front/ArtsBrief.vue"));
+const AlmanacBox = later(() => import("@/components/front/AlmanacBox.vue"));
+const AroundTown = later(() => import("@/components/front/AroundTown.vue"));
+const YearsAgo = later(() => import("@/components/front/YearsAgo.vue"));
 
 const SECTION_LABELS = { local: "Local", state: "State", country: "Nation" };
 
@@ -16,7 +22,7 @@ const SECTION_LABELS = { local: "Local", state: "State", country: "Nation" };
 // no extra requests and the pages agree with it (same forecast, same dining pick).
 export default {
   name: "Home",
-  components: { PageHeader, JumpLine, WeatherBrief, DiningBrief, ArtsBrief, AlmanacBox, AroundTown, YearsAgo },
+  components: { PageHeader, JumpLine, WeatherBrief, WhenVisible, DiningBrief, ArtsBrief, AlmanacBox, AroundTown, YearsAgo },
   computed: {
     ...mapGetters("location", ["cityState", "location"]),
     ...mapGetters("edition", ["edition"]),
@@ -34,6 +40,8 @@ export default {
       return [...take("Local", 2), ...take("State", 2), ...take("Nation", 2)];
     },
     newsBusy: ({ newsLoading }) => newsLoading.local || newsLoading.state || newsLoading.country,
+    // the wire has been asked for this edition (so an empty lead means no news, not "not yet")
+    newsTried: (vm) => !!vm.$store.state.news.loadedFor,
     newsFailed: ({ newsError }) => newsError.local && newsError.state && newsError.country
   },
   watch: {
@@ -54,12 +62,10 @@ export default {
   methods: {
     ...mapActions("weather", ["getWeather"]),
     ...mapActions("news", ["loadEdition"]),
-    ...mapActions("restaurants", ["getRestaurants"]),
     load() {
       const { name, region, country, lat, lon } = this.location;
       if (!name) return;
       this.getWeather({ lat, lon });
-      this.getRestaurants({ lat, lon });
       this.loadEdition({ name, region, country });
     }
   }
@@ -85,6 +91,9 @@ export default {
               class="front__lead-photo"
               :src="lead.media"
               alt=""
+              width="640"
+              height="400"
+              fetchpriority="high"
               @error="$event.target.style.display = 'none'"
             />
             <p class="front__deck">
@@ -92,8 +101,21 @@ export default {
             </p>
           </div>
         </template>
+        <!-- the shape of a lead story, so nothing below jumps when it arrives -->
+        <div v-else-if="(newsBusy || !newsTried) && !newsFailed" class="front__lead-skeleton">
+          <span class="sr-only">Setting type…</span>
+          <span class="front__bar front__bar--label" />
+          <span class="front__bar front__bar--head" />
+          <span class="front__bar front__bar--head front__bar--short" />
+          <div class="front__lead-body">
+            <span class="front__bar front__bar--photo" />
+            <div>
+              <span v-for="n in 5" :key="n" class="front__bar front__bar--line" />
+            </div>
+          </div>
+        </div>
         <p v-else class="front-note">
-          {{ newsBusy ? "Setting type…" : "No dispatches came over the wire this morning." }}
+          No dispatches came over the wire this morning.
         </p>
       </article>
       <WeatherBrief class="front__col front__weather" />
@@ -115,15 +137,25 @@ export default {
         </p>
         <JumpLine to="News" section="News" :page="3" />
       </section>
-      <DiningBrief class="front__col" />
-      <ArtsBrief class="front__col" />
+      <WhenVisible class="front__col">
+        <DiningBrief />
+      </WhenVisible>
+      <WhenVisible class="front__col">
+        <ArtsBrief />
+      </WhenVisible>
     </div>
 
     <!-- below the briefs: the features a real local paper ran every day -->
     <div class="front__columns front__band">
-      <AlmanacBox class="front__col" />
-      <AroundTown class="front__col" />
-      <YearsAgo class="front__col" />
+      <WhenVisible class="front__col">
+        <AlmanacBox />
+      </WhenVisible>
+      <WhenVisible class="front__col">
+        <AroundTown />
+      </WhenVisible>
+      <WhenVisible class="front__col">
+        <YearsAgo />
+      </WhenVisible>
     </div>
   </div>
 </template>
@@ -183,6 +215,35 @@ export default {
     @media screen and (min-width: $laptop) {
       grid-template-columns: 1.3fr 1fr;
       align-items: start;
+    }
+  }
+  &__lead-skeleton {
+    min-height: 420px;
+  }
+  &__bar {
+    display: block;
+    margin-bottom: $gap-2;
+    background: rgba($ink, 0.07);
+    &--label {
+      width: 30%;
+      height: 11px;
+    }
+    &--head {
+      height: clamp(28px, 4vw, 52px);
+    }
+    &--short {
+      width: 65%;
+      margin-bottom: $gap-4;
+    }
+    &--photo {
+      aspect-ratio: 16 / 10;
+    }
+    &--line {
+      height: 15px;
+      margin-bottom: 12px;
+      &:last-child {
+        width: 70%;
+      }
     }
   }
   &__lead-photo {

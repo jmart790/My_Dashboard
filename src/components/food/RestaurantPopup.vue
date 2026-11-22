@@ -42,9 +42,9 @@ export default {
     />
 
     <div class="popup__body">
-      <h3 id="popup-title" class="popup__name">
+      <h2 id="popup-title" class="popup__name">
         {{ restaurant.name }}
-      </h3>
+      </h2>
       <div class="popup__tags">
         <span class="popup__tag">{{ restaurant.cuisine }}</span>
         <span class="popup__status" :class="`popup__status--${status}`">

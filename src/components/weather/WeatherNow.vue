@@ -8,7 +8,7 @@ export default {
   name: 'WeatherNow',
   mixins: [formatMixins, weatherMixins],
   data() {
-    return { photo: null };
+    return { photo: null, plainPhoto: false }; // plainPhoto: retry without CORS
   },
   computed: {
     ...mapGetters('location', ['location']),
@@ -21,6 +21,7 @@ export default {
       async handler() {
         const { name, region } = this.location;
         this.photo = null;
+        this.plainPhoto = false;
         if (!name) return;
         try {
           this.photo = await fetchCityPhoto({ name, region });
@@ -58,7 +59,8 @@ export default {
         class="weather-now__photo"
         :src="photo.src"
         alt=""
-        @error="photo = null"
+        :crossorigin="plainPhoto ? null : 'anonymous'"
+        @error="plainPhoto ? (photo = null) : (plainPhoto = true)"
       />
       <a
         class="weather-now__credit"
@@ -67,9 +69,9 @@ export default {
         rel="noopener noreferrer"
       >Photo: {{ photo.page }}, Wikimedia Commons</a>
     </template>
-    <h3 class="kicker weather-now__time">
+    <h2 class="kicker weather-now__time">
       Conditions Now · {{ time }}
-    </h3>
+    </h2>
     <div class="weather-now__icon-summary">
       <inline-svg
         class="weather-now__icon"
@@ -88,9 +90,9 @@ export default {
         <span class="icon-droplet" />
         {{ formatPercent(currentWeather.precipProbability) }}
       </div>
-      <h1 class="current-weather-data__temp">
+      <p class="current-weather-data__temp">
         {{ Math.round(currentWeather.temperature) }}°
-      </h1>
+      </p>
     </div>
     <div class="weather-now__alerts-wrapper">
       <ul class="weather-now__alerts">
@@ -167,6 +169,7 @@ export default {
     display: flex;
     justify-content: space-between;
     &__temp {
+      font-family: $heading-font; // was an h1; keeps the headline face as a <p>
       display: flex;
       align-self: flex-end;
       font-size: 80px;

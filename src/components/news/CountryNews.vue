@@ -50,7 +50,8 @@ export default {
     margin-bottom: $gap-8;
     img {
       margin-bottom: $gap-4;
-      width: -webkit-fill-available;
+      width: 100%;
+      aspect-ratio: 16 / 9; // holds its space before the photo arrives
       object-fit: cover;
       object-position: center;
       border-radius: 0;

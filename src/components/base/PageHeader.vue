@@ -71,9 +71,9 @@ export default {
       <h1 class="page-header__title">
         {{ title }}
       </h1>
-      <h4 class="page-header__sub-title">
+      <p class="page-header__sub-title">
         {{ subtitle }}
-      </h4>
+      </p>
     </div>
     <div class="page-header__controls">
       <button
@@ -98,8 +98,8 @@ export default {
         :class="{ 'page-header__search--error': hasErrors }"
         @submit.prevent="handleSearch(zipcode)"
       >
-        <button type="submit">
-          <span class="icon-actions-linear-search" />
+        <button type="submit" aria-label="Search zip code">
+          <span class="icon-actions-linear-search" aria-hidden="true" />
         </button>
         <input
           ref="input"
@@ -107,6 +107,8 @@ export default {
           type="text"
           name="zipcode"
           placeholder="Zip code"
+          aria-label="Zip code"
+          inputmode="numeric"
           maxlength="5"
           autocomplete="off"
           @blur="handleBlur(zipcode)"

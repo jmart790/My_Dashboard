@@ -21,9 +21,9 @@ export default {
 
 <template>
   <div class="news-list">
-    <h3 class="kicker">
+    <h2 class="kicker">
       {{ label }}
-    </h3>
+    </h2>
     <div class="news-list__articles">
       <NewsSnippet
         v-for="article in news.slice(1)"
@@ -43,7 +43,7 @@ export default {
   border-top: 1px solid $ink;
   border-radius: 0;
   overflow-y: hidden;
-  h3 {
+  > .kicker {
     margin-bottom: $gap-4;
     font-weight: 400;
     font-size: 14px;

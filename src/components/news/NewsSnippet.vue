@@ -27,7 +27,9 @@ export default {
       alt=""
       @error="$event.target.style.display = 'none'"
     />
-    <h4>{{ article.title }}</h4>
+    <component :is="isLarge ? 'h2' : 'h3'" class="news-snippet__title">
+      {{ article.title }}
+    </component>
     <p>{{ article.summary }}</p>
     <a :href="article.link || '#'" target="_blank" rel="noopener noreferrer">
       <template v-if="isLarge">Read more at</template>
@@ -46,7 +48,7 @@ export default {
     height: 150px;
     object-fit: cover;
   }
-  h4 {
+  &__title {
     margin-bottom: $gap-2;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -86,7 +88,7 @@ export default {
     }
   }
   &--large {
-    h4 {
+    .news-snippet__title {
       margin-bottom: $gap-2;
       font-size: 20px;
     }

@@ -16,9 +16,9 @@ export default {
 
 <template>
   <div class="weather-daily card">
-    <h3 class="kicker">
+    <h2 class="kicker">
       The Week Ahead
-    </h3>
+    </h2>
     <ul class="weather-daily__forecasts">
       <li
         v-for="(forecast, index) in dailyForecast"

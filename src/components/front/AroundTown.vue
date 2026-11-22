@@ -6,7 +6,9 @@ import { fetchNearby, pickAround } from "@/features/sources";
 export default {
   name: "AroundTown",
   data() {
-    return { places: null, failed: false };
+    // cookie-free (CORS) loading first; a fresh Wikimedia thumbnail sometimes arrives
+    // without the CORS header, so those few fall back to a plain request
+    return { places: null, failed: false, plainImages: new Set() };
   },
   computed: {
     ...mapGetters("location", ["location"]),
@@ -46,6 +48,8 @@ export default {
           :src="place.thumb"
           alt=""
           loading="lazy"
+          :crossorigin="plainImages.has(place.id) ? null : 'anonymous'"
+          @error="plainImages.add(place.id)"
         />
         <div>
           <a

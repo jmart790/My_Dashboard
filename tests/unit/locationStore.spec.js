@@ -1,6 +1,6 @@
 import { createStore } from 'vuex';
 import apiClient from '@/apiClient';
-import location, { STORAGE_KEY } from '@/store/modules/location';
+import location, { STORAGE_KEY, DEFAULT_LOCATION } from '@/store/modules/location';
 
 vi.mock('@/apiClient', () => ({ default: { getLocation: vi.fn(), reverseGeocode: vi.fn() } }));
 
@@ -67,76 +67,47 @@ describe('location store', () => {
     expect(store.getters['location/locating']).toBe(false);
   });
 
-  it('first visit uses the device location', async () => {
-    vi.stubGlobal('navigator', { geolocation: grant(39.7, -105.0) });
-    apiClient.reverseGeocode.mockResolvedValue({ location: DENVER });
-    const store = makeStore();
-    await store.dispatch('location/init');
-    expect(store.getters['location/location']).toEqual(DENVER);
-    expect(apiClient.getLocation).not.toHaveBeenCalled();
+  // navigator stand-in with a Permissions API answer for geolocation
+  const withPermission = (state, geolocation) => ({
+    geolocation,
+    permissions: { query: async () => ({ state }) },
   });
 
-  it('first visit falls back to the default zip when location is unavailable', async () => {
-    vi.stubGlobal('navigator', { geolocation: deny() });
-    apiClient.getLocation.mockResolvedValue({ location: MIAMI });
+  it('first visit shows the built-in default at once, with no prompt and no lookup', async () => {
+    const getCurrentPosition = vi.fn();
+    vi.stubGlobal('navigator', withPermission('prompt', { getCurrentPosition }));
     const store = makeStore();
     await store.dispatch('location/init');
-    expect(apiClient.getLocation).toHaveBeenCalledWith('33137');
-    expect(store.getters['location/location']).toEqual(MIAMI);
-    // a first-visit fallback is not an error the user asked about
-    expect(store.getters['location/geoError']).toBeNull();
-    // and not a choice: not saved, so the next visit tries the device location again
+    expect(store.getters['location/location']).toEqual(DEFAULT_LOCATION);
+    expect(getCurrentPosition).not.toHaveBeenCalled(); // never prompts on load
+    expect(apiClient.getLocation).not.toHaveBeenCalled();
+    // not the reader's choice: not saved
     expect(saved()).toBeNull();
     expect(store.getters['location/source']).toBeNull();
   });
 
-  it('first visit does not wait forever on an unanswered permission prompt', async () => {
-    vi.useFakeTimers();
-    let grantLater;
-    vi.stubGlobal('navigator', {
-      geolocation: { getCurrentPosition: (ok) => (grantLater = () => ok({ coords: { latitude: 39.7, longitude: -105.0 } })) },
-    });
-    apiClient.getLocation.mockResolvedValue({ location: MIAMI });
+  it('first visit uses the device location when the site is already allowed', async () => {
+    vi.stubGlobal('navigator', withPermission('granted', grant(39.7, -105.0)));
     apiClient.reverseGeocode.mockResolvedValue({ location: DENVER });
     const store = makeStore();
-    const init = store.dispatch('location/init');
-    await vi.advanceTimersByTimeAsync(8000); // prompt still open
-    await init;
-    expect(store.getters['location/location']).toEqual(MIAMI); // pages can load meanwhile
-    // the user finally clicks Allow: their location replaces the default
-    grantLater();
-    await vi.runAllTimersAsync();
+    await store.dispatch('location/init');
     expect(store.getters['location/location']).toEqual(DENVER);
     expect(store.getters['location/source']).toBe('gps');
-    vi.useRealTimers();
   });
 
-  it('a slow default never overwrites a device location that arrived first', async () => {
-    vi.useFakeTimers();
-    let grantLater;
-    vi.stubGlobal('navigator', {
-      geolocation: { getCurrentPosition: (ok) => (grantLater = () => ok({ coords: { latitude: 39.7, longitude: -105.0 } })) },
-    });
-    let finishDefault;
-    apiClient.getLocation.mockReturnValue(new Promise((resolve) => (finishDefault = () => resolve({ location: MIAMI }))));
-    apiClient.reverseGeocode.mockResolvedValue({ location: DENVER });
+  it('keeps the default quietly if an allowed device lookup fails', async () => {
+    vi.stubGlobal('navigator', withPermission('granted', deny()));
     const store = makeStore();
-    const init = store.dispatch('location/init');
-    await vi.advanceTimersByTimeAsync(8000); // timeout: default lookup starts
-    grantLater(); // ...but the user allows before it returns
-    await vi.runAllTimersAsync();
-    finishDefault();
-    await init;
-    expect(store.getters['location/location']).toEqual(DENVER);
-    vi.useRealTimers();
+    await store.dispatch('location/init');
+    expect(store.getters['location/location']).toEqual(DEFAULT_LOCATION);
+    expect(store.getters['location/geoError']).toBeNull();
   });
 
   it('ignores corrupt saved data', async () => {
     localStorage.setItem(STORAGE_KEY, '{not json');
     vi.stubGlobal('navigator', {});
-    apiClient.getLocation.mockResolvedValue({ location: MIAMI });
     const store = makeStore();
     await store.dispatch('location/init');
-    expect(store.getters['location/location']).toEqual(MIAMI);
+    expect(store.getters['location/location']).toEqual(DEFAULT_LOCATION);
   });
 });

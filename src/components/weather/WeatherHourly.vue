@@ -15,9 +15,9 @@ export default {
 
 <template>
   <div class="weather-hourly card">
-    <h3 class="kicker">
+    <h2 class="kicker">
       Hour by Hour
-    </h3>
+    </h2>
     <ul class="weather-hourly__forecasts">
       <li v-for="(forecast, id) in hourlyForecast" :key="`HOURLYFORECAST${id}`">
         <p class="forecast-hour">

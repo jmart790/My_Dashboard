@@ -7,6 +7,11 @@ const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
 const round = (n) => Number(n).toFixed(2);
 
+// Wikipedia's thumbnail URLs carry utm_* tracking params, and Wikimedia sometimes
+// answers those with a redirect that has no CORS header, which breaks cookie-free
+// loading. The clean URL is the redirect's target, so ask for it directly.
+export const cleanImageUrl = (url) => url && url.split('?')[0];
+
 async function getJson(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`${res.status} from ${new URL(url).host}`);
@@ -39,7 +44,7 @@ export function aqiLabel(aqi) {
  * thumbnail when there is one. Cached a week; the daily pick happens in pickAround.
  */
 export function fetchNearby({ lat, lon }) {
-  return cached(`around|${round(lat)},${round(lon)}`, 7 * DAY, async () => {
+  return cached(`around2|${round(lat)},${round(lon)}`, 7 * DAY, async () => {
     const params = new URLSearchParams({
       action: 'query',
       generator: 'geosearch',
@@ -63,7 +68,7 @@ export function fetchNearby({ lat, lon }) {
         id: p.pageid,
         title: p.title,
         extract: p.extract,
-        thumb: p.thumbnail && p.thumbnail.source,
+        thumb: p.thumbnail && cleanImageUrl(p.thumbnail.source),
         link: `https://en.wikipedia.org/?curid=${p.pageid}`,
       }));
   });
@@ -92,7 +97,7 @@ async function frontPages(date, state) {
 export function fetchYearsAgo(day, state) {
   const [y, m, d] = day.split('-');
   const then = `${Number(y) - 100}-${m}-${d}`;
-  return cached(`yearsago|${then}|${state || ''}`, DAY, async () => {
+  return cached(`yearsago2|${then}|${state || ''}`, DAY, async () => {
     let pages = state ? await frontPages(then, state) : [];
     const local = pages.length > 0;
     if (!local) pages = await frontPages(then);
@@ -106,7 +111,8 @@ export function fetchYearsAgo(day, state) {
       date: then,
       paper,
       local,
-      image: iiif.replace(/\/full\/pct:[\d.]+\//, '/full/pct:25/'),
+      // 600px wide is plenty for the clipping (pct:25 was over 500 KB)
+      image: iiif.replace(/\/full\/pct:[\d.]+\//, '/full/600,/'),
       link: page.url,
     };
   });
@@ -121,14 +127,14 @@ const NOT_A_VIEW = /(map|locator|location|seal|flag|logo|coat[_ ]of[_ ]arms|\.sv
  * @returns {Promise<{ src: string, file: string, page: string } | null>}
  */
 export function fetchCityPhoto({ name, region }) {
-  return cached(`cityphoto|${name}|${region}`, 30 * DAY, async () => {
+  return cached(`cityphoto3|${name}|${region}`, 30 * DAY, async () => {
     for (const title of [`${name}, ${region}`, name]) {
       const params = new URLSearchParams({
         action: 'query',
         titles: title,
         prop: 'pageimages',
         piprop: 'thumbnail|name',
-        pithumbsize: '1400',
+        pithumbsize: '960', // the card is never wider than this; 1400 doubled the load
         redirects: '1',
         format: 'json',
         origin: '*',
@@ -137,7 +143,7 @@ export function fetchCityPhoto({ name, region }) {
       const page = Object.values((data.query && data.query.pages) || {})[0];
       if (page && page.thumbnail && page.pageimage && !NOT_A_VIEW.test(page.pageimage)) {
         return {
-          src: page.thumbnail.source,
+          src: cleanImageUrl(page.thumbnail.source),
           file: `https://commons.wikimedia.org/wiki/File:${page.pageimage}`,
           page: page.title,
         };

@@ -3,7 +3,7 @@ import { fetchCityPhoto } from '@/features/sources';
 
 const page = (title, pageimage) => ({
   ok: true,
-  json: async () => ({ query: { pages: { 1: { title, pageimage, thumbnail: pageimage && { source: `https://img/${pageimage}` } } } } }),
+  json: async () => ({ query: { pages: { 1: { title, pageimage, thumbnail: pageimage && { source: `https://img/${pageimage}?utm_source=en.wikipedia.org` } } } } }),
 });
 
 describe('fetchCityPhoto', () => {

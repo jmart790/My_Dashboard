@@ -3,11 +3,27 @@ import apiClient from '@/apiClient';
 // The chosen location (zip search or device GPS) is saved so a refresh, or any
 // other page, starts from it instead of the default.
 export const STORAGE_KEY = 'myDashboard.location.v1';
-const DEFAULT_ZIP = '33137'; // used only when there's no saved location and no GPS
-// An unanswered "Know your location?" prompt never times out by itself (the
-// geolocation timeout only starts once permission is granted), so stop waiting.
-const PROMPT_WAIT_MS = 8000;
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+// First-visit paper until the reader picks a place: built in, so the first edition
+// renders without waiting on a zip lookup.
+export const DEFAULT_LOCATION = Object.freeze({
+  country: 'United States',
+  name: 'Portland',
+  region: 'Oregon',
+  lat: 45.5181,
+  lon: -122.6745,
+  timezone: 'America/Los_Angeles',
+  zip: '97204',
+});
+
+// Has the reader already allowed location for this site? Never prompts.
+async function locationAllowed() {
+  try {
+    const status = await navigator.permissions.query({ name: 'geolocation' });
+    return status.state === 'granted';
+  } catch {
+    return false; // no Permissions API: don't guess, don't prompt
+  }
+}
 
 const emptyLocation = () => ({
   country: '',
@@ -116,23 +132,19 @@ export default {
     currentZip: ({ location }) => location.zip || '',
   },
   actions: {
-    /** App start: use the saved location, else the device's, else the default zip. */
+    /**
+     * App start: the saved location, else the default paper right away. The device
+     * location is only used here if the reader already allowed it; nobody gets a
+     * permission prompt they didn't ask for (the locate button asks).
+     */
     async init({ state, commit, dispatch }) {
       if (state.location.name) return; // restored from storage by the state initializer
-      const located = dispatch('locateMe').then(
-        () => true,
-        () => {
-          commit('SET_GEO_ERROR', null); // not asked for, so not an error to show
-          return false;
-        }
-      );
-      const answer = await Promise.race([located, wait(PROMPT_WAIT_MS).then(() => null)]);
-      if (answer === true) return;
-      // Denied, unavailable, or the prompt is still open: show the default meanwhile.
-      // If the user allows later, locateMe finishes and replaces it. Not saved: the
-      // default isn't their choice, so the next visit tries the device location again
-      // (browsers don't re-prompt after a denial).
-      await dispatch('getLocation', { zipcode: DEFAULT_ZIP, remember: false });
+      // not saved: the default isn't the reader's choice
+      commit('SET_LOCATION', { ...DEFAULT_LOCATION });
+      commit('SET_SOURCE', null);
+      if (await locationAllowed()) {
+        await dispatch('locateMe').catch(() => commit('SET_GEO_ERROR', null));
+      }
     },
     /** @param payload a zip string, or { zipcode, remember } (remember defaults to true) */
     async getLocation({ state, commit }, payload) {
