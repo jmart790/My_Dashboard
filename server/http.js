@@ -13,14 +13,18 @@ export function toConnect(handler) {
   };
 }
 
-/** @param {{ cdnSeconds?: number }} options how long Netlify's CDN may keep a 200 */
-export function toNetlify(handler, { cdnSeconds = 0 } = {}) {
+/**
+ * @param {{ cdnSeconds?: number, refusedCdnSeconds?: number }} options how long Netlify's
+ *   CDN may keep a 200, and an upstream refusal (403 quota / 429 rate limit)
+ */
+export function toNetlify(handler, { cdnSeconds = 0, refusedCdnSeconds = 0 } = {}) {
   return async (request) => {
     const { status, body } = await handler(new URL(request.url).searchParams);
     const headers = { 'cache-control': 'no-store' };
     // Netlify's CDN (not the browser) shares good answers between visitors, saving
     // upstream calls; durable keeps them across edge nodes.
-    if (status === 200 && cdnSeconds) headers['netlify-cdn-cache-control'] = `public, durable, s-maxage=${cdnSeconds}`;
+    const seconds = status === 200 ? cdnSeconds : [403, 429].includes(status) ? refusedCdnSeconds : 0;
+    if (seconds) headers['netlify-cdn-cache-control'] = `public, durable, s-maxage=${seconds}`;
     return Response.json(body, { status, headers });
   };
 }

@@ -1,9 +1,10 @@
 // @vitest-environment node
-import { searchNews, isPlaceQuery, newsKey } from '../../server/news.js';
+import { searchNews, isPlaceQuery, newsKey, clearNewsCache, NEWS_TTL_MS, REFUSED_TTL_MS } from '../../server/news.js';
 
 const ok = (body) => ({ ok: true, status: 200, json: async () => body });
 
 describe('server news search', () => {
+  beforeEach(() => clearNewsCache());
   it('only accepts place names', () => {
     expect(isPlaceQuery('Portland')).toBe(true);
     expect(isPlaceQuery("Coeur d'Alene")).toBe(true);
@@ -37,11 +38,66 @@ describe('server news search', () => {
   });
 
   it('passes quota and rate-limit answers through, and never throws', async () => {
+    const ask = (fetchImpl) => {
+      clearNewsCache(); // each case is a fresh ask, not the remembered answer
+      return searchNews('Portland', { key: 'k', fetchImpl });
+    };
     const answer = (status) => async () => ({ ok: false, status });
-    expect((await searchNews('Portland', { key: 'k', fetchImpl: answer(403) })).status).toBe(403);
-    expect((await searchNews('Portland', { key: 'k', fetchImpl: answer(500) })).status).toBe(502);
-    const body = (await searchNews('Portland', { key: 'k', fetchImpl: answer(429) })).body;
+    expect((await ask(answer(403))).status).toBe(403);
+    expect((await ask(answer(500))).status).toBe(502);
+    const body = (await ask(answer(429))).body;
     expect(JSON.stringify(body)).not.toContain('k"'); // the key is never echoed back
-    expect((await searchNews('Portland', { key: 'k', fetchImpl: async () => { throw new Error('timeout'); } })).status).toBe(504);
+    expect((await ask(async () => { throw new Error('timeout'); })).status).toBe(504);
+  });
+});
+
+describe('server news cache', () => {
+  const ok = (body) => ({ ok: true, status: 200, json: async () => body });
+  beforeEach(() => {
+    clearNewsCache();
+    vi.useFakeTimers();
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it('answers the same place from memory for 15 minutes', async () => {
+    const fetchImpl = vi.fn(async () => ok({ articles: [{ title: 'x' }] }));
+    await searchNews('Portland', { key: 'k', fetchImpl });
+    await searchNews('Portland', { key: 'k', fetchImpl });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    await searchNews('Oregon', { key: 'k', fetchImpl }); // another place is its own entry
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    vi.advanceTimersByTime(NEWS_TTL_MS + 1);
+    await searchNews('Portland', { key: 'k', fetchImpl });
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+  });
+
+  it('remembers "quota used up" for 10 minutes instead of asking again', async () => {
+    const fetchImpl = vi.fn(async () => ({ ok: false, status: 403 }));
+    expect((await searchNews('Portland', { key: 'k', fetchImpl })).status).toBe(403);
+    expect((await searchNews('Portland', { key: 'k', fetchImpl })).status).toBe(403);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(REFUSED_TTL_MS + 1);
+    await searchNews('Portland', { key: 'k', fetchImpl });
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not cache other failures', async () => {
+    const fetchImpl = vi.fn(async () => ({ ok: false, status: 500 }));
+    await searchNews('Portland', { key: 'k', fetchImpl });
+    await searchNews('Portland', { key: 'k', fetchImpl });
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('Netlify adapter caching headers', () => {
+  it('lets the CDN keep good answers and refusals, but not other errors', async () => {
+    const { toNetlify } = await import('../../server/http.js');
+    const header = async (status) =>
+      (await toNetlify(async () => ({ status, body: {} }), { cdnSeconds: 900, refusedCdnSeconds: 600 })(new Request('https://x/api/news?q=a')))
+        .headers.get('netlify-cdn-cache-control');
+    expect(await header(200)).toBe('public, durable, s-maxage=900');
+    expect(await header(403)).toBe('public, durable, s-maxage=600');
+    expect(await header(429)).toBe('public, durable, s-maxage=600');
+    expect(await header(502)).toBeNull();
   });
 });

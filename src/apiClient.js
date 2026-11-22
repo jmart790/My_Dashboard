@@ -223,7 +223,8 @@ export default {
   /**
    * GNews search -> { articles } in the old free-news shape.
    * @param {{ edition?: string, fresh?: boolean }} [opts] edition: keep the answer for that
-   *   edition id; fresh: skip every cache (the EXTRA check)
+   *   edition id; fresh: skip the browser's caches (the EXTRA check). The server still
+   *   reuses a place's news for 15 minutes, so a fresh ask rarely reaches GNews.
    */
   async getNewsByLocation(query, { edition, fresh } = {}) {
     // our /api/news endpoint calls GNews, so the key stays on the server

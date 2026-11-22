@@ -16,7 +16,7 @@ function readDismissed() {
 
 // EXTRA! Stop-the-presses news between editions. Weather warnings are checked right
 // away (free); the local wire is rechecked every 30 minutes while the site is open,
-// one GNews call each time.
+// through /api/news, whose 15-minute server cache answers most checks without GNews.
 export default {
   name: "ExtraBanner",
   data() {
