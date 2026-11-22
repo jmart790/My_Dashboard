@@ -9,6 +9,8 @@ export default {
     timeZone: { type: String, default: null }
   },
   computed: {
+    // newest first: the furthest-out game at the top, down to the oldest result
+    games: ({ sports }) => [...sports.games].sort((a, b) => b.date.localeCompare(a.date)),
     teamLine: ({ sports }) =>
       sports.nearby
         ? `Pro teams within ${LOCAL_MILES} miles`
@@ -24,6 +26,14 @@ export default {
         minute: "2-digit"
       });
     },
+    // full date for the opened game, e.g. "Sat, Nov 22, 2026 · 7:00 PM"
+    fullDate(game) {
+      const at = new Date(game.date);
+      const zone = { timeZone: this.timeZone || undefined };
+      const day = at.toLocaleDateString("en-US", { ...zone, weekday: "short", month: "short", day: "numeric", year: "numeric" });
+      const time = at.toLocaleTimeString("en-US", { ...zone, hour: "numeric", minute: "2-digit" });
+      return `${day} · ${time}`;
+    },
     showScore: (game) => game.state !== "pre" && game.home.score != null
   }
 };
@@ -34,10 +44,10 @@ export default {
     <p class="sports__teams">
       {{ teamLine }}
     </p>
-    <p v-if="!sports.games.length" class="m-section__note">
+    <p v-if="!games.length" class="m-section__note">
       No games for the local teams this week.
     </p>
-    <details v-for="game in sports.games" :key="game.id" class="m-item">
+    <details v-for="game in games" :key="game.id" class="m-item">
       <summary>
         <span class="sports__when">
           <span class="sports__league">{{ game.league }}</span>
@@ -75,6 +85,9 @@ export default {
               .join(" · ")
           }}
         </p>
+        <p class="sports__date">
+          <time :datetime="game.date">{{ fullDate(game) }}</time>
+        </p>
       </div>
     </details>
   </div>
@@ -100,6 +113,14 @@ export default {
     display: block;
     font-size: 10px;
     letter-spacing: 0.12em;
+    color: $ink-muted;
+  }
+  &__date {
+    margin-top: $gap-2;
+    text-align: right;
+    font-family: $heading-font;
+    font-size: 12px;
+    font-style: italic;
     color: $ink-muted;
   }
   &__live {
