@@ -35,7 +35,7 @@ function milesBetween(lat1, lon1, lat2, lon2) {
   return 3958.8 * 2 * Math.asin(Math.sqrt(a));
 }
 
-// GNews free plan: 100 requests/day, 3 per News page load. Cache in sessionStorage so
+// GNews (through /api/news) free plan: 100 requests/day, 3 per News page load. Cache in sessionStorage so
 // dev reloads and tab-hopping don't burn the quota.
 // ponytail: per-tab cache; move to localStorage if the daily cap still bites.
 const NEWS_TTL = 30 * 60 * 1000;
@@ -226,12 +226,9 @@ export default {
    *   edition id; fresh: skip every cache (the EXTRA check)
    */
   async getNewsByLocation(query, { edition, fresh } = {}) {
-    const apikey = import.meta.env.VITE_GNEWS_API_KEY;
-    if (!apikey) throw new Error('Missing VITE_GNEWS_API_KEY in .env.local');
+    // our /api/news endpoint calls GNews, so the key stays on the server
     const load = async () => {
-      const { data } = await throttled(() => axios.get('https://gnews.io/api/v4/search', {
-        params: { q: `"${query}"`, lang: 'en', country: 'us', max: 10, sortby: 'publishedAt', apikey },
-      }));
+      const { data } = await throttled(() => axios.get('/api/news', { params: { q: query } }));
       return data.articles;
     };
     let articles;

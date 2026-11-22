@@ -110,3 +110,11 @@ describe('findOgImage', () => {
     expect(await findOgImage('https://r.example/', { fetchImpl: boom, lookup: publicDns })).toBeNull();
   });
 });
+
+describe('guardedLookup (connect-time DNS check)', () => {
+  it('refuses a host that resolves to a private address when the connection is made', async () => {
+    const { guardedLookup } = await import('../../server/ogImage.js');
+    const error = await new Promise((resolve) => guardedLookup('localhost', {}, (err) => resolve(err)));
+    expect(error && error.message).toMatch(/private address/);
+  });
+});

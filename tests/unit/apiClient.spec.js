@@ -160,8 +160,7 @@ describe('apiClient adapters', () => {
     expect(list[1].image).toBeNull();
   });
 
-  it('getNewsByLocation maps GNews articles and caches per query', async () => {
-    vi.stubEnv('VITE_GNEWS_API_KEY', 'test-key');
+  it('getNewsByLocation asks our /api/news, maps the articles and caches per query', async () => {
     axios.get.mockResolvedValue({
       data: {
         articles: [
@@ -186,10 +185,6 @@ describe('apiClient adapters', () => {
     });
     await apiClient.getNewsByLocation('Miami');
     expect(axios.get).toHaveBeenCalledTimes(1);
-  });
-
-  it('getNewsByLocation fails clearly without an API key', async () => {
-    vi.stubEnv('VITE_GNEWS_API_KEY', '');
-    await expect(apiClient.getNewsByLocation('Miami')).rejects.toThrow('VITE_GNEWS_API_KEY');
+    expect(axios.get).toHaveBeenCalledWith('/api/news', { params: { q: 'Miami' } }); // no key from the browser
   });
 });

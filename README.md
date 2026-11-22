@@ -13,8 +13,19 @@ npm run lint       # eslint
 All data sources are free. Only news needs a key: sign up at [gnews.io](https://gnews.io), then put it in `.env.local`:
 
 ```
-VITE_GNEWS_API_KEY=your-key
+GNEWS_API_KEY=your-key
 ```
+
+The key is only read on the server: the browser calls `/api/news`, which the Vite dev and
+preview servers (and Netlify Functions in production) answer from `server/`. On Netlify, set
+`GNEWS_API_KEY` as an environment variable. Don't prefix it with `VITE_`, or Vite would put it
+in the browser code.
+
+## Deploying
+
+The site is on Netlify (`netlify.toml`), linked to this repo, so a push to `master` deploys.
+`netlify/functions/` holds the two server endpoints: `/api/news` and `/api/og-image`
+(restaurant website photos).
 
 Sources:
 

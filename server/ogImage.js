@@ -2,7 +2,11 @@
 // Runs on the server because browsers can't read other sites' HTML (CORS).
 // Plain Node: used by the Vite plugin in vite.config.js, portable to a serverless function.
 import { lookup as dnsLookup } from 'node:dns/promises';
+import { lookup as dnsLookupCallback } from 'node:dns';
 import { isIP } from 'node:net';
+import http from 'node:http';
+import https from 'node:https';
+import { Readable } from 'node:stream';
 
 const MAX_REDIRECTS = 3;
 const MAX_HTML_BYTES = 512 * 1024; // the <head> is near the top; never read whole pages
@@ -59,9 +63,46 @@ async function isSafeUrl(url, lookup) {
   } catch {
     return false;
   }
-  // ponytail: DNS is checked here and resolved again by fetch, so a host that changes
-  // its answer in between (DNS rebinding) could slip through. Fine for a local dev
-  // server; pin the checked IP with a custom undici dispatcher before exposing this publicly.
+  // The connection itself re-checks the address it actually dials (guardedLookup below),
+  // so a host that changes its DNS answer after this check (rebinding) still can't reach
+  // a private network.
+}
+
+/**
+ * dns.lookup for http(s).get that refuses private addresses at connect time: the
+ * address checked is the address dialed.
+ */
+export function guardedLookup(hostname, options, callback) {
+  dnsLookupCallback(hostname, { ...options, all: true }, (error, addresses) => {
+    if (error) return callback(error);
+    if (!addresses.length || addresses.some(({ address }) => isPrivateAddress(address))) {
+      return callback(new Error(`refusing private address for ${hostname}`));
+    }
+    if (options && options.all) return callback(null, addresses);
+    return callback(null, addresses[0].address, addresses[0].family);
+  });
+}
+
+/** A minimal fetch (status, headers.get, body stream) that connects through guardedLookup. */
+export function pinnedFetch(url, { signal, headers } = {}) {
+  return new Promise((resolve, reject) => {
+    const target = new URL(url);
+    const client = target.protocol === 'https:' ? https : http;
+    const req = client.get(target, { headers, signal, lookup: guardedLookup }, (res) => {
+      resolve({
+        status: res.statusCode,
+        ok: res.statusCode >= 200 && res.statusCode < 300,
+        headers: {
+          get: (name) => {
+            const value = res.headers[name.toLowerCase()];
+            return Array.isArray(value) ? value.join(', ') : value ?? null;
+          },
+        },
+        body: Readable.toWeb(res),
+      });
+    });
+    req.on('error', reject);
+  });
 }
 
 // ---- HTML parsing
@@ -134,7 +175,7 @@ async function readHead(response) {
  * @param {{ fetchImpl?: typeof fetch, lookup?: Function }} deps injectable for tests
  * @returns {Promise<string|null>} never throws
  */
-export async function findOgImage(pageUrl, { fetchImpl = fetch, lookup = dnsLookup } = {}) {
+export async function findOgImage(pageUrl, { fetchImpl = pinnedFetch, lookup = dnsLookup } = {}) {
   let url = pageUrl;
   try {
     for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
@@ -166,24 +207,19 @@ export async function findOgImage(pageUrl, { fetchImpl = fetch, lookup = dnsLook
 const DAY = 24 * 60 * 60 * 1000;
 const cache = new Map(); // page URL -> { image, expires }
 
-/** Connect-style middleware for GET /api/og-image?url=... -> { image } */
-export async function ogImageHandler(req, res) {
-  const target = new URL(req.url, 'http://localhost').searchParams.get('url');
-  res.setHeader('content-type', 'application/json');
-  if (!target || target.length > 2048) {
-    res.statusCode = 400;
-    res.end(JSON.stringify({ error: 'url query parameter required' }));
-    return;
-  }
+/**
+ * GET /api/og-image?url=... -> { image }. Shared by the Vite servers and the Netlify Function.
+ * @returns {Promise<{ status: number, body: object }>}
+ */
+export async function ogImageResult(target) {
+  if (!target || target.length > 2048) return { status: 400, body: { error: 'url query parameter required' } };
   let hit = cache.get(target);
   if (!hit || hit.expires < Date.now()) {
     const image = await findOgImage(target);
     // misses are re-checked sooner: sites add share images
     hit = { image, expires: Date.now() + (image ? 7 * DAY : DAY) };
+    if (cache.size > 2000) cache.clear(); // ponytail: crude cap; the client caches too, and the CDN caches the response
     cache.set(target, hit);
-    // ponytail: unbounded in-memory cache; fine for a dev server, use an LRU or KV store if deployed
   }
-  // the client caches in localStorage; a browser HTTP cache on top would hide server-side fixes
-  res.setHeader('cache-control', 'no-store');
-  res.end(JSON.stringify({ image: hit.image }));
+  return { status: 200, body: { image: hit.image } };
 }
