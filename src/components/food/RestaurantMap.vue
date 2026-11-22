@@ -324,8 +324,16 @@ onBeforeUnmount(() => {
       color: $paper;
       font-size: 20px;
       line-height: 26px;
-      &:hover {
-        color: $spot;
+      // the global `*` and `span` rules would paint Leaflet's inner × span ink on
+      // ink at body size; let it take the button's paper color and 20px
+      span {
+        color: inherit;
+        font-size: inherit;
+      }
+      &:hover,
+      &:focus-visible {
+        background: $spot;
+        color: $paper;
       }
     }
   }
