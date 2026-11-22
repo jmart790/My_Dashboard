@@ -13,7 +13,7 @@ function describeWeather(code, isDay = 1) {
   if (code === 3) return ['cloudy', 'Overcast'];
   if (code === 45 || code === 48) return ['fog', 'Foggy'];
   if (code === 56 || code === 57 || code === 66 || code === 67) return ['sleet', 'Freezing Rain'];
-  if (code >= 51 && code <= 55) return ['rain', 'Drizzle'];
+  if (code >= 51 && code <= 55) return ['drizzle', 'Drizzle'];
   if ((code >= 61 && code <= 65) || (code >= 80 && code <= 82)) return ['rain', 'Rain'];
   if ((code >= 71 && code <= 77) || code === 85 || code === 86) return ['snow', 'Snow'];
   if (code >= 95) return ['storm', 'Thunderstorms'];

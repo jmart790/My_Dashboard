@@ -29,10 +29,10 @@ export default {
         </p>
         <div class="weather-daily__icon-group">
           <inline-svg
-            class="weather-daily__icon ink-keyline"
+            class="weather-daily__icon"
             :src="iconUrl(forecast.icon)"
-            height="25"
-            width="30"
+            height="40"
+            width="40"
           />
           <p class="forecast-precipitation">
             <span v-show="showPrecipitation(forecast.icon)">

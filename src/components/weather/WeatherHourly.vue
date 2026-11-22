@@ -30,10 +30,10 @@ export default {
           </span>
         </p>
         <inline-svg
-          class="forecast-icon ink-keyline"
+          class="forecast-icon"
           :src="iconUrl(forecast.icon)"
-          height="30"
-          width="40"
+          height="48"
+          width="48"
         />
         <p class="weather-hourly__temp">
           {{ forecast.temperature }}°

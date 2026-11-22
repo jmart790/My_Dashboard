@@ -43,10 +43,3 @@
     border-radius: 0;
   }
 }
-
-// The weather icons were drawn for a dark background (white-to-lavender fills). A
-// thin ink keyline makes them read on newsprint while keeping their colors.
-.ink-keyline {
-  filter: drop-shadow(1px 0 0 $ink) drop-shadow(-1px 0 0 $ink) drop-shadow(0 1px 0 $ink)
-    drop-shadow(0 -1px 0 $ink);
-}

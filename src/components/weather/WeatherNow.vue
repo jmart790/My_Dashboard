@@ -33,7 +33,7 @@ export default {
     </h3>
     <div class="weather-now__icon-summary">
       <inline-svg
-        class="weather-now__icon ink-keyline"
+        class="weather-now__icon"
         :src="iconUrl(currentWeather.icon)"
         title="My Image"
         height="130"

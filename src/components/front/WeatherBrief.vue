@@ -24,7 +24,7 @@ export default {
     </h2>
     <template v-if="hasWeatherData">
       <div class="w-brief__now">
-        <img class="w-brief__icon ink-keyline" :src="iconUrl(now.icon)" alt="" />
+        <img class="w-brief__icon" :src="iconUrl(now.icon)" alt="" />
         <div>
           <p class="w-brief__temp">
             {{ Math.round(now.temperature) }}&deg;
@@ -43,7 +43,7 @@ export default {
       <ul class="w-brief__days">
         <li v-for="day in nextDays" :key="day.time">
           <span class="w-brief__day">{{ day.time.slice(0, 3) }}</span>
-          <img class="w-brief__mini ink-keyline" :src="iconUrl(day.icon)" alt="" />
+          <img class="w-brief__mini" :src="iconUrl(day.icon)" alt="" />
           <span>{{ day.high }}&deg; / {{ day.low }}&deg;</span>
         </li>
       </ul>
@@ -63,8 +63,9 @@ export default {
     gap: $gap-3;
   }
   &__icon {
-    width: 72px;
-    height: 72px;
+    width: 88px;
+    height: 88px;
+    margin: -8px; // the artwork has wide built-in padding
   }
   &__temp {
     font-family: $heading-font;
@@ -108,8 +109,8 @@ export default {
     font-weight: 700;
   }
   &__mini {
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
   }
 }
 </style>
